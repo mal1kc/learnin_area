@@ -1,6 +1,13 @@
 {
     "c-cpp-compile-run.cpp-compiler": "H:/dev-tools/mingw/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/g++.exe",
-    "better-comments.tags": [{
+    "better-comments.tags": 
+    [
+        {
+            "tag": "",
+            "color": "#BB8D70",
+            "bold": true,
+
+        }, {
             "tag": "!",
             "color": "#FF2D00",
             "strikethrough": false,
@@ -60,9 +67,9 @@
             "backgroundColor": "#9ae897",
             "bold": true,
             "italic": true
-        },{
+        }, {
             "tag": "H2",
-            "color": "#6B2C70",
+            "color": "#936697",
             "strikethrough": false,
             "underline": false,
             "backgroundColor": "transparent",
@@ -86,7 +93,7 @@
             "italic": true
         }, {
             "tag": "-",
-            "color": "#74915d",
+            "color": "#5D9160",
             "strikethrough": false,
             "underline": false,
             "backgroundColor": "transparent",

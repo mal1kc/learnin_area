@@ -6,7 +6,7 @@
     "args": [
       "-fdiagnostics-color=always",
       "-g",
-      "${fileBasename}",
+      "${file}",
       "-o",
       "./debug/${fileBasenameNoExtension}_gnu.exe"
     ],
