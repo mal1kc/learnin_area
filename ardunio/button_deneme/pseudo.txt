@@ -1,0 +1,12 @@
+loop()
+{
+    butonDurumu = buton ;
+    if (butonDurumu == 1){
+        
+        if (buton.durum == 1)
+        ışıgı yak
+    }else{
+        ışığı yakma
+    }
+}
+

@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "ms-vscode.cpptools",
+        "danielpinto8zz6.c-cpp-compile-run",
+        "ms-dotnettools.csharp",
+        "tamasfe.even-better-toml",
+        "aaron-bond.better-comments",
+        "hookyqr.beautify",
+        "ms-toolsai.jupyter",
+        "10f.laetus",
+        "ms-python.python"
+    ]
+}
