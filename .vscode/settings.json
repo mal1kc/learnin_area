@@ -171,5 +171,6 @@
         "typescript": "ts-node",
         "coffeescript": "coffee",
     },
+    "cSpell.language": "en,tr",
     "window.zoomLevel": 0
 }
