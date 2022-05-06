@@ -3,7 +3,6 @@ import '009-classes_Employee_class.dart';
 
 void main(List<String> args) {
   Employee malik = Employee('malik', 'kocaeli');
-  print(malik);
   malik.cloths = {
     'body':'t-shirt',
     'legs':'black jean'
