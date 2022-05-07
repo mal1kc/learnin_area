@@ -1,5 +1,5 @@
-import '009-classes_Company_class.dart';
-import '009-classes_Employee_class.dart';
+import '010-classes_Company_class.dart';
+import '010-classes_Employee_class.dart';
 
 void main(List<String> args) {
   Employee malik = Employee('malik', 'kocaeli');
