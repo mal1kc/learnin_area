@@ -1,5 +1,6 @@
 void main(List<String> args) {
   final user = _User('s123c', bodySize: null);
+  print('${user}');
   
 }
 
