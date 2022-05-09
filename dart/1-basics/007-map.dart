@@ -1,7 +1,7 @@
 void main(List<String> args) {
-  Map<String, int> users = {'ayşe': 32, 'ahmet': 20};
+  Map<String, int> users = {'ayşe': 32, 'mehmet': 20};
 
-  print('ayşenin parası ${users['ayşe']}');
+  print('ayşe\'nin parası ${users['ayşe']}');
   for (var item in users.keys) {
     print('$item parası : ${users[item]}');
   }

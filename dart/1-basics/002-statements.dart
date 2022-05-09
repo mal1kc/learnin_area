@@ -23,29 +23,29 @@ void main() {
   final String kCompany = 'kamil';
   final String jCompany = 'ki';
 
-  const int companyBossLenght = 3;
+  const int companyBossLength = 3;
   String results = ' ';
 
 //* √
-  if (aCompany.length <= companyBossLenght) {
+  if (aCompany.length <= companyBossLength) {
     results += ', ' + aCompany;
   }
-  if (bCompany.length <= companyBossLenght) {
+  if (bCompany.length <= companyBossLength) {
     results += ', ' + bCompany;
   }
-  if (cCompany.length <= companyBossLenght) {
+  if (cCompany.length <= companyBossLength) {
     results += ', ' + cCompany;
   }
-  if (kCompany.length <= companyBossLenght) {
+  if (kCompany.length <= companyBossLength) {
     results += ', ' + kCompany;
   }
-  if (jCompany.length <= companyBossLenght) {
+  if (jCompany.length <= companyBossLength) {
     results += ', ' + jCompany;
   }
   if (results.length == 1) {
-    print('hepsinın adı $companyBossLenght den uzun');
+    print('hepsinin adı $companyBossLength den uzun');
   } else {
-    print('adı $companyBossLenght den kısa olanlar $results');
+    print('adı $companyBossLength den kısa olanlar $results');
   }
 
   // @note switch case
@@ -60,10 +60,10 @@ void main() {
       print('olur');
     break;
     case 0:
-    print('basaramadın');
+    print('başaramadın');
     break;
     default:
-    print('sen naptin ?');
+    print('sen ne yaptın ?');
     break;
   }
 

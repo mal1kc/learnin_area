@@ -25,6 +25,7 @@ void main(List<String> args) {
   int? nullnumber;
   // if nullnumber is null it is become 5 for once after it become null again
   print((nullnumber ?? 5));
+  nullnumber = nullnumber ?? 5;
   print(nullnumber);
 
   nullnumber = 5;
