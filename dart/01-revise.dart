@@ -173,14 +173,14 @@ void main() // main method is the entry point of the program
   print('a' == 'a' ? 'hi' : 'bye');
   print('a' != 'a' ? 'hi' : 'bye');
 
-  int? nullnumber;
-  // if nullnumber is null it is become 5 for once after it become null again
-  print((nullnumber ?? 5));
-  nullnumber = nullnumber ?? 5;
-  print(nullnumber);
+  int? nullNumber;
+  // if nullNumber is null it is become 5 for once after it become null again
+  print((nullNumber ?? 5));
+  nullNumber = nullNumber ?? 5;
+  print(nullNumber);
 
-  nullnumber = 5;
-  print(nullnumber);
+  nullNumber = 5;
+  print(nullNumber);
 
   // h1 enums
 
