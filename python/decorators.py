@@ -1,5 +1,6 @@
-# example decorator and usage
-
+'''
+example decorator and usage
+'''
 
 def decorator_function0(original_function):
     def wrapper_function0(*args, **kwargs):
