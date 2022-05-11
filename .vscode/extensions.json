@@ -8,6 +8,8 @@
         "hookyqr.beautify",
         "ms-toolsai.jupyter",
         "10f.laetus",
-        "ms-python.python"
+        "ms-python.python",
+        "zhuangtongfa.material-theme",
+        "PKief.material-icon-theme"
     ]
 }
