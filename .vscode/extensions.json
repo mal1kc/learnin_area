@@ -6,10 +6,9 @@
         "tamasfe.even-better-toml",
         "aaron-bond.better-comments",
         "hookyqr.beautify",
-        "ms-toolsai.jupyter",
         "10f.laetus",
         "ms-python.python",
         "zhuangtongfa.material-theme",
-        "PKief.material-icon-theme"
+        "pkief.material-icon-theme"
     ]
 }
