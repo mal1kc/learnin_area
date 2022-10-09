@@ -6,6 +6,12 @@
 //                            
 // "https://www.fluentcpp.com/2020/02/28/c-regex-101-simple-code-for-simple-cases-with-regexes/"
 
+// learning sources -|
+//                   https://www.newthinktank.com/2018/06/c-tutorial-19-2/
+//                   |
+//                   https://www.fluentcpp.com/2020/02/28/c-regex-101-simple-code-for-simple-cases-with-regexes/
+//                   |
+
 /* NOTE std::regex used for creating regex patterns
 
       std::regex regexp = std::regex(R"(\d+)");
@@ -61,16 +67,39 @@ int example_regexlib_usage() {
   return 0;
 }
 
+void printMatches(std::string str, std::string regex_pattern) {
+  std::regex regexp(regex_pattern);
+  std::sregex_iterator currentMatch(str.begin(), str.end(), regexp);
+
+  // Used to determine if there are any more matches
+  std::sregex_iterator lastMatch;
+
+  std::cout << "text : \n<-------\n"
+            << str << " \n<-------\n"
+            << "regex pattern : " << regex_pattern << "\n";
+
+  // While the current match doesn't equal the last
+  while (currentMatch != lastMatch) {
+    std::smatch match = *currentMatch;
+    std::cout << match.str() << "\n";
+    currentMatch++;
+  }
+
+  std::cout << std::endl;
+}
+
 int my_regex_example() {
 
   using namespace std;
-
-  auto const regexp = regex(R"(\d+)");
+  auto const regex_pattern = "(\\d+)";
   auto const example_text = string("MemTotal:       16313192 kB"
                                    "MemFree:        10332752 kB"
                                    "MemAvailable:   13959848 kB");
-  bool const example_contains_regex = regex_search(example_text, regexp);
-  cout << boolalpha << example_contains_regex << "\n";
+  // auto const example_text =
+  //     string("MemTotal:       16313192 kB\nMemFree:        10332752 "
+  //            "kB\nMemAvailable:   13959848 kB");
+  cout << "\n";
+  printMatches(example_text, regex_pattern);
   return 0;
 }
 
