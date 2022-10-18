@@ -1,0 +1,35 @@
+##
+# Project Title
+#
+# @file
+# @version 0.1
+
+C++:=clang++
+CC:=clang
+
+C++Source := $(wildcard src/*.cpp)
+CSource := $(wildcard src/*.c)
+
+all: c c++
+
+bin:
+	if ! [ -f ./bin/ ]; then 						\
+		echo bin folder not exists creating ... ;		\
+		mkdir ./bin     					    ;	\
+	fi
+
+c: src/main.c bin
+	echo $@ compiling ${CSource}
+	${CC} ${CSource} -o ./bin/main_c.o
+
+c++: src/main.cpp bin
+	echo $@ compiling ${C++Source}
+	${C++} ${C++Source} -o ./bin/main_cpp.o
+
+run: all
+	$(wildcard ./bin/*.o)
+
+clean: bin
+	rm -f $(wildcard  ./bin/*.o)
+
+# end
