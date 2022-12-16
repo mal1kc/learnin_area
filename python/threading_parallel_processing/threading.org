@@ -119,6 +119,7 @@ we do not have control over when the thread will execute precisely or which cpu 
 
 import threading
 import time
+from pprint import pprint
 
 print('example 1\n'+('-'*21))
 def task1():
@@ -171,6 +172,206 @@ print('-'*32)
 
 * extend the thread class
 
-* resouces
+we can also execute funcs in another thread by extending the *threading.Thread* class and overriding the run() function.
 
+In this section we will look at some examples of extending *thread.Thread* class
+
+** possible usage cases
+
+given that it is a custom class,you can defina a constructor for the class and use it to pass in data that may be needed in the *run()* function, stored as instance variables (attributes).
+
+you can also define additional functions on the class to split up the work you may need to complete another thread.
+
+finally, attributes caan also be used to store the results of any calculation or IO performed in another thread that may be need to be retrieved afterward.
+
+** example of extending the thread class
+
+example code :
+
+#+begin_example
+class CustomThread(Thread):
+    ...
+#+end_example
+
+this will inherit *Thread* class to our *CustomThread* class,then we need override
+*run()* func to execute another threads funcs,overriding a function very basic as syntax:
+
+#+begin_example
+def run(self):
+    sleep(1)
+    print('this is coming from another thread')
+
+# create the thread
+thread = CustomThread()
+
+# start the thread
+
+thread.start()
+
+# wait for the thread finish
+
+print('waiting for the thread to finish')
+
+thread.join()
+
+#+end_example
+
+
+complete code would be like:
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 3\n'+('-'*21))
+
+
+def example3():
+    class CustomThread(threading.Thread):
+        def run(self):
+            time.sleep(1)
+            print('this is coming from another thread')
+
+
+    thread = CustomThread()
+    thread.start()
+    print('waitin for thread finish')
+    thread.join()
+
+example3()
+print('-'*32)
+
+#+end_src
+
+** example of extending the thread class with return values
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 4\n'+('-'*21))
+
+def example4():
+    class CustomThread(threading.Thread):
+        def run(self):
+            time.sleep(1)
+            print('this is coming from another thread')
+            self.value = 99
+
+    thread = CustomThread()
+    thread.start()
+    print('waitin for thread finish')
+    thread.join()
+    value = thread.value
+    print(f'{value=}')
+
+example4()
+print('-'*32)
+
+#+end_src
+
+* thread instance attributes
+
+an instance of the thread class provides a handle of a thread of execution.
+it provides attributes that we can use to query properties and the status of the underlaying thread.
+
+** thread name
+
+threads are named automatically in a somewhat unique manner within each process withe the form "Thread-%d" where %d is the integer indicating the thread number within the process,e.g. Thread-1 for the first thread created.
+
+** thread daemon
+
+a thread may be a deamon thread, daemon threads is the name givent to background threads.by default threads are non-daemon threads.
+
+a python program will only exit when all non-daemon threads have finished exiting. for example , the main threads is a non-daemon threads.this means that daemon threads can run in the background and do not have to finish or be explicitly excited for the program end.
+
+** thread identifier
+
+each thread has unique identifier (id) within python process,assigned by python interpreter.
+
+the identifier is a read-only positive integer value and is assigned only after thread has been started.
+
+can be accesed via *"ident"* property
+
+** thread native identifier
+
+each thread has unique identifier assigned by the operating system.
+
+python threads (cpython) are real native threads,means that each thread we created is actually created and managed (scheduled) by operating system.As such, the operating system will assing a unique integer to each thread that is created on the system (across processes).
+
+can be acced via *"native_id"* property
+
+it is assigned after thread has been started
+
+** thread alive status
+
+thread class property that holds is thread running or dead (non-started or finished)
+
+in example:
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 5\n'+('-'*21))
+def example5():
+    # create instance of Thread object with lambda func
+    thread = threading.Thread(target=lambda:(
+        time.sleep(0.2),
+        print('this is from another thread')
+    ))
+    # report thread alive status
+    is_alive = thread.is_alive()
+    print(f'thread\'s {is_alive=}')
+    # report thread identifier value
+    ident = thread.ident
+    print(f'{ident=}')
+    # report thread daemon property
+    daemon = thread.daemon
+    print(f'{daemon=}')
+    name = thread.name
+    print(f'{name=}')
+    thread.start()
+    # report thread native id property
+    native_id = thread.native_id
+    print(f'{native_id=}')
+    is_alive = thread.is_alive()
+    print(f'{is_alive=}')
+    ident = thread.ident
+    print(f'{ident=}')
+    thread.join()
+    is_alive = thread.is_alive()
+    print(f'{is_alive=}')
+
+example5()
+print('-'*32)
+
+
+#+end_src
+
+* configure threads
+
+** how to configue thread name
+
+the name of a thread can be ser via the *"name"* argument in the threading.Thread constructor
+
+
+
+** how to configue thread daemon
+
+a thread may be configured to be a daemon or not,and most threads in concurrent programming,including the main thread,are non-daemon threads(no background threads) by default
+
+can be configured via setting *"daemon"* argument to True in the constructor
+
+for example:
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 5\n'+('-'*21))
+def example6():
+    thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
+    print(f'{thread.daemon=}')
+    print(f'{thread.name=}')
+    thread.start()
+
+example6()
+print('-'*32)
+
+#+end_src
+
+* resouces
  - https://superfastpython.com/threading-in-python/#Python_Threads
