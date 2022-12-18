@@ -109,7 +109,7 @@ def example5():
 example5()
 print('-'*32)
 
-print('example 5\n'+('-'*21))
+print('example 6\n'+('-'*21))
 def example6():
     thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
     print(f'{thread.daemon=}')
@@ -117,4 +117,70 @@ def example6():
     thread.start()
 
 example6()
+print('-'*32)
+
+print('example 7\n'+('-'*21))
+def example7():
+    from threading import current_thread
+    thread = current_thread()
+    print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
+
+example7()
+print('-'*32)
+
+print('example 8\n'+('-'*21))
+def example8():
+    active_thread_count = threading.active_count()
+    print(f'{active_thread_count=}')
+    current_thread = threading.current_thread()
+    current_thread.name="main thread"
+    print(f'{current_thread=}')
+    print(f'{threading.get_ident()=}')
+    thread = threading.Thread(name='other thread',target=lambda:print(f'this message is from daemon thread'))
+    print(f'{threading.get_native_id()=}')
+    thread.start()
+    threads = threading.enumerate()
+    for th in threads:
+        print(f'{th.name=}')
+    thread.join()
+example8()
+print('-'*32)
+
+print('example 9\n'+('-'*21))
+def example9():
+    def work():
+        print('working .',end='')
+        for ti in range(10):
+            time.sleep(0.5)
+            print('. .',end='')
+        print('..')
+        raise Exception('something bad happened')
+    thread = threading.Thread(target=work)
+    thread.start()
+    thread.join()
+    print('continuing on ...')
+    time.sleep(0.2)
+    print('finished')
+example9()
+print('-'*32)
+
+print('example 10\n'+('-'*21))
+def example10():
+    def work():
+        print('working .',end='')
+        for ti in range(10):
+            time.sleep(0.5)
+            print('. .',end='')
+        print('..')
+        raise Exception('something bad happened')
+    def custom_hook(args):
+        print(f'thread failed:{args.exc_value}')
+    threading.excepthook = custom_hook
+    thread = threading.Thread(target=work)
+    thread.start()
+    thread.join()
+    print('continuing on ...')
+    time.sleep(0.2)
+    print('finished')
+example10()
 print('-'*32)

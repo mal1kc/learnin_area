@@ -361,7 +361,7 @@ for example:
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
 
-print('example 5\n'+('-'*21))
+print('example 6\n'+('-'*21))
 def example6():
     thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
     print(f'{thread.daemon=}')
@@ -371,6 +371,149 @@ def example6():
 example6()
 print('-'*32)
 
+#+end_src
+
+* whats main thread
+
+each python process is created with one default thread called the *"the main thread"*
+
+when we execute a python program, it is executing in the main thread.
+
+the main thread is created for each python process
+
+#+begin_quote
+in normal conditions, the main thread is thread from which the python interpreter was started.
+#+end_quote
+-- [[https://docs.python.org/3/library/threading.html][threading -- Thread-based parallelism]]
+
+the main thread in each python process always has the name *"MainThread"* and is not a daemon thread.Once the *"main thread"* exists,the Python will exit,assuming there are non-daemon threads running.
+
+#+begin_quote
+there is a "main thread" object;this corresponds to initial thread of control in python program.It is not a daemon thread.
+#+end_quote
+-- [[https://docs.python.org/3/library/threading.html][threading -- Thread-based parallelism]]
+
+we can acuire a main thread by calling *threadin.current_thread()*
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 7\n'+('-'*21))
+def example7():
+    from threading import current_thread
+    thread = current_thread()
+    print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
+
+example7()
+print('-'*32)
+#+end_src
+
+* Thread Utilities
+
+** number of active threads
+
+*threading.active_count()* gives integer that indicates number of threads that are "alive"
+
+** current thread
+
+*threading.current_thread()* gives *threading.Thread* instance of thread running the current code
+
+** thread identifier
+
+*threading.get_ident()* gives current threads identifier integer
+
+** native thread identifier
+
+*threading.get_ident()* gives current threads identifier integer that assigned by operating system
+
+** enumarate active threads
+
+we can get a list of active threads via calling *threading.enumarate()* function,it returns list of active threads
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 8\n'+('-'*21))
+def example8():
+    active_thread_count = threading.active_count()
+    print(f'{active_thread_count=}')
+    current_thread = threading.current_thread()
+    current_thread.name="main thread"
+    print(f'{current_thread=}')
+    print(f'{threading.get_ident()=}')
+    thread = threading.Thread(name='other thread',target=lambda:print(f'this message is from daemon thread'))
+    print(f'{threading.get_native_id()=}')
+    thread.start()
+    threads = threading.enumerate()
+    for th in threads:
+        print(f'{th.name=}')
+    thread.join()
+example8()
+print('-'*32)
+
+#+end_src
+
+* thread exception handling
+
+** unhandled exception
+
+an unhandled exception can occur in a new thread.
+
+the effect will be that the thread will unwind and report the message on standart
+error.Unwinding the thread means that the thread will stop executing at the point of the (or error) and that the exception will bubble up the stack in the thread until it reaches the top level,e.g. the run() funtion.
+
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 9\n'+('-'*21))
+def example9():
+    def work():
+        print('working .',end='')
+        for ti in range(10):
+            time.sleep(0.5)
+            print('. .',end='')
+        print('..')
+        raise Exception('something bad happened')
+    thread = threading.Thread(target=work)
+    thread.start()
+    thread.join()
+    print('continuing on ...')
+    time.sleep(0.2)
+    print('finished')
+example9()
+print('-'*32)
+#+end_src
+
+** exception hook
+
+we can specify how to handle unhandled errors aand exceptions that occuur within new threads via the exception hook
+
+by default,there is no exception hook, in which case the *[[https://docs.python.org/3/library/sys.html#sys.excepthook][sys.excepthook function]]*
+is called that reports the familiar message.
+
+first, we must define a function that takes a single argument that will be an instance of the *ExceptHookArgs* class,containing details of the exception and thread
+
+example
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+
+print('example 10\n'+('-'*21))
+def example10():
+    def work():
+        print('working .',end='')
+        for ti in range(10):
+            time.sleep(0.5)
+            print('. .',end='')
+        print('..')
+        raise Exception('something bad happened')
+    def custom_hook(args):
+        print(f'thread failed:{args.exc_value}')
+    threading.excepthook = custom_hook
+    thread = threading.Thread(target=work)
+    thread.start()
+    thread.join()
+    print('continuing on ...')
+    time.sleep(0.2)
+    print('finished')
+example10()
+print('-'*32)
 #+end_src
 
 * resouces
