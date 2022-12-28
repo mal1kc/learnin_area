@@ -2,7 +2,22 @@
 
 > this document generated via chatgpt by openai
 
-* PHP
+* What is Php
+
+PHP (Hypertext Preprocessor) is a popular server-side scripting language that is widely used for creating dynamic and interactive websites. It is a powerful tool for building web applications and can be used to perform a wide range of tasks, including:
+
++ Connecting to and interacting with databases
++ Creating and managing sessions and cookies
++ Sending and receiving data from forms
++ Generating dynamic content
++ Validating user input
+
+PHP code is typically executed on the server, and the resulting output is sent to the client in the form of HTML, CSS, and JavaScript. This allows for the creation of interactive and dynamic websites without the need for the user to refresh the page.
+
+PHP is a flexible language that can be used with a variety of platforms, including Windows, Linux, and MacOS. It is also compatible with most web servers, including Apache and IIS.
+
+
+* PHP Syntax
 
 ** Variables
 + Declare a variable: $var_name = value;
@@ -17,6 +32,183 @@
 + Array: a list of values, accessed using an index
 + Object: a data type that represents a structure
 + NULL: represents a variable with no value
+** Comments
+*** Single-Line Comment
+
+#+BEGIN_SRC php
+// This is a single-line comment
+#+END_SRC
+
+*** Multi-Line Comment
+
+#+BEGIN_SRC php
+/*
+This is a
+multi-line comment
+*/
+#+END_SRC
+
+*** Documenting Functions
+
+#+BEGIN_SRC php
+/**
+    This is a function documentation block.
+    @param string $arg1 Description of argument.
+    @param int $arg2 Description of argument.
+    @return bool Description of return value.
+    */
+    function function_name($arg1, $arg2) {
+    // code to execute
+    return value;
+    }
+    #+END_SRC
+
+* PHP Echo and Print Statements Cheat Sheet
+
+** Echo
+
+#+BEGIN_SRC php
+echo "Hello, World!";
+echo $variable;
+echo "This is a string", $variable;
+#+END_SRC
+
+** Print
+
+#+BEGIN_SRC php
+print "Hello, World!";
+print $variable;
+#+END_SRC
+
+ *Note that the echo and print statements are similar, but echo is generally faster and can take multiple arguments (separated by commas).*
+
+* Data Types
+
+** Strings
+
+*** Declaring a String
+
+#+BEGIN_SRC php
+$string1 = "This is a string";
+$string2 = 'This is also a string';
+#+END_SRC
+
+*** Concatenation
+
+#+BEGIN_SRC php
+$string1 = "Hello";
+$string2 = "World";
+$string3 = $string1 . " " . $string2; // "Hello World"
+#+END_SRC
+
+*** Escape Sequences
+
+| Sequence | Description     |
+| \n       | New Line        |
+| \r       | Carriage Return |
+| \t       | Tab             |
+| \v       | Vertical Tab    |
+| \e       | Escape          |
+| \f       | Form Feed       |
+
+*** String Functions
+**** strlen()
+
+#+BEGIN_SRC php
+echo strlen("Hello, World!"); // 13
+#+END_SRC
+
+**** strrev()
+
+#+BEGIN_SRC php
+echo strrev("Hello, World!"); // "!dlroW ,olleH"
+#+END_SRC
+
+**** strpos()
+
+#+BEGIN_SRC php
+echo strpos("Hello, World!", "World"); // 7
+#+END_SRC
+
+**** str_replace()
+
+#+BEGIN_SRC php
+echo str_replace("World", "Universe", "Hello, World!"); // "Hello, Universe!"
+#+END_SRC
+
+**** substr()
+
+#+BEGIN_SRC php
+echo substr("Hello, World!", 7); // "World!"
+#+END_SRC
+
+** Numbers
+
+*** Integer
+
+#+BEGIN_SRC php
+$int1 = 123;
+$int2 = -456;
+#+END_SRC
+
+*** Float
+
+#+BEGIN_SRC php
+$float1 = 3.14;
+$float2 = -2.71828;
+#+END_SRC
+
+*** Mathematical Operators
+
+| Operator | Description    |
+|----------+----------------|
+| +        | Addition       |
+| *        | Multiplication |
+| /        | Division       |
+| %        | Modulus        |
+| **       | Exponentiation |
+
+*** Comparison Operators
+
+| Operator | Description              |
+| ==       | Equal to                 |
+| !=       | Not equal to             |
+| >        | Greater than             |
+| <        | Less than                |
+| >=       | Greater than or equal to |
+| <=       | Less than or equal to    |
+
+*** Number Functions
+**** abs()
+
+#+BEGIN_SRC php
+echo abs(-123); // 123
+#+END_SRC
+
+**** round()
+
+#+BEGIN_SRC php
+echo round(3.14); // 3
+#+END_SRC
+
+**** ceil()
+
+#+BEGIN_SRC php
+echo ceil(3.14); // 4
+#+END_SRC
+
+**** floor()
+
+#+BEGIN_SRC php
+echo floor(3.14); // 3
+#+END_SRC
+
+**** mt_rand()
+
+#+BEGIN_SRC php
+echo mt_rand(); // random integer between 0 and mt_getrandmax()
+#+END_SRC
+
 * Control Structures
 ** If-Else
 
@@ -43,6 +235,7 @@ default:
 }
 #+END_SRC
 
+* Loops
 ** For Loop
 
 #+BEGIN_SRC php
