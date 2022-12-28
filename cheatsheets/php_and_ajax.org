@@ -1,0 +1,245 @@
+#+TITLE: PHP and AJAX Cheat Sheet
+
+> this document generated via chatgpt by openai
+
+* PHP
+
+** Variables
++ Declare a variable: $var_name = value;
++ Concatenate strings: $string1 . $string2
++ Escape a string for use in a single-quoted string: 'string with a {$variable} inside'
++ Escape a string for use in a double-quoted string: "string with a {$variable} inside"
+** Data Types
++ String: enclosed in single or double quotes
++ Integer: a whole number
++ Float: a number with a decimal point
++ Boolean: true or false
++ Array: a list of values, accessed using an index
++ Object: a data type that represents a structure
++ NULL: represents a variable with no value
+* Control Structures
+** If-Else
+
+#+BEGIN_SRC php
+if (condition) {
+// code to execute if condition is true
+} else {
+// code to execute if condition is false
+}
+#+END_SRC
+
+** Switch
+
+#+BEGIN_SRC php
+switch (expression) {
+case value1:
+// code to execute if expression equals value1
+break;
+case value2:
+// code to execute if expression equals value2
+break;
+default:
+// code to execute if expression does not equal any of the values
+}
+#+END_SRC
+
+** For Loop
+
+#+BEGIN_SRC php
+for ($i = 0; $i < count($array); $i++) {
+// code to execute for each value in the array
+}
+#+END_SRC
+
+** While Loop
+
+#+BEGIN_SRC php
+while (condition) {
+// code to execute while condition is true
+}
+#+END_SRC
+
+** Do-While Loop
+
+#+BEGIN_SRC php
+do {
+// code to execute
+} while (condition);
+#+END_SRC
+
+* Functions
+** Defining a Function
+
+#+BEGIN_SRC php
+function function_name($arguments) {
+// code to execute
+return value;
+}
+#+END_SRC
+** Calling a Function
+
+#+BEGIN_SRC php
+$result = function_name($arguments);
+#+END_SRC
+
+* Arrays
+** Creating an Array
+
+#+BEGIN_SRC php
+$array = array(value1, value2, value3);
+#+END_SRC
+
+** Accessing an Array Value
+
+#+BEGIN_SRC php
+echo $array[0]; // outputs value1
+#+END_SRC
+
+** Modifying an Array Value
+
+#+BEGIN_SRC php
+$array[0] = new_value;
+#+END_SRC
+
+** Adding to an Array
+
+#+BEGIN_SRC php
+array_push($array, value);
+#+END_SRC
+
+** Removing from an Array
+
+#+BEGIN_SRC php
+unset($array[index]);
+#+END_SRC
+
+* Objects
+** Defining a Class
+
+#+BEGIN_SRC php
+class ClassName {
+// properties and methods go here
+}
+#+END_SRC
+
+** Creating an Object
+
+#+BEGIN_SRC php
+$object = new ClassName();
+#+END_SRC
+
+** Accessing an Object Property or Method
+
+#+BEGIN_SRC php
+echo $object->property;
+echo $object->method();
+#+END_SRC
+
+* Databases
+** Connecting to a MySQL Database
+
+#+BEGIN_SRC php
+$host = "hostname";
+$user = "username";
+$pass = "password";
+$db = "database_name";
+
+$conn = mysqli_connect($host, $user, $pass, $db);
+
+if (!$conn) {
+die("Connection failed: " . mysqli_connect_error());
+}
+#+END_SRC
+
+** Performing a MySQL Query
+
+#+BEGIN_SRC php
+$query = "SELECT * FROM table_name";
+$result = mysqli_query($conn, $query);
+
+if (mysqli_num_rows($result) > 0) {
+// output data of each row
+while($row = mysqli_fetch_assoc($result)) {
+echo "id: " . $row["id"]. " - Name: " . $row["name"]. "<br>";
+}
+} else {
+echo "0 results";
+}
+#+END_SRC
+
+** Closing a MySQL Connection
+
+#+BEGIN_SRC php
+mysqli_close($conn);
+#+END_SRC
+
+* Sessions
+** Starting a Session
+
+#+BEGIN_SRC php
+session_start();
+#+END_SRC
+
+** Storing a Value in a Session
+
+#+BEGIN_SRC php
+$_SESSION["key"] = value;
+#+END_SRC
+
+** Retrieving a Value from a Session
+
+#+BEGIN_SRC php
+$value = $_SESSION["key"];
+#+END_SRC
+
+** Destroying a Session
+
+#+BEGIN_SRC php
+session_destroy();
+#+END_SRC
+
+* Cookies
+** Setting a Cookie
+
+#+BEGIN_SRC php
+setcookie("key", "value", time() + 3600); // expires in 1 hour
+#+END_SRC
+
+** Retrieving a Cookie Value
+
+#+BEGIN_SRC php
+$value = $_COOKIE["key"];
+#+END_SRC
+
+** Deleting a Cookie
+
+#+BEGIN_SRC php
+setcookie("key", "", time() - 3600); // expires in the past
+#+END_SRC
+* AJAX
+
+** Sending an AJAX Request
+
+#+BEGIN_SRC javascript
+$.ajax({
+url: "url",
+type: "POST",
+data: {key: value},
+success: function(response) {
+// code to execute on success
+},
+error: function(xhr, status, error) {
+// code to execute on error
+}
+});
+#+END_SRC
+
+** Processing an AJAX Request in PHP
+
+#+BEGIN_SRC php
+if (isset($_POST["key"])) {
+$value = $_POST["key"];
+// code to process value
+echo response;
+}
+#+END_SRC
