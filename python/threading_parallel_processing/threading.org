@@ -1,6 +1,6 @@
 #+title: Threading in Python
 #+author: mal1kc
-#+property: header-args :tangle threading_example.py
+#+property: header-args :tangle
 #+auto_tangle: t
 #+startup: showeverything
 
@@ -114,34 +114,31 @@ the *start()* func will return immediately and the operating system will execute
 we do not have control over when the thread will execute precisely or which cpu core wwill execute it. both of these are low-level responsibilities that are handled by operating systeö.
 
 > examle :
-
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle __init__.py
 
 import threading
 import time
 from pprint import pprint
 
-print('example 1\n'+('-'*21))
-def task1():
+#+end_src
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_1.py
+from __init__ import *
+
+def task():
     # block for 1 second
     time.sleep(1)
     # display a message
 
     print('this is from another thread')
 
-
-def example1():
-    thread = threading.Thread(target=task1)
-    thread.start()
-    print('waiting fo the thread ..')
-    thread.join() # explicitly waiting to finish thread
-
-example1()
-print('-'*32)
+thread = threading.Thread(target=task)
+thread.start()
+print('waiting fo the thread ..')
+thread.join() # explicitly waiting to finish thread
 #+end_src
 
 #+RESULTS:
-: None
 
 running the example first creates instance  of threeding.Thread then calls the *start()* func.This does not start the thread immediately,but instead allows to operating system to schedule the function to execute as soon as possible.
 
@@ -149,25 +146,20 @@ the main thread then prints a message '/waiting .../' ,then calls the *join()* f
 
 > example with arguments
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_2.py
+from __init__ import *
 
-print('example 2\n'+('-'*21))
-def task2(sleep_time,message):
+def task(sleep_time,message):
     # block for 1 second
     time.sleep(sleep_time)
     # display a message
     print(message)
 
 
-def example2():
-    thread = threading.Thread(target=task2,args=(1.5,'new message from another thread'))
-    thread.start()
-    print('waiting fo the thread ..')
-    thread.join() # explicitly waiting to finish thread
-
-example2()
-
-print('-'*32)
+thread = threading.Thread(target=task,args=(1.5,'new message from another thread'))
+thread.start()
+print('waiting fo the thread ..')
+thread.join() # explicitly waiting to finish thread
 #+end_src
 
 * extend the thread class
@@ -219,50 +211,38 @@ thread.join()
 
 complete code would be like:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_3.py
+from __init__ import *
 
-print('example 3\n'+('-'*21))
-
-
-def example3():
-    class CustomThread(threading.Thread):
-        def run(self):
-            time.sleep(1)
-            print('this is coming from another thread')
+class CustomThread(threading.Thread):
+    def run(self):
+        time.sleep(1)
+        print('this is coming from another thread')
 
 
-    thread = CustomThread()
-    thread.start()
-    print('waitin for thread finish')
-    thread.join()
-
-example3()
-print('-'*32)
-
+thread = CustomThread()
+thread.start()
+print('waitin for thread finish')
+thread.join()
 #+end_src
 
 ** example of extending the thread class with return values
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_4.py
+from __init__ import *
 
-print('example 4\n'+('-'*21))
+class CustomThread(threading.Thread):
+    def run(self):
+        time.sleep(1)
+        print('this is coming from another thread')
+        self.value = 99
 
-def example4():
-    class CustomThread(threading.Thread):
-        def run(self):
-            time.sleep(1)
-            print('this is coming from another thread')
-            self.value = 99
-
-    thread = CustomThread()
-    thread.start()
-    print('waitin for thread finish')
-    thread.join()
-    value = thread.value
-    print(f'{value=}')
-
-example4()
-print('-'*32)
+thread = CustomThread()
+thread.start()
+print('waitin for thread finish')
+thread.join()
+value = thread.value
+print(f'{value=}')
 
 #+end_src
 
@@ -305,41 +285,36 @@ thread class property that holds is thread running or dead (non-started or finis
 
 in example:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_5.py
+from __init__ import *
 
-print('example 5\n'+('-'*21))
-def example5():
-    # create instance of Thread object with lambda func
-    thread = threading.Thread(target=lambda:(
-        time.sleep(0.2),
-        print('this is from another thread')
-    ))
-    # report thread alive status
-    is_alive = thread.is_alive()
-    print(f'thread\'s {is_alive=}')
-    # report thread identifier value
-    ident = thread.ident
-    print(f'{ident=}')
-    # report thread daemon property
-    daemon = thread.daemon
-    print(f'{daemon=}')
-    name = thread.name
-    print(f'{name=}')
-    thread.start()
-    # report thread native id property
-    native_id = thread.native_id
-    print(f'{native_id=}')
-    is_alive = thread.is_alive()
-    print(f'{is_alive=}')
-    ident = thread.ident
-    print(f'{ident=}')
-    thread.join()
-    is_alive = thread.is_alive()
-    print(f'{is_alive=}')
-
-example5()
-print('-'*32)
-
+# create instance of Thread object with lambda func
+thread = threading.Thread(target=lambda:(
+time.sleep(0.2),
+print('this is from another thread')
+))
+# report thread alive status
+is_alive = thread.is_alive()
+print(f'thread\'s {is_alive=}')
+# report thread identifier value
+ident = thread.ident
+print(f'{ident=}')
+# report thread daemon property
+daemon = thread.daemon
+print(f'{daemon=}')
+name = thread.name
+print(f'{name=}')
+thread.start()
+# report thread native id property
+native_id = thread.native_id
+print(f'{native_id=}')
+is_alive = thread.is_alive()
+print(f'{is_alive=}')
+ident = thread.ident
+print(f'{ident=}')
+thread.join()
+is_alive = thread.is_alive()
+print(f'{is_alive=}')
 
 #+end_src
 
@@ -359,18 +334,12 @@ can be configured via setting *"daemon"* argument to True in the constructor
 
 for example:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
-
-print('example 6\n'+('-'*21))
-def example6():
-    thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
-    print(f'{thread.daemon=}')
-    print(f'{thread.name=}')
-    thread.start()
-
-example6()
-print('-'*32)
-
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_6.py
+from __init__ import *
+thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
+print(f'{thread.daemon=}')
+print(f'{thread.name=}')
+thread.start()
 #+end_src
 
 * whats main thread
@@ -395,16 +364,12 @@ there is a "main thread" object;this corresponds to initial thread of control in
 
 we can acuire a main thread by calling *threadin.current_thread()*
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_7.py
+from __init__ import *
 
-print('example 7\n'+('-'*21))
-def example7():
-    from threading import current_thread
-    thread = current_thread()
-    print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
-
-example7()
-print('-'*32)
+from threading import current_thread
+thread = current_thread()
+print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
 #+end_src
 
 * Thread Utilities
@@ -429,25 +394,22 @@ print('-'*32)
 
 we can get a list of active threads via calling *threading.enumarate()* function,it returns list of active threads
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_8.py
 
-print('example 8\n'+('-'*21))
-def example8():
-    active_thread_count = threading.active_count()
-    print(f'{active_thread_count=}')
-    current_thread = threading.current_thread()
-    current_thread.name="main thread"
-    print(f'{current_thread=}')
-    print(f'{threading.get_ident()=}')
-    thread = threading.Thread(name='other thread',target=lambda:print(f'this message is from daemon thread'))
-    print(f'{threading.get_native_id()=}')
-    thread.start()
-    threads = threading.enumerate()
-    for th in threads:
-        print(f'{th.name=}')
-    thread.join()
-example8()
-print('-'*32)
+from __init__ import *
+active_thread_count = threading.active_count()
+print(f'{active_thread_count=}')
+current_thread = threading.current_thread()
+current_thread.name="main thread"
+print(f'{current_thread=}')
+print(f'{threading.get_ident()=}')
+thread = threading.Thread(name='other thread',target=lambda:print(f'this message is from daemon thread'))
+print(f'{threading.get_native_id()=}')
+thread.start()
+threads = threading.enumerate()
+for th in threads:
+    print(f'{th.name=}')
+thread.join()
 
 #+end_src
 
@@ -461,25 +423,22 @@ the effect will be that the thread will unwind and report the message on standar
 error.Unwinding the thread means that the thread will stop executing at the point of the (or error) and that the exception will bubble up the stack in the thread until it reaches the top level,e.g. the run() funtion.
 
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_9.py
+from __init__ import *
 
-print('example 9\n'+('-'*21))
-def example9():
-    def work():
-        print('working .',end='')
-        for ti in range(10):
-            time.sleep(0.5)
-            print('. .',end='')
-        print('..')
-        raise Exception('something bad happened')
-    thread = threading.Thread(target=work)
-    thread.start()
-    thread.join()
-    print('continuing on ...')
-    time.sleep(0.2)
-    print('finished')
-example9()
-print('-'*32)
+def work():
+    print('working .',end='')
+    for ti in range(10):
+        time.sleep(0.5)
+        print('. .',end='')
+    print('..')
+    raise Exception('something bad happened')
+thread = threading.Thread(target=work)
+thread.start()
+thread.join()
+print('continuing on ...')
+time.sleep(0.2)
+print('finished')
 #+end_src
 
 ** exception hook
@@ -492,29 +451,113 @@ is called that reports the familiar message.
 first, we must define a function that takes a single argument that will be an instance of the *ExceptHookArgs* class,containing details of the exception and thread
 
 example
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_10.py
+from __init__ import *
 
-print('example 10\n'+('-'*21))
-def example10():
-    def work():
-        print('working .',end='')
-        for ti in range(10):
-            time.sleep(0.5)
-            print('. .',end='')
-        print('..')
-        raise Exception('something bad happened')
-    def custom_hook(args):
-        print(f'thread failed:{args.exc_value}')
-    threading.excepthook = custom_hook
-    thread = threading.Thread(target=work)
-    thread.start()
-    thread.join()
-    print('continuing on ...')
-    time.sleep(0.2)
-    print('finished')
-example10()
-print('-'*32)
+def work():
+    print('working .',end='')
+    for ti in range(10):
+        time.sleep(0.5)
+        print('. .',end='')
+    print('..')
+    raise Exception('something bad happened')
+def custom_hook(args):
+    print(f'thread failed:{args.exc_value}')
+threading.excepthook = custom_hook
+thread = threading.Thread(target=work)
+thread.start()
+thread.join()
+print('continuing on ...')
+time.sleep(0.2)
+print('finished')
 #+end_src
+
+* limitation of threads in cpython
+
+python interpreter generally does not permit more than one thread to run at a time
+
+this is achieved via mutal exclusion (mutex) lock within interpreter that ensures that only one thread at a time can execute python bytecodes in python virtual machine .
+
+#+begin_quote
+In CPython, due to the Global Interpreter Lock, only one thread can execute Python code at once (even though certain performance-oriented libraries might overcome this limitation).
+#+end_quote
+-- [[https://docs.python.org/3/library/threading.html][threading -- Thread-based parallelism]]
+
+this lock is referred to as the *Global interpreter Lock* or *GIL* for short.
+#+begin_quote
+In CPython, the global interpreter lock, or GIL, is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once. The GIL prevents race conditions and ensures thread safety.
+#+end_quote
+-- [[https://wiki.python.org/moin/GlobalInterpreterLock][GLOBAL INTERPRETER LOCK, PYTHON WIKI]]
+
+this means that although we might write concurent code  with threads and run our code  on hardware with many CPU cores, we may not be able to execute our code in parallel
+
+there are some exceptions to this.
+
+specially, the *GIL* is released by the Python interpreter sometimes to allow other threads to run.
+
+such as when the thread is blocked ,such as performing IO with socket or file, or often if the thread is executing computationally intesive code in C library,like hashing bytes.
+
+#+begin_quote
+Luckily, many potentially blocking or long-running operations, such as I/O, image processing, and NumPy number crunching, happen outside the GIL. Therefore it is only in multithreaded programs that spend a lot of time inside the GIL, interpreting CPython bytecode, that the GIL becomes a bottleneck.
+#+end_quote
+-- [[https://wiki.python.org/moin/GlobalInterpreterLock][GLOBAL INTERPRETER LOCK, PYTHON WIKI]]
+
+therefore, although in most cases Cpython will prevent parallel execution of threads, it is allowed in some circumstances,these  circumstances represent the base use case for adopting threads in our python programs.
+
+* when to use thread
+
+there are times when the GIL lock is released by the interpreter and we can achieve  parallel execution of our concurent code in python.
+
+*examples of when lock is released include:*
+
+ - when thread is performing blocking IO
+
+ - when a thread is executing C code  and explicitly releases
+
+*there are also ways of avoiding the lock entirely,such a:*
+
+ - using third-party interpreter to execute python code
+
+** use threads for blocking IO
+
+should use threads for IO bound tasks.
+
+an IO-bound task is a type of tash that involves reading from or writing to device, file, or socket connection.
+
+modern CPUs, like a 4GHz CPU, can execute 4 billion instructions per second, and you likely have more than one CPU core in your system.
+
+doing IO is very slow compared to the speed of CPUs.
+
+interacting with devices,reading  and writing files and socket connections involves calling instructions in your operating system ,which will wait for the operation to complete. If this operation is the main focus for your Cpu ,such as executing in the main thread of your python program,then your cpu is going to wait many milliseconds or even many seconds doing nothing.
+
+that is probably preventing billions of operations from executing.
+
+a thread performing an IO operation will block for the duration of the operation.While blocked,this signals to the operating system that a thread can be suspended and onether thread can execute, called a context switch.
+
+additonally, python interpreter will release the GIL when performing blocking IO operations,allowing other threads within the python process to execute.
+
+therefore, blocking IO provides an excellent use case for using threads in python.
+
+    examples of blocking IO operations include:
+
+    - reading or writing a file from the hard drive.
+
+    - reading or writing to standart output, input or error(stdin,stdout,stderr).
+
+    - printing a document.
+
+    - reading or writing bytes on a socket connection with a server.
+
+    - downloading or uplading a file.
+
+    - query a server.
+
+    - query a database.
+
+    - taking a photo.
+
+    - everythin that includes disk write read
+
 
 * resouces
  - https://superfastpython.com/threading-in-python/#Python_Threads
