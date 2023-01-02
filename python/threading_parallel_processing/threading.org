@@ -558,6 +558,63 @@ therefore, blocking IO provides an excellent use case for using threads in pytho
 
     - everythin that includes disk write read
 
+** use threads external c code (that realses the GIL)
+
+we may make function calls that themselves call down into a third-party C library.
+
+Often these function calls will realase the GIL as the C library being called will not interact with the intpreter.
+
+this provides an opputunity for other threads in the python process to run.
+
+*for example*,when using the "*hash*" module in python std library,the GIL is released when hashing the data via the [[https://docs.python.org/3/library/hashlib.html#hashlib.hash.update][hash.update() function]]
+
+#+begin_quote
+The Python GIL is released to allow other threads to run while hash updates on data larger than 2047 bytes is taking place when using hash algorithms supplied by OpenSSL.
+#+end_quote
+-- [[https://docs.python.org/3/library/hashlib.html][HASHLIB — SECURE HASHES AND MESSAGE DIGESTS]]
+
+Another example is the NumPy library for managing arrays of data which will release the GIL when performing functions on arrays.
+
+#+begin_quote
+The exceptions are few but important: while a thread is waiting for IO (for you to type something, say, or for something to come in the network) python releases the GIL so other threads can run. And, more importantly for us, while numpy is doing an array operation, python also releases the GIL.
+#+end_quote
+-- [[https://scipy-cookbook.readthedocs.io/items/ParallelProgramming.html][WRITE MULTITHREADED OR MULTIPROCESS CODE, SCIPY COOKBOOK]]
+
+** use threads with (some) third-party python interpreter
+
+there are alternate commericial and open source python interpreters that you can acquire and use to execute your python code.
+
+some python interpreters may implement a GIL and release it more or less than Cpython. Other interpreters remove the GIL entirely and allow multiple python concurent threads to execute in parallel.
+
+* threads blocking calls
+
+a blocking call is a function call that does not return until is complete.
+
+all normal functions are blocking calls.
+
+blocking call are calls to functions that will wait for a specific condition and signal to the operating system that nothing interesting going on while the thread is waiting.
+
+the os may notice that a thread is making a blocking function call and decide to context switch to another thread.
+
+you may recall that the os manages what threads should run and when to run them.it achieves this using a type of multitasking where a running thread is suspended and suspended thread is restored and continues running.This suspending and restoring of threads is called a context switch.
+
+the os prefers to context switch away from blocked threads, allowing non-blocked threads to run.
+
+this means if a thread makes a blocking function call,a call that waits, then it is likely to signal that the thread can be suspended and allow other threads to run.
+
+similarly, many function calls that we may traditionally think block may have non-blocking versions in modern non-blocking concurrency APIs, like asyncio.
+
+there are three types of blocking function calls you need to consider in concurrent programming, they are:
+
+- blocking calls on concurent primitives
+
+- blocking calls for IO
+
+- blocking calls to sleep
+
+** blocking calls on concurrency primitives
+** blocking calls for I/O
+** blocking calls to sleep
 
 * resouces
  - https://superfastpython.com/threading-in-python/#Python_Threads
