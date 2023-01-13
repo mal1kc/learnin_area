@@ -34,7 +34,9 @@ these are number of reasons for this,such as:
 - the underlaying hardware may or may not support parallel execution (e.g. one vs multiple CPU cores)
 - the python interpreter may or may not permity multiple threads execute in parallel
 
-> this highlights the distiction between concurent and parallel execution
+#+begin_quote
+ this highlights the distiction between concurent and parallel execution
+#+end_quote
 
 - *Concurrent* : Code that can be executed out of order
 - *Parallel* : Capability to execute code simultaneously
@@ -111,16 +113,22 @@ the func executed in another thread may have args in which case can be specifice
 
 the *start()* func will return immediately and the operating system will execute    the function in a seperate thread as soon as it is able.
 
-we do not have control over when the thread will execute precisely or which cpu core wwill execute it. both of these are low-level responsibilities that are handled by operating systeö.
+we do not have control over when the thread will execute precisely or which cpu core wwill execute it. both of these are low-level responsibilities that are handled by operating system.
 
-> examle :
+#+begin_quote
+ doing nessesary imports for examples
+#+end_quote
+
 #+begin_src python :shebang "#!/bin/env python" :tangle __init__.py
 
+# doing nessesary imports for examples
 import threading
 import time
-from pprint import pprint
 
 #+end_src
+
+
+*** example
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_1.py
 from __init__ import *
@@ -144,7 +152,7 @@ running the example first creates instance  of threeding.Thread then calls the *
 
 the main thread then prints a message '/waiting .../' ,then calls the *join()* function to explicitly block and wait for the new thread to finish executing.
 
-> example with arguments
+*** example with arguments
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_2.py
 from __init__ import *
@@ -283,7 +291,7 @@ it is assigned after thread has been started
 
 thread class property that holds is thread running or dead (non-started or finished)
 
-in example:
+*** in example:
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_5.py
 from __init__ import *
@@ -332,7 +340,7 @@ a thread may be configured to be a daemon or not,and most threads in concurrent 
 
 can be configured via setting *"daemon"* argument to True in the constructor
 
-for example:
+*** for example:
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_6.py
 from __init__ import *
@@ -450,8 +458,9 @@ is called that reports the familiar message.
 
 first, we must define a function that takes a single argument that will be an instance of the *ExceptHookArgs* class,containing details of the exception and thread
 
-example
+*** example
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_10.py
+
 from __init__ import *
 
 def work():
@@ -613,8 +622,108 @@ there are three types of blocking function calls you need to consider in concurr
 - blocking calls to sleep
 
 ** blocking calls on concurrency primitives
+
+there are many blocking calls in concurrent programming
+
+common ways are;
+
+- waiting for a lock,e.g. calling acquire() from 'threading.Lock' class
+- waiting to be notified,e.g. calling wait() from 'threading.Condition' class
+- waiting for a thread to terminate ,e.g. calling join() from 'threading.Thread' class
+- waiting for an event,e.g. calling wait() from 'threading.Event' class
+- waiting for a barrier,e.g. calling wait() from 'threading.Barrier' class
+
 ** blocking calls for I/O
+
+conventionally,function calls that interact with I/O are mostly blocking calls.they are blocking in same sencse as blocking calls in concurency primitives
+the wait for the I/O device respond is another signal to operating system that the thread can be context switched.
+
+common examples are;
+
+- *hdd(hard disk drive)* :reading,writing,appending,renaming,deleting,.. files
+- *perpheral devices*    :mouse,keyboard,screen,printe,camera,serial device etc.
+- *database*             :sql queries
+- *internet*             :downloading,uplading,http requests,etc.
+  - *email*                :send,receieve,querry inbox,etc.
+- *and more,mostly other socket related things*
+
+performing I/O operations with devices is typically very slow compared to CPU operations.
+
+the I/O with devices is coordinated by the operating system and the device.this means the operating system can gather or sen some bytes from or to device.this means operating system can gather or send some bytes from or to the device then context switch back to the blocking thread when needed allowing the function call to progress.
+
 ** blocking calls to sleep
 
+the sleep() function is a capability provided by the underlying operating system that we can make use of within our program.
+
+it is a blocking function call that pauses the thread to block for a fixed time in seconds.
+in cpython this can be achieved via *'sleep(seconds)'* fucntion call from built-in *time* module
+#+begin_src python
+
+# sleep for 5 seconds
+import time
+...
+time.sleep(5)
+...
+#+end_src
+it is a blocking call it signals to the operating system that the thread is waiting and is a good candidate for a context switch.
+
+sleeps are often ısed when timing is important in an application.
+
+in programming, adding a sleep can be useful way to simulate waiting within fixed interval.
+
+sleep often used in worked examples when demonstrating concurrency programming,but adding sleeps to code can also aid in unit testing and debugging concurency failure conditions,such as race conditions by forcing mistiming of events within a dynamic application
+
+* thread-local data
+threads can store local data via an instance of the *threading.local* class
+
+example
+#+begin_src python
+import threading
+# create a instance of local class
+
+local = threading.local()
+
+# store some data
+local.custom = 33
+#+end_src
+
+importantly,other threads can use the same property names on local but the values will be limited to each thread.
+this is like a namespace limited to each thread and is called "thread-local data".it means that threads cannot acces or read the local data of other threads.
+importantly, each thread must hang on to the "local" instance in order to acces the stored data.
+
+** example
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_11.py
+
+from __init__ import *
+
+def task(value:int):
+    # create local storage
+    local=threading.local()
+    # store value in local storage
+    local.value = value
+    # block for given time
+    time.sleep(value)
+    # retrieve given value
+    print(f'stored value: {local.value}')
+
+# create thread and start thread
+thread.Thread(target=task,args=(1,)).start()
+# create another thread and start it
+thread.Thread(target=task,args=(2)).start()
+#+end_src
+
+* thread mutex lock
+** what is mutual exclusion lock
+** how to use mutex lock
+** example of using mutex lock
+* thread reentrant lock
+** what is reentrant lock
+** how to use reentrant lock
+** example of using reentrant lock
+* thread condition
+** what is a threading condition
+** how to use condition object
+** example of wait and notify with a condition
 * resouces
  - https://superfastpython.com/threading-in-python/#Python_Threads

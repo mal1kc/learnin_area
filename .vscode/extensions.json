@@ -1,11 +1,10 @@
 {
     "recommendations": [
-        "danielpinto8zz6.c-cpp-compile-run",
-        "ms-dotnettools.csharp",
         "tamasfe.even-better-toml",
         "aaron-bond.better-comments",
         "ms-python.python",
         "pkief.material-icon-theme",
         "llvm-vs-code-extensions.vscode-clangd",
+        "vscode-org-mode.org-mode"
     ]
 }
