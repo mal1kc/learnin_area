@@ -1,5 +1,6 @@
 #!/bin/env python
 from __init__ import *
+
 def work():
     print('working .',end='')
     for ti in range(10):

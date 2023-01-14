@@ -1,7 +1,5 @@
 #+title: Threading in Python
 #+author: mal1kc
-#+property: header-args :tangle
-#+auto_tangle: t
 #+startup: showeverything
 
 * Python Threads
@@ -84,7 +82,7 @@ for example:
 
 - the diffrence between blocked and terminated
 
-while running, the thread may be executing code or may be blocked,waiting on something such as another thread or external resouce.although, not all threads may block, it is optinal base on specific use case for the new thread.
+while running, the thread may be executing code or may be blocked,waiting on something such as another thread or external resource.although, not all threads may block, it is optinal base on specific use case for the new thread.
 
 1. new thread
 2. running thread
@@ -130,7 +128,7 @@ import time
 
 *** example
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_1.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_01.py
 from __init__ import *
 
 def task():
@@ -154,7 +152,7 @@ the main thread then prints a message '/waiting .../' ,then calls the *join()* f
 
 *** example with arguments
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_2.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_02.py
 from __init__ import *
 
 def task(sleep_time,message):
@@ -219,7 +217,7 @@ thread.join()
 
 complete code would be like:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_3.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_03.py
 from __init__ import *
 
 class CustomThread(threading.Thread):
@@ -236,7 +234,7 @@ thread.join()
 
 ** example of extending the thread class with return values
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_4.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_04.py
 from __init__ import *
 
 class CustomThread(threading.Thread):
@@ -293,7 +291,7 @@ thread class property that holds is thread running or dead (non-started or finis
 
 *** in example:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_5.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_05.py
 from __init__ import *
 
 # create instance of Thread object with lambda func
@@ -342,7 +340,7 @@ can be configured via setting *"daemon"* argument to True in the constructor
 
 *** for example:
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_6.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_06.py
 from __init__ import *
 thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
 print(f'{thread.daemon=}')
@@ -370,9 +368,9 @@ there is a "main thread" object;this corresponds to initial thread of control in
 #+end_quote
 -- [[https://docs.python.org/3/library/threading.html][threading -- Thread-based parallelism]]
 
-we can acuire a main thread by calling *threadin.current_thread()*
+we can acquire a main thread by calling *threadin.current_thread()*
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_7.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_07.py
 from __init__ import *
 
 from threading import current_thread
@@ -402,7 +400,7 @@ print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
 
 we can get a list of active threads via calling *threading.enumarate()* function,it returns list of active threads
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_8.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_08.py
 
 from __init__ import *
 active_thread_count = threading.active_count()
@@ -431,7 +429,7 @@ the effect will be that the thread will unwind and report the message on standar
 error.Unwinding the thread means that the thread will stop executing at the point of the (or error) and that the exception will bubble up the stack in the thread until it reaches the top level,e.g. the run() funtion.
 
 
-#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_9.py
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_09.py
 from __init__ import *
 
 def work():
@@ -708,15 +706,103 @@ def task(value:int):
     print(f'stored value: {local.value}')
 
 # create thread and start thread
-thread.Thread(target=task,args=(1,)).start()
+threading.Thread(target=task,args=(1,)).start()
 # create another thread and start it
-thread.Thread(target=task,args=(2)).start()
+threading.Thread(target=task,args=(2,)).start()
 #+end_src
 
-* thread mutex lock
+* thread mutex lock - /class threading.Lock/
 ** what is mutual exclusion lock
+*** why we need mutual exclusion lock
+#+begin_center
+a _mutual exclusion lock_ is a synchronization primitive intented to prevent a race condition.
+
+a race conditions is a concurency failure case when two threads run same code and access or update same resource leaving the resource unkown and inconsistent state.
+these censitive parts of cade that can be executed by multiple threads concurently and may result in race conditions are called critical sections, a critical
+section may refer to single block of code, but is also refers to multiple accesses to the same data variable or resource from multiple functions.
+#+end_center
+*** description of mutex
+#+begin_center
+mutual exclusion lock also known as mutex,is synchronization mechanism used to control acces to a shared resource in concurent system.A mutex is essentially a binary semaphore (e.g railroad switch signals) with two states;locked and unlocked.When a thread acquires a mutex,it sets the lock to locked state,preventing other threads from also acquiring the lock.The thread that acquire the lock is said to have exclusive acces to the shared resource.When the thread releases the lock.The thread that acquired the lock is said to gave exclusive access to the shared resource.When the thread releases the lock,it sets the lock to the unlocked state, allowing other thread to acquire the lock and gain access to the shared resource.this mechanism ensures that only one thread can access resource at a time, preventing race conditions and other synchronization issues.
+#+end_center
 ** how to use mutex lock
+#+begin_center
+the class implementing primitive lock objects.
+
+NOTE : that _Lock_ is actually a factory function which returns an instance of the most efficient version of the concrete Lock class that is supported by the platform
+#+end_center
+
+
+#+begin_src python
+# create a lock
+lock = threading.Lock()
+# acquire the lock
+# ...
+# release the lock
+lock.release()
+#+end_src
+only one thread can acquire lock,if lock not released it cannot be acquired again.
+
+the thread attempting to acquire the lock will block until the lock is acquired, such as if another thread currently holds the lock then releases it.
+
+we can attempt to acquire the lock without blocking by setting the "blocking" arg to *False*. if the lock cannot be acquired,a value of *False* is returned.
+
+#+begin_src python
+...
+# acquire the lock without blocking
+lock.acquire(blocking=false)
+#+end_src
+
+we can also attempt to acquire the lock with a timeout,If the lock cannot be acquired a *False* returned.
+#+begin_src python
+...
+# acquire the lock with a timeout
+lock.acquire(timeout=10)
+#+end_src
+
+*** for example
+
+#+begin_src python
+...
+# create a lock
+lock = threading.Lock()
+# acquire the lock
+with lock:
+    # ...
+#+end_src
+
+this is preffered usage as it makes it clear where the protected code starts and ends,and ensures that the lock is always released, even if there is an exception or error within the critical section.
+
+also we can check if the lock is currently acquired by a thread
+
+#+begin_src python
+if lock.locked():
+    # if lock is acquired runs this indent block of code
+else:
+    # if not lock is acquired runs this indent block of code
+#+end_src
+
 ** example of using mutex lock
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_12.py
+
+from __init__ import *
+from random import random
+
+def task(lock,identifier,value:int|float):
+    # acquire the lock
+    with lock:
+        print(f'>thread {identifier} got the lock,sleepin for {value}')
+        time.sleep(value)
+# create shared lock
+lock = threading.Lock()
+for i in range(10):
+    threading.Thread(target=task, args=(lock, i, random())).start()
+
+#+end_src
+
+#+RESULTS:
+
 * thread reentrant lock
 ** what is reentrant lock
 ** how to use reentrant lock
@@ -725,5 +811,5 @@ thread.Thread(target=task,args=(2)).start()
 ** what is a threading condition
 ** how to use condition object
 ** example of wait and notify with a condition
-* resouces
+* resources
  - https://superfastpython.com/threading-in-python/#Python_Threads
