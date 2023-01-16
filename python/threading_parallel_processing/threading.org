@@ -803,13 +803,78 @@ for i in range(10):
 
 #+RESULTS:
 
-* thread reentrant lock
+* thread reentrant lock  - /class threading.RLock/
 ** what is reentrant lock
+a reentrant mutual exclusion lock aka "reenrant mutex" or "reentrant lock" for short, is like a mutex lock except it allows a thread to acquire the lock more than once.
+#+begin_quote
+a reentrant lock is synchranization primitive that may be acquired multiple times by the same thread [...] In the locked state,some thread owns the lock;in the unlocked state no thread owns it
+#+end_quote
+-- [[https://docs.python.org/3/library/threading.html#rlock-objects.html][rlock objects -- Thread-based parallelism]]
+*** why we neet reentrant lock
+we can imagine critical sections spread across a number of funcstions,each protected by the same lock.A thread may call across these functions in course of normal execution and may call into one critical section from another critical section.
+
+a limitation of a (non-reentrant) mutex lock is that if a thread has acquired the lock that it cannot acquire it again.In fact, this situation will result in a deadblock as it will wait forever for the lock to be released so that it can be acquired, but it holds the lock and will not release it.
+
+*** description of reentrant lock
+
+a reenrant lock will allow a thread to acquire the same lock again if it has already acquired it.This allows the thread to execute critical sections from within critical sections,as long as they are protected by same reentrant lock.
+
+each time a thread acquires the lock it must also release it, meaning that are recursive levels of acquire and release for the owning thread.As such,this type of lock is sometimes called a "recursive mutex lock".
+
 ** how to use reentrant lock
+
+#+begin_src python
+...
+# create reentrant lock
+lock = RLock()
+# acquires the lock
+lock.acquire()
+...
+# release the lock
+lock.release()
+#+end_src
+
+the thread attempting to acquire the lock will block until the lock is acquired, such as if another thread currently holds the lock (once or more than once) then releases it.
+
+we can use "*blocking*" argument and "*timeout*" argument like normal mutex lock.
+bonus: we can use via '*with*' keyword for safety.
+
 ** example of using reentrant lock
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_13.py
+
+from __init__ import *
+from random import random
+
+def report(lock,identifier):
+    with lock:
+        print(f'>thread {identifier} done')
+
+def task(lock,identifier,value):
+    with lock:
+        print(f'> thread {identifier} sleeping for {value}')
+        time.sleep(value)
+        report(lock,identifier)
+lock = threading.RLock()
+for i in range(10):
+    threading.Thread(target=task,args=(lock,i,random())).start()
+
+#+end_src
+
+running the examples creates 10 threads with target as task function.
+then executes them.only one thread can acquire the lock at time,and then once acquired,blocks and then reenters the same lock again to report the done message.
+
+if non-reentrant lock,e.g. a threading.Lock was used instead,then the thread would block forever waiting for the lock to become available,which it can't because the thread already holds the lock.
 * thread condition
 ** what is a threading condition
 ** how to use condition object
 ** example of wait and notify with a condition
+* thread semaphore
+** what is a semaphore
+** how to use a semaphore
+** example
+* thread event
+** how to use event object
+** example
 * resources
  - https://superfastpython.com/threading-in-python/#Python_Threads
