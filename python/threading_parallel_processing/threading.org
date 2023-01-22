@@ -711,7 +711,7 @@ threading.Thread(target=task,args=(1,)).start()
 threading.Thread(target=task,args=(2,)).start()
 #+end_src
 
-* thread mutex lock - /class threading.Lock/
+* thread mutex lock - /threading.Lock/
 ** what is mutual exclusion lock
 *** why we need mutual exclusion lock
 #+begin_center
@@ -803,7 +803,7 @@ for i in range(10):
 
 #+RESULTS:
 
-* thread reentrant lock  - /class threading.RLock/
+* thread reentrant lock  - /threading.RLock/
 ** what is reentrant lock
 a reentrant mutual exclusion lock aka "reenrant mutex" or "reentrant lock" for short, is like a mutex lock except it allows a thread to acquire the lock more than once.
 #+begin_quote
@@ -865,16 +865,222 @@ running the examples creates 10 threads with target as task function.
 then executes them.only one thread can acquire the lock at time,and then once acquired,blocks and then reenters the same lock again to report the done message.
 
 if non-reentrant lock,e.g. a threading.Lock was used instead,then the thread would block forever waiting for the lock to become available,which it can't because the thread already holds the lock.
-* thread condition
+* thread condition - /threading.Condition/
 ** what is a threading condition
+
+in concurency,a condition (also called a monitor) allows multiple threads to be notified about some result.
+
+it combines both a mutual exclusion lock(mutex) and a conditional variable.
+
+a mutex allow can be used to protect a critical section, but it cannot be used to alert other threads that a condition has changed or been met.
+
+a condition can be acquired by a thread(like a mutex) after which it canbe wait to be notified by another thread that something has changed. while waiting, the thread is blocked and releases the lock for other threads to acquire.
+
+another thread can then acquire the condition, make change, and notify one, all, or a subset of threads waiting on the condition that something has changed. the waiting thread can then wake-up (be scheduled by the op. sys.), reacquire the condition  (mutex), perform checks on any changed state and perform required actions.
+
+this highlights that a condition and to allow threads to notify other threads waiting on the condition.
+
 ** how to use condition object
+we can create condition object by default it will create a new reentrant mutex lock (*threading.RLock*).
+
+#+begin_src python
+...
+# create a new condition
+
+condition = threading.Condition()
+
+#+end_src
+
+we may have a reentrant or non-reentrant mutex that we wish to reuse in the condition for some good reason, in which case we can provide it to the constructor.
+
+this is unrecommended unless you know your use case has this requirement.The chance of getting into trouble is high.
+#+begin_src python
+...
+# create a new condition with custom lock
+
+condition = threading.Condition(lock=my_lock)
+
+#+end_src
+
+*we can aquire and release conditions like the Locks*
+
+#+begin_src  python
+...
+# acquire the condition
+condition.acquire()
+# wait to be notified
+condition.wait()
+# release the condition
+condition.release()
+
+# alternate way of doing same things
+
+# acquire the condition
+with condition:
+    # wait to be notified
+    condition.wait()
+#+end_src
+
+we can notify a single waitinh thread viaa the notify function.
+
+#+begin_src python
+...
+# acquire the condition
+with condition:
+    # notify a waiting thread
+    condition.notify()
+...
+
+#+end_src
+
+the notified thread will stop-blocking as soon as it can re-acquire the mutex within condition.This will be attemted automatically as part of its call to wait(), you do not need to do anything extra.
+
+if there are more than one thread waiting on the condition, we will not know which thread will be notified.
+
+we can notify all threads waitinh on yhe condition via the notify_all() function.
+#+begin_src python
+...
+# acquire the condition
+with condition:
+    # notify all threads waiting on the condition
+    condition.notify_all()
+...
+
+#+end_src
+
 ** example of wait and notify with a condition
-* thread semaphore
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_14.py
+from __init__ import *
+
+def task(condition, work_list):
+    # block for a moment
+    time.sleep(1)
+    # add data to the work list
+    work_list.append(2)
+    # notify a waiting thread that work is done
+    print('thread sending notif...')
+    with condition:
+        condition.notify()
+
+# create a condition
+condition = threading.Condition()
+work_list = list()
+print('main thread waiting for data ...')
+with condition:
+    # start a new thread to perform some work
+    worker = threading.Thread(target=task, args=(condition,work_list))
+    worker.start()
+    # wait to be notified
+    condition.wait()
+# we know the data is ready
+print(f'got data: {work_list}')
+#+end_src
+
+#+RESULTS:
+
+* thread semaphore - /threading.Senaphore/
+
+a semaphore is essentially a counter protected by a mutex lock used to limit the number of threads that can acces a resource.
+
 ** what is a semaphore
+a semaphore is a concurency primitive that allows a limit on the number of threads that can acquire a lock protecting a critical section.
+
+it is an extension of a mutual exclusion (mutex) lock that adds a count for the number of threads that can acquire the lock before additional threads will block. once full, new threads can only acquire a position on the semaphore once existing thread holding the semaphore releases a position.
+
+internally, the semaphore maintains a counter protected by a mutex lock that is incremented each time the semphore is acquired and decremented each time it released.
+
+when semaphore is created, the upper limit on the counter is set. If it is set to be 1, then the semphore will operate like a mutex lock.
+
+A semaphore provides a useful concurency, in examples:
+- limiting concurent;
+  - socket connections to a server.
+  - file operations on a hard drive.
+  - calculations
+
 ** how to use a semaphore
+
+the *threading.Semaphore* instance must be configured when it is created to set the limit on the internal counter.This limit will match the number of concurrent threads that can hold the semaphore.
+
+in example
+#+begin_src python
+...
+# create a semaphore with a limit of 100
+semaphore = Semaphore(100)
+#+end_src
+
+in this implementation,each time the semaphore is acquired,the internal counter is decremented. each time the semaphore is released, the internal counter is incremented.The semephore cannot be acquired if the semphore has no avaliable positions in which case, threads attempting to acquire it must block until a postion becomes avaliable.
+
+*** acquiring and releasing
+
+#+begin_src python
+...
+# acquire the semphore without blocking
+semphore.acquire(blocking=False)
+# acquire the semaphore with a timeout
+semaphore.acquire(timeout=19)
+# release the semaphore
+semaphore.release()
+
+# acquire the semphore
+with semphore:
+    # ...
+#+end_src
+
 ** example
+
+#+begin_src  python :shebang "#!/bin/env python" :tangle threading_example_15.py
+from __init__ import *
+from random import random
+
+def task(semaphore, number:int):
+    # attempt to acquire the semaphore
+    with semaphore:
+        # process
+        value = random()
+        time.sleep(value)
+        # report result
+        print(f'thread {number} got {value}')
+
+# create a semaphore
+semaphore = threading.Semaphore()
+for i in range(10):
+    worker = threading.Thread(target=task,args=(semaphore, i))
+    worker.start()
+# wait for all workers to complete ...
+
+#+end_src
+
 * thread event
 ** how to use event object
 ** example
+* timer threads
+** how to use a timer thread
+** example of using a timer thread
+* thread barrier
+** what is barrier
+** how to use barrier
+** example
+* pyhton : threading best practices
+** tip 1
+** tip 2
+** tip 3
+** tip 4
+* python : threading common errors
+** race conditions
+** thread deadlocks
+** thread livelocks
+* python threading common questions
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
+**
 * resources
  - https://superfastpython.com/threading-in-python/#Python_Threads
