@@ -186,15 +186,15 @@ finally, attributes caan also be used to store the results of any calculation or
 
 example code :
 
-#+begin_example
+#+begin_src python
 class CustomThread(Thread):
     ...
-#+end_example
+#+end_src
 
 this will inherit *Thread* class to our *CustomThread* class,then we need override
 *run()* func to execute another threads funcs,overriding a function very basic as syntax:
 
-#+begin_example
+#+begin_src python
 def run(self):
     sleep(1)
     print('this is coming from another thread')
@@ -212,7 +212,7 @@ print('waiting for the thread to finish')
 
 thread.join()
 
-#+end_example
+#+end_src
 
 
 complete code would be like:
@@ -326,13 +326,13 @@ print(f'{is_alive=}')
 
 * configure threads
 
-** how to configue thread name
+** how to configure thread name
 
 the name of a thread can be ser via the *"name"* argument in the threading.Thread constructor
 
 
 
-** how to configue thread daemon
+** how to configure thread daemon
 
 a thread may be configured to be a daemon or not,and most threads in concurrent programming,including the main thread,are non-daemon threads(no background threads) by default
 
@@ -654,7 +654,7 @@ the I/O with devices is coordinated by the operating system and the device.this 
 the sleep() function is a capability provided by the underlying operating system that we can make use of within our program.
 
 it is a blocking function call that pauses the thread to block for a fixed time in seconds.
-in cpython this can be achieved via *'sleep(seconds)'* fucntion call from built-in *time* module
+in cpython this can be achieved via *'sleep(seconds)'* function call from built-in *time* module
 #+begin_src python
 
 # sleep for 5 seconds
@@ -979,7 +979,7 @@ print(f'got data: {work_list}')
 
 #+RESULTS:
 
-* thread semaphore - /threading.Senaphore/
+* thread semaphore - /threading.Semaphore/
 
 a semaphore is essentially a counter protected by a mutex lock used to limit the number of threads that can acces a resource.
 
@@ -1051,16 +1051,236 @@ for i in range(10):
 
 #+end_src
 
-* thread event
+* thread event - /threading.Event/
+an event is a thread-safe boolean flag.
 ** how to use event object
+an event is a simple pritimitve that allows communitcation between threads.
+
+a *threading.Event* object wraps a boolean variable that can either be "set" (*True*) or "not set" (*False*). threads sharing the event instance can check if the event is set and set the event or clear event (make it not set), or wait for the event to be set.
+
+the *threading.Event* provides an easy way to share a boolean variable between threads that can act as a trigger for an action.
+
+#+begin_quote
+this is one of the simplest mechanism for communitcation between threads: one thread signals an event and other threads wait for it.
+#+end_quote
+
+-- [[https://docs.python.org/3/library/threading.html#event-objects][Event objects,threading -- thread-based parallelism]]
+
+#+begin_src python
+...
+# create an instance of an event
+# ! and the event will be in the "not set" state.
+event = threading.Event()
+
+...
+
+# check if the event is set
+if event.is_set():
+    # do something ...
+# set the event
+event.set()
+# mark the event as not sets
+event.clear()
+
+# wait for the event to be sets
+event.wait()
+#+end_src
+
+#+begin_center
+NOTE ⚠: waiting threads are only notified when *set()* function is called, not when *clear()* function is called
+#+end_center
+
+a "*timeout*" argument can be passed to the *wait()* function which will limit how long a thread will return True if the event was set while waiting, otherwise a value *False* returned indicates that the event was not set and called timedout.
+
+#+begin_src  python
+...
+# wait for the event to be set with a timeout
+event.wait(timeout=10)
+#+end_src
+
 ** example
-* timer threads
+#+begin_src  python :shebang "#!/bin/env python" :tangle threading_example_16.py
+from __init__ import *
+from random import random
+
+def task(event, number):
+    # wait for the event to be set
+    event.wait()
+    # begin processing
+    value = random()
+    time.sleep(value)
+    print(f'thread {number} got {value}')
+
+# create a shared event object
+event = threading.Event()
+# create a suite of threads
+for i in range(5):
+    thread = threading.Thread(target=task,args=(event,i))
+    thread.start()
+# block for a moment
+print(' main thread blocking ...')
+time.sleep(2)
+# start processing in all threads
+event.set()
+# wait for all threads to finnish ...
+#+end_src
+* timer threads - /threading.Timer/
+a timer thread will execute a function after a time delay.
 ** how to use a timer thread
+
+the *threading.Timer* is an extension of fhe *threading.Thread* class because of this reason
+we can use it just like a normal thread instance.
+
+first, we can create an instance of the timer and configure it.This includes the time to wait before executing in seconds, the function to execute once triggered, adn any arguments to the target function.
+
+#+begin_src python
+...
+# create with configuration a timer  thread
+timerT = threading.Timer(10,task,args=(arg1,arg2))
+
+# to start timer func we use
+timerT.start()
+# if we decide cancel the timer before target function has executed,we can use timerthread's cancel() method
+
+timerT.cancel()
+#+end_src
+
 ** example of using a timer thread
-* thread barrier
+
+#+begin_src  python :shebang "#!/bin/env python" :tangle threading_example_17.py
+from __init__ import *
+
+def task(message):
+    # report the message
+    print(message)
+
+# create a thread timer object
+timerT = threading.Timer(3, task, args=('hello world',))
+# start the timer object
+timerT.start()
+# wait for the timer to finish
+print('waiting for the timer ...')
+#+end_src
+
+* thread barrier - /threading.Barrier/
 ** what is barrier
+a barrier is a synchranization primitive.
+
+it allows multiple threads to wait on the same barrier object instance (e.g. at the same point in code) until a predefined fixed number of threads arrive (e.g. barrier is full), after which all threads are then notified and released to continue their execution.
+
+internally, a barrier maintains a count of the number of threads waiting on the barrier and a configured maximum number of parties (threads) that are expected. Once the expected number of parties reaches the pre-defined maximum, all waiting threads are notified.
 ** how to use barrier
+
+a barrier instance must first be created and configured via the constructor specifying the number of parties (threads) that must arrive before the barrier will be lifted.
+
+#+begin_src python
+...
+# create a barrier
+Tbarrier = threading.Barrier(10)
+#+end_src
+
+we can also perform an action once all threads reach the barrier which can be specified via "action" arg in the constructor.
+
+this action mus be callable such as a function or a lambda that does not take any arguments and will be executed by one thread once all threads reach the barrier and call the *wait()* function.
+#+begin_src python
+...
+Tbarrier = threading.Barrier(10,action=my_func)
+# we can use timeout too
+Tbarrier = threading.Barrier(10,action=my_func,timedout=5)
+Tbarrier = threading.Barrier(10,timedout=5)
+#+end_src
+
+a thread can reach and wait on the barrier via the *wait()* function.
+
+#+begin_src python
+...
+# wait on the barrier for all other threads to arrive
+barrier.wait()
+#+end_src
+
+this iss a blocking call and will return once all other threads (the pre-configured number of parties) have reached the barrier.
+
+the wait function does return an integer indicating the number of parties remaining to arrive at the barrier.If a thread was the last thread to arrive, then the return value will be zero.This is helpful if you want the last thread or one thread to perform an action after the barrier is released, and alternative to using the "*action*" arg in constructor.
+
+#+begin_src python
+...
+# wait on the barrier
+remaining = barrier.wait()
+# after released, check if this was the last party
+if remaining == 0:
+    print('i was last ..')
+#+end_src
+
+a timeout can be set on the call to wait in second via the "*timeout*" argument.If the timeout expires before all parties reach the  barrier, a *BrokenBarrierError* will be raised
+in all threads waiting on the barrier and the barrier will be marked as broken.
+
+if a timeout is used via "*timeout*" argument  or the default timeout in the constructor, then all calls to the *wait()* function may need to handle the *BrokenBarrierError*.
+
+#+begin_src python
+...
+# wait on the barrier for all other threads to arrive
+try:
+    barrier.wait()
+except BrokenBarrierError:
+    # ...
+#+end_src
+
+we can also abort the barrier.aborting the barrier means that all threads waiting on the barrier via the *wait()* function will raise *BrokenBarrierError* and the barrier will be put in the broken state.
+
+to abort the barrier we use *abort()* function
+#+begin_src py
+barrier.abort()
+#+end_src
+
+a broken barrier cannot be used.Caalls to *wait()* will raise *BrokenBarrierError*.
+
+a barrier can be fixed and made ready for use again by calling the *reset()* function.
+
+if you cancel a coodination effort although you wish to retry it again with same barrier instance.
+
+#+begin_src python
+...
+# reset a broken barrier
+barrier.reset()
+#+end_src
+
+the status of the barrier can be checked via attributes.
+
+- *parties*: reports the canfigured number of parties that must reach the barrier for it to be lifted.
+- *n_waiting*: reports the current number of threads waiting on the barrier.
+- *broken*: attribute indicates whether the barrier is currently is currently broken or not.
+
 ** example
+
+in this example we will create a suite of threads, each required to perform some blocking calculation we will use a barrier to coodinate all threads after they have finished their work and perform some action in the main thread. this is a good proxy for the types of coodination we may need to perform with a barrier.
+
+#+begin_src python :shebang "#!/bin/env python" :tangle threading_example_18.py
+from __init__ import *
+from random import random
+
+# target function to prepare some work
+def task(barrier, number):
+    # generate a unique value
+    value = random() * 10
+    # block for a moment
+    time.sleep(value)
+    # report result
+    print(f'thread {number} done, got: {value}')
+    barrier.wait()
+# create a barrier
+Tbarrier = threading.Barrier(5+1)
+# create the worker threads
+for i in range(5):
+    # start a new thread to perform some work
+    worker = threading.Thread(target=task,args=(Tbarrier,i))
+    worker.start()
+# wait for all thread to finish
+print('main thread waiting on all results ...')
+Tbarrier.wait()
+# report once all threads are done
+print('all threads have their result')
+#+end_src
+
 * pyhton : threading best practices
 ** tip 1
 ** tip 2
