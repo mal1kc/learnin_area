@@ -45,7 +45,7 @@ a process refers to a computer process
 
 #+BEGIN_QUOTE
 process: the operating system's spawned and controlled entity that encapsulates an executing application.
-a process has two main functions. the first is to act as the resource holder for the applicatio,
+a process has two main functions. the first is to act as the resource holder for the application,
 and the second is to execute the instructions of the application.
 - book: page 271,the art of concurency,2009
 #+END_QUOTE
@@ -1282,10 +1282,111 @@ print('all threads have their result')
 #+end_src
 
 * pyhton : threading best practices
-** tip 1
-** tip 2
-** tip 3
-** tip 4
+** tip 1: use context managers
+acquire and release locks using a context manager, wherever possible.
+
+*** not use this
+
+
+#+begin_src python
+...
+
+# acquire the lock manually
+lock.acquire()
+# critical section...
+# release the lock
+lock.release()
+#+end_src
+
+*** use this for better control over threads (more safe)
+
+#+begin_src python
+...
+# acquire the lock
+lock.acquire()
+try:
+    # critical section ...
+finally:
+    # always release the lock
+    lock.release()
+
+#+end_src
+
+same but less code
+
+#+begin_src python
+...
+# acquire the lock
+with lock:
+    # critical section ...
+#+end_src
+
+*** the real benefit
+
+the benefit of the context manager is that the lock is always released as soon as the block exited,regardless of how it is exited, e.g normally, a return, an error, or an exception.
+
+this applies to a number of concurency primitives,such as:
+
+- acquiring ;
+  - mutex lock via *threading.Lock* class
+  - reentrant mutex lock via *threading.RLock* class
+  - semaphore via *threading.Semaphore* class
+  - condition via *threading.Condition* class
+
+** tip 2 : Use timedouts when waiting
+always use a timedout when waiting on a blocking call.
+
+many calls made on concurency primitives may block.
+
+examples:
+
+- waiting to acquire a *threading.Lock()* via *acquire()*.
+- waiting for a thread to terminate via *join()*.
+- waiting to be notified on a *threading.Condition* via *wait()*.
+- and more.
+
+All blocking calls on concurrency primitives take a "*timeout*" argument and return *True* if the call was successful or *False* otherwise.
+
+Do not call a blocking call without a timedout,wherever possible.
+
+#+begin_src python
+...
+# acquire the lock
+if not lock.acquire(timedout=2*60):
+    # handle failure case ...
+#+end_src
+
+this allow the waiting thread to give-up waiting after a fixed time limit and then attempt to rectify the situation, e.g. report and error, force termination, etc.
+
+** tip 3: use a mutex to protect critical sections
+always use a mutual exclusion (mutex) lock to protect critical sections in code.
+
+Critical sections are sensitive parts of code that can be executed by multiple threads concurency and may result in race conditions.
+
+a critical section maay refer to a single block code, but it also refers to multiple accesses oto the same data variable or a resource from multiple functions.
+
+a mutex lock can be used to ensure that only one thread at a time executes a critical section of code at time, while all other threads trying to execute the same code must wait until the currently executing thread is finished with the critical section and releases the lock.
+
+each thread must attempt to acquire the lock at the beginning of the critical section.if the lock has not been obtained,then thread will acquire it and other threads must wait until the thread that acquired the lock releases it.
+
+#+begin_src python
+...
+# acquire the lock
+with lock:
+    # critical section ...
+#+end_src
+
+
+** tip 4: acquire locks in order
+
+acquire locks in the same order throught the application, wherever possible.
+
+this is called "lock ordering".
+
+in some applications you may be able to abstract the acquisition of lock using a list of *threading.Lock* object that may be itered  and acquired in order, or a function call that acquired locks in sonsistent order.
+
+when this is not possible, you may need to audit your code to confirm that all paths throught the code acquire the locks in same order.
+
 * python : threading common errors
 ** race conditions
 ** thread deadlocks
