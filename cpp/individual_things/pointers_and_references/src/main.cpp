@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string.h>
 
-// NOTE pointers are integer numbers that stores memory adresses of other type
+// NOTE pointers are integer numbers that stores memory addresses of other type
 // of data types
 //
 // helper video source
@@ -12,20 +12,20 @@
 void p_example_1() {
   int var = 8;
   // void *ptr = nullptr; // null pointer (pointer that holds nothing)
-  void *ptr = &var; // pointer that holds var's memory adress
+  void *ptr = &var; // pointer that holds var's memory addresss
 
   std::cout << "ptr :" << ptr << "\n";
 }
 
 void p_example_2() {
   int var = 9;
-  // we told the compiler that pointer points memory addres of
+  // we told the compiler that pointer points memory address of
   // int type of data
   int *ptr = &var;
 
   std::cout << "pointer : " << ptr << "\n"
             << "data pointed by pointer : " << *ptr
-            << "\n"; // accesing data pointed by pointer
+            << "\n"; // accessing data pointed by pointer
   *ptr = 12;         // change variable that pointed by pointer
   std::cout << "after change :"
             << "\n\t"
@@ -33,7 +33,7 @@ void p_example_2() {
             << ptr << "\n"
             << "\t"
             << "data pointed by pointer : " << *ptr
-            << "\n"; // accesing data pointed by pointer
+            << "\n"; // accessing data pointed by pointer
 }
 
 void p_example_3() {
@@ -69,19 +69,23 @@ void r_example_1() {
 
 // extension funcs for r-example 2 to demonstrade refrence
 // func1 that not used with ref it creates new value from copy ( func meant to
-// Increament given value)
+// Increment given value)
 void r_example_2_ext1(int value) { value++; }
-// func2 that used with ref ( func meant to  Increament given value)
+// func2 that used with ref ( func meant to  Increment given value)
 // thats wrong (no work we want) beacause in here first increment then reference
 // pointer void r_example_2_ext2(int *value) { *value++; }
 void r_example_2_ext2(int *value) { (*value)++; }
-// func3 that uses automaticly refrence // it does nearly same thing with func2
+// func3 that uses automatically reference // it does nearly same thing with
+// func2
 void r_example_2_ext3(int &value) { value++; }
 
-// NOTE we need to use reference wherever we can because it looks nice 😎 and clean 🆒 (for better readability)
-// FIXME IMPORTANT if we want to create ref and later we want to change ref we cannot do that not like pointers
-//  Also we cannot use references without initilazing (setting something while creating);
-                              
+// NOTE we need to use reference wherever we can because it looks nice 😎 and
+// lean 🆒 (for better readability)
+// FIXME IMPORTANT if we want to create ref and later we want to change ref we
+// cannot do that not like pointers
+//  Also we cannot use references without initializing (setting something while
+//  creating);
+
 void r_example_2() {
   int a = 9;
   r_example_2_ext1(a);
@@ -102,7 +106,7 @@ int main(int argc, char *argv[]) {
   Log("pointers example 3 \a");
   p_example_3();
 
-  Log("refrences example 1\a");
+  Log("references example 1\a");
   r_example_1();
   Log("references example 2\a");
   r_example_2();

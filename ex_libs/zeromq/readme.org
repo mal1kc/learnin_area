@@ -1,0 +1,19 @@
+#+title: zeromq library
+
+* what is it
+
+#+begin_quote
+ It gives you sockets that carry atomic messages across various transports like in-process, inter-process, TCP, and multicast
+#+end_quote
+    -- [[https://zguide.zeromq.org/docs/preface/#ZeroMQ-in-a-Hundred-Words][source]]
+
+    [[https://zguide.zeromq.org/docs/preface/#ZeroMQ-in-a-Hundred-Words][read more in library documentation]]
+
+** some notes about zmq in general (not language specific)
+#+begin_quote
+ZeroMQ doesn’t know anything about the data you send except its size in bytes. That means you are responsible for formatting it safely so that applications can read it back. Doing this for objects and complex data types is a job for specialized libraries like Protocol Buffers. But even for strings, you need to take care.
+#+end_quote
+-- [[https://zguide.zeromq.org/docs/chapter1/#A-Minor-Note-on-Strings][source]]
+
+** pyzmq
+ *[[./python/readme.org][ basics pyzmq ]]*

@@ -1,0 +1,560 @@
+#+title: basics of python standart library module *socket*
+#+author: mal1kc
+#+options: toc:3
+
+* what is *sockets* why we use them
+
+sockets and the socket Api are  used to send messages over a network.They provide form of interprocess communication (IPC).The network can be logical, local network to computer, or one that's physically connected to an externel network.The most obvius example is Internet.
+
+first their use was ARPANET in 1971 and then become api in Berkeley Software Distrubution (BSD) operating system in 1983 called Berkeley Sockets
+
+[[https://en.wikipedia.org/wiki/Berkeley_sockets?oldformat=true][read more about berkeley sockets (commonly implemented socket API)]]
+
+* what it is *socket* module
+
+#+begin_quote
+This module provides access to the BSD socket interface. It is available on all modern Unix systems, Windows, MacOS, and probably additional platforms.
+#+end_quote
+-- [[https://docs.python.org/3/library/socket.html][python org module]]
+
+** the primary socket API functions and methods in this modeule are:
+
++ socket _class_
+  - .bind()
+  - .listen()
+  - .accept()
+  - .connect()
+  - .connect_ex()
+  - .send()
+  - .recv()
+  - .close()
+
+python provides good API that maps directly to syscalls,
+their ~C~ counterparts.
+
+as part of its ~std~ library, python has classes that make using these lower level socket operations easier.
+
+* tcp sockets
+
+when we create socket object using *socket.socket()*,specifiyn socket type as socket.SOCK_STREAM.When we do that, the default protocol that's used is the [[https://en.wikipedia.org/wiki/Transmission_Control_Protocol][Transmission Control Protocol a.k.a. TCP]] . this is default and this is probably what we want.
+
+if we want a lookout there was a [[https://commons.wikimedia.org/wiki/File:InternetSocketBasicDiagram_zhtw.png][socket diagram (basically tells how tcp works)]]
+
+* some example echo server,client
+** src of echo server
+
+#+begin_src python :tangle echo_srv.py
+#!/usr/bin/env python3
+import socket
+
+HOST = "127.0.0.1"  # localhost or "127.0.0.1" (standart loopback interface address)
+PORT = 5634  # port to listen on (non-privileged ports are > 1023)
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.bind((HOST, PORT))
+    s.listen()
+    conn, addr = s.accept()
+    with conn:
+        print(f"connected by {addr} conn {conn=}")
+        while True:
+            data = conn.recv(1024)
+            if not data:
+                break
+            conn.sendall(data)
+#+end_src
+
+**** explanation of server
+
+- we create socket object with  [[https://docs.python.org/3/reference/datamodel.html#context-managers][context manager type]] ,by doing that after a with indent code finishes it automaticly calls ~s.close()~
+- the args of socket obects are
+  + *AF_INET* : IPV4
+  + *SOCK_STREAM* : TCP
+- ~s.bind()~ is binds our socket to given HOST and PORT
+- ~s.listen()~ Enable a server to accept connections. If backlog is specified, it must be at least 0 (if it is lower, it is set to 0); it specifies the number of unaccepted connections that the system will allow before refusing new connections. If not specified, a default reasonable value is chosen.
+- ~s.accept()~ blocks execution and waits for incoming connection.when client connects it returns a new socket object represnting connection and a tuple about client address ( ipv4 (host, port) , ipv6 (host, port, flowinfo, scopeid) [[https://docs.python.org/3/library/socket.html#socket-families][(more info socket addr families]] ) .
+- after ~.accept()~ provide connection socket object,an while loop is used to loop over blocking calls to ~conn.recv()~.This reads whatever data the client sends and echoest it back using conn.sendall().
+- if conn.recv() returns emtpy *bytes* object,b'',that signals client closed the connection and the loop is terminated
+
+** src of echo client
+
+#+begin_src python :tangle echo_clnt.py
+#!/usr/bin/env python3
+import socket
+HOST = "127.0.0.1"  # the server's hostname or IP address
+PORT = 5634  # the port used by the server
+
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    s.connect((HOST, PORT))
+    s.sendall(b"hello, universe.\nHi, friend.")
+    data = s.recv(1024)
+
+print(f"received some data:\n{data=}")
+print(f"rendered data :\n---\n{data.decode()}\n---")
+#+end_src
+
+
+* handling multiple connections
+
+the echo server has its limitations.one of big ones is that is serves onlt one client then exists.the echo client has some limitations too,but there is a extra problem.when client uses ~s.recv()~, *it's possible that it will return only one byte,b'h' from b'hello, universe'*
+
+the bufsize arg of 1024 used above is the maximum amount of data to be received at once.it doesn't mean that ~.recv()~ will return 1024 bytes.
+
+the ~.send()~ method also behaves this way.it returns the number of bytes sent, which may be less than the size of data passed in.we are responsible for checkin this and calling ~.send()~ as many times as needed to send all of the data.
+
+#+begin_quote
+Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this topic, consult the [[https://docs.python.org/3/howto/sockets.html#socket-howto][Socket Programming HOWTO]].
+#+end_quote
+-- [[https://docs.python.org/3/library/socket.html#socket.socket.send][python.org source]]
+
+in the example ~echo client~ we avoided havinf to do this by using ~.sendall()~
+
+#+begin_quote
+Unlike ~send()~, this method continues to send data from bytes until either all data has been sent or an error occurs. None is returned on success. On error, an exception is raised, and there is no way to determine how much data, if any, was successfully sent.
+#+end_quote
+-- [[https://docs.python.org/3/library/socket.html#socket.socket.sendall][python.org source]]
+
++ we have two problems at this point
+
+  - how do we handle multiple connections
+
+  - we need to call ~.send()~ and ~.recv()~ until all data is sent or received.
+
+there are many approaches to [[https://realpython.com/python-concurrency/][concurrency]],there was std library module ~asyncio~ (after python 3.4),there was std library module ~threads~.
+
+the trouble with concurrency there are many substleties to consider and guard against.but simpicitily for examples of ~socket~ module we are going to use somethin trational.we're going to use [[https://docs.python.org/3/library/selectors.html#selectors.BaseSelector.select][.select()]].
+
+the ~.select()~ method allows we to check for I/O completion on more than one socket.so new can call ~.select()~ to see which socket have I/O ready for reading and/or writing.but in python there's more we use [[https://docs.python.org/3/library/selectors.html][selectors module]] in standar library so that the most efficent implementation is used, regardless of OS (operating system).
+
+#+begin_quote
+This module (~selectors module~) allows high-level and efficient I/O multiplexing, built upon the select module primitives. Users are encouraged to use this module instead, unless they want precise control over the OS-level primitives used.
+#+end_quote
+-- [[https://docs.python.org/3/library/selectors.html][High-level I/O multiplexing - source]]
+
+still,by using ~.select()~, we're not exactly to run concurrenctly.it still depends our workload,what our application needs,how many clients ,how many data transfer happens etc.
+
+** code with explanation of multiconnection server
+
+#+begin_src python
+#!/usr/bin/env python3
+import sys
+import socket
+import selectors
+import types
+
+sel = selectors.DefaultSelector()
+
+...
+
+if len(sys.argv) < 2:
+    raise Exception(
+        f'you are not give me correct args\n args must be host and port example:\n python {__file__.split("/")[-1]} HOST PORT\n ./{__file__.split("/")[-1]} HOST PORT\n ./{__file__.split("/")[-1]} 127.0.0.1 5634'
+    )
+
+
+host, port = sys.argv[1], int(sys.argv[2])
+
+lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+lsock.bind((host, port))
+lsock.listen()
+print(f"listenin on host: {host} port: {port} ")
+lsock.setblocking(False)
+sel.register(lsock, selectors.EVENT_READ, data=None)
+#+end_src
+
+- the biggest diffrence between ~echo server~ and this server is the call to ~lsock.setblocking(False)~ to configure socket in *non-blocking* mode. calls made to this socket will no longer block.when it's used with ~sel.select()~,we can wait for events on one or more sockets then read and write data when it's ready.
+
+- sel.register() registers the socket to be monitored with ~sel.select()~ for the events we're interested in (in this example EVENT_READ).
+
+- to store arbitarty data we'd like along with socket,we'll use ~data~.it's returned when ~.select()~ returns.we'll use data to keep track of what's been sent and received on the socket.
+
+#+begin_src python
+try:
+    while True:
+        events = sel.select(timeout=None)
+        for key, mask in events:
+            if key.data is None:
+                accept_wrapper(key.fileObj)
+            else:
+                service_connection(key,mask)
+except KeyboardInterrupt:
+    print('caught keyboard interrupt, exiting ...')
+finally:
+    sel.close()
+#+end_src
+
+- ~sel.select(timeout=None)~ blocks until there are sockets ready for I/O. it *returns a list of tuples, one for each socket*.Each tuple *contains a key and a mask*.The key is a [[https://docs.python.org/3/library/selectors.html#selectors.SelectorKey][SelectorKey -> namedtuple]] that contains a ~fileobj~ attribute key. *fileobj is socket object*, and mask is an event [[https://en.wikipedia.org/wiki/Mask_(computing)][mask]] of the operations that are ready.
+
+- if key.data is None,then we know it's from the listening socket and we need to accept the connection.we'll call our own ~accpet_wrapper()~ function to get the new socket object and register it with the selector.we'll look at that in a moment.
+
+- if key.data is not None,then we know it's a client socket that's already been accepted, and we neet to servcice it . ~service_connection()~ is then called with key and mask as arguments, and that's everything we need to operate on the socket.
+
+#+begin_src python
+def accept_wrapper(sock):
+    conn, addr = sock.accept()  # should be ready to read
+    print(f"accepted connection from {addr}")
+    conn.setblocking(False)
+    data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
+
+#+end_src
+
+- because the listening socket registed for the event selectors. ~EVENT_READ~, it should be ready to read. we call ~sock.accept()~ and then call ~conn.setblocking(False)~ to put the socket in non-blocking mode.
+
+- *remember* , this is the main objective in this version of the server because we don't want it to block.if it blocks, then the entire server is stalled until it returns.that means other sockects are left waiting event though the server isn't actively working. *this is the dreaded "hanging" state that we don't want our server to be in.*
+
+- next, we create an object to hold the data that we want included along with the socket using a [[https://docs.python.org/3/library/types.html#types.SimpleNamespace][SimpleNamespace]] , because we want to know when the client connection is ready for reading and writing,both of those events the client connections ready for reading and writing, both of those events are set with *bitwise OR* operators
+
+#+begin_src python
+
+
+def service_connection(key, mask):
+    sock = key.fileobj
+    data = key.data
+    if mask & selectors.EVENT_READ:
+        recv_data = sock.recv(1024)  # should be ready to read
+        if recv_data:
+            data.outb += recv_data
+        else:
+            print(f"closing connection to {data.addr}")
+            sel.unregister(sock)
+            sock.close()
+    if mask & selectors.EVENT_WRITE:
+        if data.outb:
+            print(f"echoing {data.outb!r} to {data.addr}")
+            sent = sock.send(data.outb)  # should be ready to write
+            data.outb = data.outb[sent:]
+
+#+end_src
+
+_this is heart of simple multi-connection server._
+
+- if  the socket is ready for reading,then ~mask & selectors.EVENT_READ~ will evaluate to True, so ~sock.recv()~ is called.Any data that's read is appended to ~data.outb~ so that can be sent later.
+
+- if no data is received, this means that the client has closed their socket,so the server should too. but *don’t forget* to call ~sel.unregister()~ before closing, so it’s no longer monitored by ~.select()~.
+
+- when the socket is ready for wiriting, which should always be the case for a healthy socket, any received data stored in ~data.outb~ is echoed to the client using ~socket.send()~. the bytes sent are then removed from send buffer.
+
+- the ~.send()~ method returns the number of bytes sent. this number can then be used with [[https://docs.python.org/3/reference/expressions.html#slicings][slice notation]]
+
+
+
+** code with explanation of multiconnection client
+
+#+begin_src python
+
+import sys
+import socket
+import selectors
+import types
+
+sel = selectors.DefaultSelector()
+messages = [b"hello message 1 from client.", b"hi message 2 from client."]
+
+def start_connections(host, port, num_conns):
+    server_addr = (host, port)
+    for i in range(0, num_conns):
+        connid = i + 1
+        print(f"starting connection {connid} to {server_addr}")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setblocking(False)
+        sock.connect_ex(server_addr)
+        events = selectors.EVENT_READ | selectors.EVENT_WRITE
+        data = types.SimpleNamespace(
+            connid=connid,
+            msg_total=sum(len(m) for m in messages),
+            recv_total=0,
+            messages=messages.copy(),
+            outb=b"",
+        )
+        sel.register(sock, events, data=data)
+
+#+end_src
+
+- ~num_conns~ is  read from the command-line and is the number of connections to create to the server.just like server, each socket is set to non-blocking mode.
+
+- we use [[https://docs.python.org/3/library/socket.html#socket.socket.connect_ex][.connect_ex()]] instead of ~.connect()~ because ~.connect()~ would immediately raise a BlockingIOError exception.The ~.connect_ex()~  method innitially returns an /error indicator, errno.EINPROGRESS/ , instead of raising an exception that would interfere with the connection in progress. Once the connection is completed, the socket is ready for reading and writing and is returned by ~.select()~.
+
+- after the socket is set up, the data we want to store with the socket is created using ~SimpleNamespace~. the messages that client will send to server are copied using ~.copy()~ because each connection will call ~socket.send()~ and modify the list.everything needed to keep track of what the client needs to send, has sent, and has received, including total number of bytes in the messages, is stored in object data.
+
+  ~service_connection() for the client~
+
+ #+begin_src python
+
+def service_connection(key, mask):
+    sock = key.fileobj
+    data = key.data
+    if mask & selectors.EVENT_READ:
+        recv_data = sock.recv(1024)  # should be ready to read
+        if recv_data:
+            print(f"received {recv_data!r} from connection {data.connid}")
+            data.recv_total += len(recv_data)
+        if not recv_data or data.recv_total == data.msg_total:
+            print(f"closing connection {data.connid}")
+            sel.unregister(sock)
+            sock.close()
+    if mask & selectors.EVENT_WRITE:
+        if not data.outb and data.messages:
+            data.outb = data.messages.pop(0)
+        if data.outb:
+            print(f"sending {data.outb!r} to connection {data.connid}")
+            sent = sock.send(data.outb)  # should be ready to write
+            data.outb = data.outb[sent:]
+
+ #+end_src
+** src of multiconnection server
+
+#+begin_src python :tangle mutliconn-srvr.py
+#!/usr/bin/env python3
+
+import sys
+import socket
+import selectors
+import types
+
+
+sel = selectors.DefaultSelector()
+
+
+def accept_wrapper(sock):
+    conn, addr = sock.accept()  # should be ready to read
+    print(f"accepted connection from {addr}")
+    conn.setblocking(False)
+    data = types.SimpleNamespace(addr=addr, inb=b"", outb=b"")
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
+
+
+def service_connection(key, mask):
+    sock = key.fileobj
+    data = key.data
+    if mask & selectors.EVENT_READ:
+        recv_data = sock.recv(1024)  # Should be ready to read
+        if recv_data:
+            data.outb += recv_data
+        else:
+            print(f"closing connection to {data.addr}")
+            sel.unregister(sock)
+            sock.close()
+    if mask & selectors.EVENT_WRITE:
+        if data.outb:
+            print(f"echoing {data.outb!r} to {data.addr}")
+            sent = sock.send(data.outb)  # Should be ready to write
+            data.outb = data.outb[sent:]
+
+
+def main():
+
+    if len(sys.argv) < 2:
+        raise Exception(
+            f'you are not give me correct args\n args must be <host> and <port> example:\n python {__file__.split("/")[-1]} <HOST> <PORT>\n ./{__file__.split("/")[-1]} <HOST> <PORT>\n ./{__file__.split("/")[-1]} 127.0.0.1 5634'
+        )
+
+    host, port = sys.argv[1], int(sys.argv[2])
+
+    lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    lsock.bind((host, port))
+    lsock.listen()
+    print(f"listenin on host: {host} port: {port} ")
+    lsock.setblocking(False)
+    sel.register(lsock, selectors.EVENT_READ, data=None)
+
+    try:
+        while True:
+            events = sel.select(timeout=None)
+            for key, mask in events:
+                if key.data is None:
+                    accept_wrapper(key.fileobj)
+                else:
+                    service_connection(key, mask)
+    except KeyboardInterrupt:
+        print("Caught keyboard interrupt, exiting")
+    finally:
+        sel.close()
+
+
+if __name__ == "__main__":
+    main()
+#+end_src
+
+** src of multiconnection client
+
+#+begin_src python :tangle multiconn-clnt.py
+#!/usr/bin/env python3
+
+import sys
+import socket
+import selectors
+import types
+
+sel = selectors.DefaultSelector()
+messages = [b"hello message 1 from client.", b"hi message 2 from client."]
+
+def start_connections(host, port, num_conns):
+    server_addr = (host, port)
+    for i in range(0, num_conns):
+        connid = i + 1
+        print(f"starting connection {connid} to {server_addr}")
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setblocking(False)
+        sock.connect_ex(server_addr)
+        events = selectors.EVENT_READ | selectors.EVENT_WRITE
+        data = types.SimpleNamespace(
+            connid=connid,
+            msg_total=sum(len(m) for m in messages),
+            recv_total=0,
+            messages=messages.copy(),
+            outb=b"",
+        )
+        sel.register(sock, events, data=data)
+
+
+def service_connection(key, mask):
+    sock = key.fileobj
+    data = key.data
+    if mask & selectors.EVENT_READ:
+        recv_data = sock.recv(1024)  # should be ready to read
+        if recv_data:
+            print(f"received {recv_data!r} from connection {data.connid}")
+            data.recv_total += len(recv_data)
+        if not recv_data or data.recv_total == data.msg_total:
+            print(f"closing connection {data.connid}")
+            sel.unregister(sock)
+            sock.close()
+    if mask & selectors.EVENT_WRITE:
+        if not data.outb and data.messages:
+            data.outb = data.messages.pop(0)
+        if data.outb:
+            print(f"sending {data.outb!r} to connection {data.connid}")
+            sent = sock.send(data.outb)  # should be ready to write
+            data.outb = data.outb[sent:]
+
+
+if len(sys.argv) != 4:
+    print(f"usage: {sys.argv[0]} <host> <port> <num_connections> in example:\n {sys.argv[0]} 127.0.0.1 5634 2")
+    sys.exit(1)
+
+def main():
+    host, port, num_conns = sys.argv[1:4]
+    start_connections(host, int(port), int(num_conns))
+
+    try:
+        while True:
+            events = sel.select(timeout=1)
+            if events:
+                for key, mask in events:
+                    service_connection(key, mask)
+            # check for a socket being monitored to continue.
+            if not sel.get_map():
+                break
+    except KeyboardInterrupt:
+        print("caught keyboard interrupt, exiting ...")
+    finally:
+        sel.close()
+
+if __name__ == '__main__':
+    main()
+
+#+end_src
+
+* application client and server  (more advanced example of mutliconn):
+
+we want a client and servert that handle errors appropriately so that other connections aren't effected.
+
+#+begin_quote
+All errors raise exceptions. The normal exceptions for invalid argument types and out-of-memory conditions can be raised. Errors related to socket or address semantics raise [[https://docs.python.org/3/library/exceptions.html#OSError][OSError]] or one of its subclasses.
+#+end_quote
+-- [[https://docs.python.org/3/library/socket.html][source]]
+
+so, one thing we need to catch ~OSError~.Another important consideration in relation to erros is *timeout*.
+*timeouts* are couse a lot of trouble; hosts and routers are rebooted, switch ports go bad, cables go bad, cables get unplugged.best way to handle them is prevent them.
+
+when we use TCP we read data from continues stream from network. however, unlike reading a file, there's no [[https://docs.python.org/3/tutorial/inputoutput.html#methods-of-file-objects][f.seek()]].
+
+once we've read them,they need to be saved somewhere, or else we will have dropped them. calling ~.recv()~ again reads the next stream of bytes avaliable from socket.
+
+we'll be reading from the socket in chunks. so, we need to call ~.recv()~ and save the data in a buffer until we've read enough bytes to have a complete message that makes sens to our application.
+
+in other words,we need to keep up with how many bytes read, and figure out where the messages boundaries are.
+
+one of solution of this is send always fixed size data.but it's insufficent for most ways.
+
+we'll learn a generic approach, one that's used by many protocols,including HTTP.we'll prefix messages with a *header* that includes content lenght as well as any other fields we need.by doing this,we'll only need to keep up with the header.Once we’ve read the header, we can process it to determine the length of the message’s content. With the content length, we can then read that number of bytes to consume it.
+
+we'll implement this by creating a custom class that can send and receive messages that contain text or binary data.
+
+before we get started,we need to learn something.in erlier examples we're sending and receiving raw bytes.if we receive data and want to use it in a contex where it's inrerpreted as multiple bytes, for example a 4-byte interger,we'll need to take int o account that it could be in a format that's not native to our machine's CPU.The client or server on the other end could have a CPU that uses a diffrent byte order than our own.if this is the case, then we'll need to convert it to our host's native byte order before using it. this byte order referred to as a CPU's [[https://en.wikipedia.org/wiki/Endianness][endiannes]].
+
+we'll avoid this issue by takin advantage of Unicode for our message header and using the encoding UTF-8.since UTF-8 uses an 8-bit encoding, there are no byte ordering issues.
+
+by the way we can easily deterine the byte code of our machine by usin ~sys.byteorder~
+
+#+begin_src shell
+python -c 'import sys; print(repr(sys.byteorder))'
+#+end_src
+
+#+RESULTS:
+: 'little'
+
+** application protocol header
+
+the app protocol header is:
+
+- variable-length text
+- unicode with encoding UTF-8
+- a python dict serialize by using [[https://docs.python.org/3/library/json.html][JSON]]
+
+| name             | desc                                                                                           |
+| byteorder        | the byte order of the machine (uses sys.byteorder).this may not required by every application. |
+| content-lenght   | the lenght of content in bytes.                                                                |
+| content-type     | type of content in payload (text/json,binary/binary-type)                                      |
+| content-encoding | the encoding used by the content (utf-8,binary)                                                |
+
+** sending an  app message
+
+we have still some problem. we have a variable-lenght header,nice and flexible,but how do we know the lenght of the header when reading it with ~.recv()~?
+
+when we previously learned about using ~.recv()~ and message boundaries, we also learned that fixed lenght can be insefficient. that's true,but we're goint to use a small,2-byte,fixed-lenght header to prefix the JSON header that contains its lenght.
+
+** application message class
+
+to keep things simple but still demonstrate how things work in real worl applications, this example uses an application protocol that implements a basic search feature. the client sens aa search request and the server does a lookup for a match if the request sent by the client isn't recognized as a search, the server assumes it's a binary request and returns a binary response.
+
+general work steps like this:
+
+| step | endpoint | action / message content                       |
+|    1 | client   | sends a message containing request content     |
+|    2 | server   | receives and processes client request message  |
+|    3 | server   | sends a message containing response content    |
+|    4 | client   | receives and processes server response message |
+
+file layout
+
+| app    | file        | code                        |
+| server | app-srvr.py | the servers's main coode    |
+| server | libsrvr.py  | the servers's message class |
+| client | app-clnt.py | the client's main code      |
+| client | libclnt.py  | the client's message class  |
+
+*** message entry point
+
+unders
+
+* publish - subscribe example
+** src of publish - subscribe example
+
+#+begin_src python :tangle pub.py
+#!/usr/bin/env python3
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
+
+#+end_src
+
+* this document heavily used this sources
+
+- [[https://realpython.com/python-sockets/][realpython.com - python sockets]]
+- [[https://docs.python.org/3/library/socket.html][doc.python.org - socket]]

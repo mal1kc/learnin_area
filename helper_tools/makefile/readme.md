@@ -8,9 +8,9 @@ targets: prerequisites
     command
     command
 ```
-- the targets are filenames,seperated by spaces.Typically,theres is only one per rule
+- the targets are filenames,separated by spaces.Typically,there's is only one per rule
 - the commands are a series of steps typically used to **make** the target(s). These need to start with a tab character, not spaces.
-- the prerequisites are also filenames ,seperated by spaces. These files need to exist before the commands for target run they alse called dependencies
+- the prerequisites are also filenames ,separated by spaces. These files need to exist before the commands for target run they else called dependencies
 > exc:
 ```**make** file
 hello:
@@ -53,11 +53,11 @@ make: 'hello' is up to date.
 
 this will cause because target no supplied as argument to **make**  command
 if we supply **make** command like 'make foo' it will run foo target commands
-if we update foo.c and we try to run 'make foo' it wiil give this as output:
+if we update foo.c and we try to run 'make foo' it will give this as output:
 ```sh
 'make: 'foo' is up to date.'
 ```
-thats because foo file already exists,and that causes to not run target (not recompile foo.c file)
+that's because foo file already exists,and that causes to not run target (not recompile foo.c file)
 solution is quite simple we add filenames as prerequisite , this will cause to if foo.c modified it will recompile
 
 >> makefile
@@ -85,13 +85,13 @@ foo.c:
 
 **step by step description of this example**
 
-- **make** selects target 'foo' because the first taget is default target
+- **make** selects target 'foo' because the first target is default target
 - foo requires foo.o,so**make** searches for the foo.o target
 - foo.o requires foo.c,so**make** searches foo.c target
 - foo.c has no dependencies,so the echo command is run
 - the cc -c command is run, because of all foo.o dependencies finished
-- the top cc command is run , because of all foo depen. is finished
-- thats it foo is a compiled c program
+- the top cc command is run , because of all foo depend. is finished
+- that's it foo is a compiled c program
 
 __if we delete foo.c,all targets will rerun.__
 
@@ -107,7 +107,7 @@ other_file:
 ```
 
 ## make clean
- clean is often used as a target that removes the output of other targets,bu thats not a special keyword in **make** 
+ clean is often used as a target that removes the output of other targets,bu that's not a special keyword in **make** 
 
 > example: **makefile** 
 ```makefile
@@ -133,7 +133,7 @@ file2:
 clean:
     rm -f file1 file2 some_file
 ```
-single or double quotes does not matter,but if you use them they will be stored with quoetes
+single or double quotes does not matter,but if you use them they will be stored with quotes
 this will be useful for using with commands like `printf`
 ```makefile
 foo := one two  # foo is assigned to str "one two"
@@ -195,7 +195,7 @@ comp2.o:
 
 ## automatic variables and wildcards
 
-both `*` and `%` are wildcards in make,but their meaning are compeletly diffrent
+both `*` and `%` are wildcards in make,but their meaning are completely different
 ### `*` wildcard
 `*`searches your filesystem for matching filenames but there was a
 `common pitfall`
@@ -230,7 +230,7 @@ four: $(wildcard *.o)
 ```
 ## `%` wildcard
 
- `%` is really useful but is somewhat confusing because of usaged situations
+ `%` is really useful but is somewhat confusing because of usages situations
  example situations
 
 - when used "matching" mode,it matches one or more characters in str. this match called stem
@@ -265,8 +265,8 @@ clean:
 ```
 
 
-## sources docs and more knowladge about makefile
+## sources docs and more knowledge about makefile
 
-source of this knowladge more about makefile
+source of this knowledge more about makefile
 `makefiletutorial` [web](https://makefiletutorial.com) [github repo](https://github.com/theicfire/makefiletutorial)
 

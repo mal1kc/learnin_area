@@ -2,7 +2,7 @@
 #+creator: mal1kc
 
 
-i suggest to read orginal manual from gnu.org 'https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html'
+i suggest to read original manual from gnu.org 'https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html'
 
 
 * nil and t

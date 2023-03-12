@@ -1,45 +1,44 @@
 #+title: Threading in Python
 #+author: mal1kc
 #+startup: showeverything
+#+options: toc:3
 
-* Python Threads
-
-** what are threads
+* what are threads
 threads refers to thread of execution in computer program
 
 #+BEGIN_QUOTE
-Thread: The operating system object that executess the instructions of a process
-- book: page 273,the art of concurency,2009.
+Thread: The operating system object that executes the instructions of a process
+- book: page 273,the art of concurrency,2009.
 #+END_QUOTE
 
 when we run python script, it starts an instance of python interpreter that runs our code in the main thread.
 the main threads is the default thread of a python process
 
-we may develop our program to  perform tasks concurently in that case we may need threads,these are concurent threads of execution without our program
+we may develop our program to  perform tasks concurrently in that case we may need threads,these are concurrent threads of execution without our program
 example of this will be:
 
-- execution funtion calls concurently
-- execution object methods concurently
+- execution function calls concurrently
+- execution object methods concurrently
 
 a python thread is an object representation of native thread provided by operating system
 
-when we create and run a new thread, Python will make system calls on the underlaying op. system and request new thread be created and start running new thread
+when we create and run a new thread, Python will make system calls on the underplaying op. system and request new thread be created and start running new thread
 
-the code in new threads may or may not be executed in parallel,even though the threads are executed concurently.
+the code in new threads may or may not be executed in parallel,even though the threads are executed concurrently.
 
 these are number of reasons for this,such as:
 
-- the underlaying hardware may or may not support parallel execution (e.g. one vs multiple CPU cores)
-- the python interpreter may or may not permity multiple threads execute in parallel
+- the underplaying hardware may or may not support parallel execution (e.g. one vs multiple CPU cores)
+- the python interpreter may or may not permit multiple threads execute in parallel
 
 #+begin_quote
- this highlights the distiction between concurent and parallel execution
+ this highlights the distinction between concurrent and parallel execution
 #+end_quote
 
 - *Concurrent* : Code that can be executed out of order
 - *Parallel* : Capability to execute code simultaneously
 
-** thread vs process
+* thread vs process
 
 a process refers to a computer process
 
@@ -47,7 +46,7 @@ a process refers to a computer process
 process: the operating system's spawned and controlled entity that encapsulates an executing application.
 a process has two main functions. the first is to act as the resource holder for the application,
 and the second is to execute the instructions of the application.
-- book: page 271,the art of concurency,2009
+- book: page 271,the art of concurrency,2009
 #+END_QUOTE
 
 the op system controls how new processes are created on some system,that may require spawning a new process,and on others,it may require that process is forked.
@@ -61,53 +60,53 @@ threads that we create within the process will belong to that process.
 
 the python process will terminate once all(non background threads) are terminated
 
-- *process*: an instance of the python interpreter has atleast one thread called MainThread
+- *process*: an instance of the python interpreter has at least one thread called MainThread
 - *thread*: a thread of execution within Python process,such as the MainThread or new thread.
 
-** life-cycle of thread
+* life-cycle of thread
 
 a thread in python is object instanced from  *threading.Thread* class
 
-once a thead is started, interpreter will interface with the operating system and request that new native thread be created. the instance of *threading.Thread*
-the provides a python-based reference to his underlaying native thread.
+once a thread is started, interpreter will interface with the operating system and request that new native thread be created. the instance of *threading.Thread*
+the provides a python-based reference to his underplaying native thread.
 
 each thread follows same life-cycle . understanding of its life-cycle help with
-concurent programming in python.
+concurrent programming in python.
 
 for example:
 
-- the diffrence between creatimg and starting a thread
+- the difference between creating and starting a thread
 
-- the diffrence between run and start
+- the difference between run and start
 
-- the diffrence between blocked and terminated
+- the difference between blocked and terminated
 
-while running, the thread may be executing code or may be blocked,waiting on something such as another thread or external resource.although, not all threads may block, it is optinal base on specific use case for the new thread.
+while running, the thread may be executing code or may be blocked,waiting on something such as another thread or external resource.although, not all threads may block, it is optional base on specific use case for the new thread.
 
 1. new thread
 2. running thread
-    1. blocked thread (optinal).
+    1. blocked thread (optimal).
 3. terminated thread.
 
 A new thread is a thread that has been constructed by. creating an instance of the *threading.Thread* class
 
 a new thread can transition to a running thread by calling the start() function.
 
-a running thread may block in many ways, such as reading or writing from a file or a socket or by waiting on concurency primitive such as semaphore or a lock
+a running thread may block in many ways, such as reading or writing from a file or a socket or by waiting on concurrency primitive such as semaphore or a lock
 after blocking,the thread will run again.
 
-finaly, a thread may terminate once it has finished executing its code or by raising
+finally, a thread may terminate once it has finished executing its code or by raising
 error or exception
 
-[[(thread life cycle diaram)./thread-life-cycle.webp]]
+[[./thread-life-cycle.webp][thread life cycle diagr
 
 * run a func in thread
 
-python funcs can executed in a seperatie thread using *threading.Thread* class
+python funcs can executed in a separate thread using *threading.Thread* class
 
 ** how to run a func in thread
 
-the func executed in another thread may have args in which case can be specificed as aa tuple and passed to the "*args*" argument of the threading.threading class constructor or as dictionart to the "*kwargs*" argument.
+the func executed in another thread may have args in which case can be specified as a tuple and passed to the "*args*" argument of the threading.threading class constructor or as dictionart to the "*kwargs*" argument.
 
 the *start()* func will return immediately and the operating system will execute    the function in a seperate thread as soon as it is able.
 

@@ -1,5 +1,5 @@
 """
-# diffrences between __new__ and __init__ methods in classes
+# differences between __new__ and __init__ methods in classes
 
 where i learn : https://www.youtube.com/watch?v=-zsV0_QrfTw
 base src : https://github.com/mCodingLLC/VideosSampleCode/blob/master/videos/076_new_vs_init_in_python/new_vs_init.py
@@ -37,7 +37,7 @@ class LowercaseTuple(tuple):
         upper_iterable = (s.lower() for s in iterable)
         return super().__new__(cls, upper_iterable)
 
-    # this __init__ not work because tupples does not support item assigment
+    # this __init__ not work because tuples does not support item assigment
     # even in init
     #
     # Tldr error: tuples are immutable,even in init
@@ -48,7 +48,7 @@ class LowercaseTuple(tuple):
 
 
 def example_inheriting_immutable_uppercase_tuple():
-    print("lowecase tuple")
+    print("lowercase tuple")
     print(LowercaseTuple(["HI", "THERE"]))
 
 

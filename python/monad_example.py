@@ -101,8 +101,8 @@ def main():
     # what is monad good for ?
     #
     #   make composition of functions easier
-    #   avoid repeating coöputational patterns
-    #   paricularly useful when pipelininig operations
+    #   avoid repeating computational patterns
+    #   particularly useful when pipeline operations
 
     # how to define monad:
     #

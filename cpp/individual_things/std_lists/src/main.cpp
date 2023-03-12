@@ -8,10 +8,10 @@
 ** NOTE list syntax
 ** template < class Type, class Alloc = allocator<T> > class list;
 **
-**  -- > T = definies the type of element contained, any data type include user
+**  -- > T = defines the type of element contained, any data type include user
 *     |-> defined types
 **
-**  -- > Alloc = defines the type of allocator objec this uses allocator class
+**  -- > Alloc = defines the type of allocator object this uses allocator class
 **    |-> template by default
 **    |-> it is value-dependent and uses a simple memory allocation model.
 **
@@ -51,7 +51,7 @@ void example_1() {
 **
 * NOTE some list constructors
 *
-* |> default constructor --> it creates an empty list, that with zero eleements
+* |> default constructor --> it creates an empty list, that with zero elements
 *
 * |> fill constructor --> it creates a list with n elements and assigns a
 *                      |-> value of zero to each element
@@ -96,13 +96,13 @@ void example_2() {
 }
 
 /*
- * NOTE container propertities
+ * NOTE container properties
  *
  *  | property           | desc
  *  |
- *  | sequence           | sequence contaiers order their elements
+ *  | sequence           | sequence containers order their elements
  *  |                      in a strict linear sequence, elements are
- *  |                      acces by their position in the sequence
+ *  |                      access by their position in the sequence
  *  |
  *  | doubly-linked list | every element has information on how to
  *  |                      locate previous and next elements this

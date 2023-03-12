@@ -38,8 +38,8 @@ int write_file() {
   FILE *fp;
 
   fp = fopen("/tmp/test.txt", "w+");
-  fprintf(fp, "This is testing for fprintf...\n");
-  fputs("This is testing for fputs...\n", fp);
+  fprintf(fp, "this is testing for fprintf...\n");
+  fputs("this is testing for fputs...\n", fp);
   fclose(fp);
 
   return 0;
@@ -54,7 +54,7 @@ int read_file() {
   fscanf(fp, "%s", buff);
   printf("1: %s\n", buff);
 
-  // char *fgets( char *buf, int n, FILE *fp );
+  // char *fgets( char *buff, int n, FILE *fp );
   // fgets reads up to n-1 characters from file \
   // \ to buff array and appending null character
   // \ to terminate string

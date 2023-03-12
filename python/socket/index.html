@@ -1,0 +1,1107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-03-14 Tue 22:11 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>basics of python standart library module *socket*</title>
+<meta name="author" content="mal1kc" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">basics of python standart library module <b>socket</b></h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org61cc3cb">1. what is <b>sockets</b> why we use them</a></li>
+<li><a href="#org8b112bd">2. what it is <b>socket</b> module</a>
+<ul>
+<li><a href="#org04265c0">2.1. the primary socket API functions and methods in this modeule are:</a></li>
+</ul>
+</li>
+<li><a href="#orga670e77">3. tcp sockets</a></li>
+<li><a href="#org976e8a7">4. some example echo server,client</a>
+<ul>
+<li><a href="#org31ca787">4.1. src of echo server</a></li>
+<li><a href="#orgc489ee1">4.2. src of echo client</a></li>
+</ul>
+</li>
+<li><a href="#org45a1285">5. handling multiple connections</a>
+<ul>
+<li><a href="#org43e114e">5.1. code with explanation of multiconnection server</a></li>
+<li><a href="#org41f4dfe">5.2. code with explanation of multiconnection client</a></li>
+<li><a href="#org3b30b32">5.3. src of multiconnection server</a></li>
+<li><a href="#orgd19a673">5.4. src of multiconnection client</a></li>
+</ul>
+</li>
+<li><a href="#org539ba93">6. application client and server  (more advanced example of mutliconn):</a>
+<ul>
+<li><a href="#orgcf2d8cf">6.1. application protocol header</a></li>
+<li><a href="#org4f17d21">6.2. sending an  app message</a></li>
+<li><a href="#org13a7dc5">6.3. application message class</a>
+<ul>
+<li><a href="#org55f561f">6.3.1. message entry point</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgd7cbe71">7. publish - subscribe example</a>
+<ul>
+<li><a href="#orgb68524c">7.1. src of publish - subscribe example</a></li>
+</ul>
+</li>
+<li><a href="#org483d530">8. this document heavily used this sources</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org61cc3cb" class="outline-2">
+<h2 id="org61cc3cb"><span class="section-number-2">1.</span> what is <b>sockets</b> why we use them</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+sockets and the socket Api are  used to send messages over a network.They provide form of interprocess communication (IPC).The network can be logical, local network to computer, or one that&rsquo;s physically connected to an externel network.The most obvius example is Internet.
+</p>
+
+<p>
+first their use was ARPANET in 1971 and then become api in Berkeley Software Distrubution (BSD) operating system in 1983 called Berkeley Sockets
+</p>
+
+<p>
+<a href="https://en.wikipedia.org/wiki/Berkeley_sockets?oldformat=true">read more about berkeley sockets (commonly implemented socket API)</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8b112bd" class="outline-2">
+<h2 id="org8b112bd"><span class="section-number-2">2.</span> what it is <b>socket</b> module</h2>
+<div class="outline-text-2" id="text-2">
+<blockquote>
+<p>
+This module provides access to the BSD socket interface. It is available on all modern Unix systems, Windows, MacOS, and probably additional platforms.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/socket.html">python org module</a>
+</p>
+</div>
+
+<div id="outline-container-org04265c0" class="outline-3">
+<h3 id="org04265c0"><span class="section-number-3">2.1.</span> the primary socket API functions and methods in this modeule are:</h3>
+<div class="outline-text-3" id="text-2-1">
+<ul class="org-ul">
+<li>socket <span class="underline">class</span>
+<ul class="org-ul">
+<li>.bind()</li>
+<li>.listen()</li>
+<li>.accept()</li>
+<li>.connect()</li>
+<li>.connect<sub>ex</sub>()</li>
+<li>.send()</li>
+<li>.recv()</li>
+<li>.close()</li>
+</ul></li>
+</ul>
+
+<p>
+python provides good API that maps directly to syscalls,
+their <code>C</code> counterparts.
+</p>
+
+<p>
+as part of its <code>std</code> library, python has classes that make using these lower level socket operations easier.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga670e77" class="outline-2">
+<h2 id="orga670e77"><span class="section-number-2">3.</span> tcp sockets</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+when we create socket object using <b>socket.socket()</b>,specifiyn socket type as socket.SOCK<sub>STREAM.When</sub> we do that, the default protocol that&rsquo;s used is the <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">Transmission Control Protocol a.k.a. TCP</a> . this is default and this is probably what we want.
+</p>
+
+<p>
+if we want a lookout there was a <a href="https://commons.wikimedia.org/wiki/File:InternetSocketBasicDiagram_zhtw.png">socket diagram (basically tells how tcp works)</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org976e8a7" class="outline-2">
+<h2 id="org976e8a7"><span class="section-number-2">4.</span> some example echo server,client</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org31ca787" class="outline-3">
+<h3 id="org31ca787"><span class="section-number-3">4.1.</span> src of echo server</h3>
+<div class="outline-text-3" id="text-4-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+<span style="color: #b5bd68;">import</span> socket
+
+<span style="color: #f0c674;">HOST</span> = <span style="color: #8abeb7;">"127.0.0.1"</span>  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">localhost or "127.0.0.1" (standart loopback interface address)</span>
+<span style="color: #f0c674;">PORT</span> = <span style="color: #81a2be;">5634</span>  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">port to listen on (non-privileged ports are &gt; 1023)</span>
+
+<span style="color: #b5bd68;">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span style="color: #b5bd68;">as</span> <span style="color: #f0c674;">s</span>:
+    s.bind((HOST, PORT))
+    s.listen()
+    <span style="color: #f0c674;">conn</span>, <span style="color: #f0c674;">addr</span> = s.accept()
+    <span style="color: #b5bd68;">with</span> conn:
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"connected by </span>{addr}<span style="color: #8abeb7;"> conn </span>{conn=}<span style="color: #8abeb7;">"</span>)
+        <span style="color: #b5bd68;">while</span> <span style="color: #81a2be;">True</span>:
+            data = conn.recv(<span style="color: #81a2be;">1024</span>)
+            <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> data:
+                <span style="color: #b5bd68;">break</span>
+            conn.sendall(data)
+</pre>
+</div>
+</div>
+
+<ol class="org-ol">
+<li><a id="org6f20508"></a>explanation of server<br />
+<div class="outline-text-5" id="text-4-1-0-1">
+<ul class="org-ul">
+<li>we create socket object with  <a href="https://docs.python.org/3/reference/datamodel.html#context-managers">context manager type</a> ,by doing that after a with indent code finishes it automaticly calls <code>s.close()</code></li>
+<li>the args of socket obects are
+<ul class="org-ul">
+<li><b>AF<sub>INET</sub></b> : IPV4</li>
+<li><b>SOCK<sub>STREAM</sub></b> : TCP</li>
+</ul></li>
+<li><code>s.bind()</code> is binds our socket to given HOST and PORT</li>
+<li><code>s.listen()</code> Enable a server to accept connections. If backlog is specified, it must be at least 0 (if it is lower, it is set to 0); it specifies the number of unaccepted connections that the system will allow before refusing new connections. If not specified, a default reasonable value is chosen.</li>
+<li><code>s.accept()</code> blocks execution and waits for incoming connection.when client connects it returns a new socket object represnting connection and a tuple about client address ( ipv4 (host, port) , ipv6 (host, port, flowinfo, scopeid) <a href="https://docs.python.org/3/library/socket.html#socket-families">(more info socket addr families</a> ) .</li>
+<li>after <code>.accept()</code> provide connection socket object,an while loop is used to loop over blocking calls to <code>conn.recv()</code>.This reads whatever data the client sends and echoest it back using conn.sendall().</li>
+<li>if conn.recv() returns emtpy <b>bytes</b> object,b&rsquo;&rsquo;,that signals client closed the connection and the loop is terminated</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+
+<div id="outline-container-orgc489ee1" class="outline-3">
+<h3 id="orgc489ee1"><span class="section-number-3">4.2.</span> src of echo client</h3>
+<div class="outline-text-3" id="text-4-2">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+<span style="color: #b5bd68;">import</span> socket
+<span style="color: #f0c674;">HOST</span> = <span style="color: #8abeb7;">"127.0.0.1"</span>  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">the server's hostname or IP address</span>
+<span style="color: #f0c674;">PORT</span> = <span style="color: #81a2be;">5634</span>  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">the port used by the server</span>
+
+<span style="color: #b5bd68;">with</span> socket.socket(socket.AF_INET, socket.SOCK_STREAM) <span style="color: #b5bd68;">as</span> <span style="color: #f0c674;">s</span>:
+    s.connect((HOST, PORT))
+    s.sendall(b<span style="color: #8abeb7;">"hello, universe.\nHi, friend."</span>)
+    data = s.recv(<span style="color: #81a2be;">1024</span>)
+
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"received some data:\n</span>{data=}<span style="color: #8abeb7;">"</span>)
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"rendered data :\n---\n</span>{data.decode()}<span style="color: #8abeb7;">\n---"</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org45a1285" class="outline-2">
+<h2 id="org45a1285"><span class="section-number-2">5.</span> handling multiple connections</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+the echo server has its limitations.one of big ones is that is serves onlt one client then exists.the echo client has some limitations too,but there is a extra problem.when client uses <code>s.recv()</code>, <b>it&rsquo;s possible that it will return only one byte,b&rsquo;h&rsquo; from b&rsquo;hello, universe&rsquo;</b>
+</p>
+
+<p>
+the bufsize arg of 1024 used above is the maximum amount of data to be received at once.it doesn&rsquo;t mean that <code>.recv()</code> will return 1024 bytes.
+</p>
+
+<p>
+the <code>.send()</code> method also behaves this way.it returns the number of bytes sent, which may be less than the size of data passed in.we are responsible for checkin this and calling <code>.send()</code> as many times as needed to send all of the data.
+</p>
+
+<blockquote>
+<p>
+Returns the number of bytes sent. Applications are responsible for checking that all data has been sent; if only some of the data was transmitted, the application needs to attempt delivery of the remaining data. For further information on this topic, consult the <a href="https://docs.python.org/3/howto/sockets.html#socket-howto">Socket Programming HOWTO</a>.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/socket.html#socket.socket.send">python.org source</a>
+</p>
+
+<p>
+in the example <code>echo client</code> we avoided havinf to do this by using <code>.sendall()</code>
+</p>
+
+<blockquote>
+<p>
+Unlike <code>send()</code>, this method continues to send data from bytes until either all data has been sent or an error occurs. None is returned on success. On error, an exception is raised, and there is no way to determine how much data, if any, was successfully sent.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/socket.html#socket.socket.sendall">python.org source</a>
+</p>
+
+<ul class="org-ul">
+<li>we have two problems at this point
+
+<ul class="org-ul">
+<li>how do we handle multiple connections</li>
+
+<li>we need to call <code>.send()</code> and <code>.recv()</code> until all data is sent or received.</li>
+</ul></li>
+</ul>
+
+<p>
+there are many approaches to <a href="https://realpython.com/python-concurrency/">concurrency</a>,there was std library module <code>asyncio</code> (after python 3.4),there was std library module <code>threads</code>.
+</p>
+
+<p>
+the trouble with concurrency there are many substleties to consider and guard against.but simpicitily for examples of <code>socket</code> module we are going to use somethin trational.we&rsquo;re going to use <a href="https://docs.python.org/3/library/selectors.html#selectors.BaseSelector.select">.select()</a>.
+</p>
+
+<p>
+the <code>.select()</code> method allows we to check for I/O completion on more than one socket.so new can call <code>.select()</code> to see which socket have I/O ready for reading and/or writing.but in python there&rsquo;s more we use <a href="https://docs.python.org/3/library/selectors.html">selectors module</a> in standar library so that the most efficent implementation is used, regardless of OS (operating system).
+</p>
+
+<blockquote>
+<p>
+This module (<code>selectors module</code>) allows high-level and efficient I/O multiplexing, built upon the select module primitives. Users are encouraged to use this module instead, unless they want precise control over the OS-level primitives used.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/selectors.html">High-level I/O multiplexing - source</a>
+</p>
+
+<p>
+still,by using <code>.select()</code>, we&rsquo;re not exactly to run concurrenctly.it still depends our workload,what our application needs,how many clients ,how many data transfer happens etc.
+</p>
+</div>
+
+<div id="outline-container-org43e114e" class="outline-3">
+<h3 id="org43e114e"><span class="section-number-3">5.1.</span> code with explanation of multiconnection server</h3>
+<div class="outline-text-3" id="text-5-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+<span style="color: #b5bd68;">import</span> sys
+<span style="color: #b5bd68;">import</span> socket
+<span style="color: #b5bd68;">import</span> selectors
+<span style="color: #b5bd68;">import</span> types
+
+<span style="color: #f0c674;">sel</span> = selectors.DefaultSelector()
+
+...
+
+<span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">len</span>(sys.argv) &lt; <span style="color: #81a2be;">2</span>:
+    <span style="color: #b5bd68;">raise</span> <span style="color: #81a2be;">Exception</span>(
+        f<span style="color: #8abeb7;">'you are not give me correct args\n args must be host and port example:\n python </span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> HOST PORT\n ./</span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> HOST PORT\n ./</span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> 127.0.0.1 5634'</span>
+    )
+
+
+<span style="color: #f0c674;">host</span>, <span style="color: #f0c674;">port</span> = sys.argv[<span style="color: #81a2be;">1</span>], <span style="color: #b294bb;">int</span>(sys.argv[<span style="color: #81a2be;">2</span>])
+
+<span style="color: #f0c674;">lsock</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+lsock.bind((host, port))
+lsock.listen()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"listenin on host: </span>{host}<span style="color: #8abeb7;"> port: </span>{port}<span style="color: #8abeb7;"> "</span>)
+lsock.setblocking(<span style="color: #81a2be;">False</span>)
+sel.register(lsock, selectors.EVENT_READ, data=<span style="color: #81a2be;">None</span>)
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>the biggest diffrence between <code>echo server</code> and this server is the call to <code>lsock.setblocking(False)</code> to configure socket in <b>non-blocking</b> mode. calls made to this socket will no longer block.when it&rsquo;s used with <code>sel.select()</code>,we can wait for events on one or more sockets then read and write data when it&rsquo;s ready.</li>
+
+<li>sel.register() registers the socket to be monitored with <code>sel.select()</code> for the events we&rsquo;re interested in (in this example EVENT<sub>READ</sub>).</li>
+
+<li>to store arbitarty data we&rsquo;d like along with socket,we&rsquo;ll use <code>data</code>.it&rsquo;s returned when <code>.select()</code> returns.we&rsquo;ll use data to keep track of what&rsquo;s been sent and received on the socket.</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">try</span>:
+    <span style="color: #b5bd68;">while</span> <span style="color: #81a2be;">True</span>:
+        events = sel.select(timeout=<span style="color: #81a2be;">None</span>)
+        <span style="color: #b5bd68;">for</span> key, mask <span style="color: #b5bd68;">in</span> events:
+            <span style="color: #b5bd68;">if</span> key.data <span style="color: #b5bd68;">is</span> <span style="color: #81a2be;">None</span>:
+                accept_wrapper(key.fileObj)
+            <span style="color: #b5bd68;">else</span>:
+                service_connection(key,mask)
+<span style="color: #b5bd68;">except</span> <span style="color: #81a2be;">KeyboardInterrupt</span>:
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'caught keyboard interrupt, exiting ...'</span>)
+<span style="color: #b5bd68;">finally</span>:
+    sel.close()
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><code>sel.select(timeout=None)</code> blocks until there are sockets ready for I/O. it <b>returns a list of tuples, one for each socket</b>.Each tuple <b>contains a key and a mask</b>.The key is a <a href="https://docs.python.org/3/library/selectors.html#selectors.SelectorKey">SelectorKey -&gt; namedtuple</a> that contains a <code>fileobj</code> attribute key. <b>fileobj is socket object</b>, and mask is an event <a href="https://en.wikipedia.org/wiki/Mask_(computing)">mask</a> of the operations that are ready.</li>
+
+<li>if key.data is None,then we know it&rsquo;s from the listening socket and we need to accept the connection.we&rsquo;ll call our own <code>accpet_wrapper()</code> function to get the new socket object and register it with the selector.we&rsquo;ll look at that in a moment.</li>
+
+<li>if key.data is not None,then we know it&rsquo;s a client socket that&rsquo;s already been accepted, and we neet to servcice it . <code>service_connection()</code> is then called with key and mask as arguments, and that&rsquo;s everything we need to operate on the socket.</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">def</span> <span style="color: #de935f;">accept_wrapper</span>(sock):
+    <span style="color: #f0c674;">conn</span>, <span style="color: #f0c674;">addr</span> = sock.accept()  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to read</span>
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"accepted connection from </span>{addr}<span style="color: #8abeb7;">"</span>)
+    conn.setblocking(<span style="color: #81a2be;">False</span>)
+    <span style="color: #f0c674;">data</span> = types.SimpleNamespace(addr=addr, inb=b<span style="color: #8abeb7;">""</span>, outb=b<span style="color: #8abeb7;">""</span>)
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
+
+</pre>
+</div>
+
+<ul class="org-ul">
+<li>because the listening socket registed for the event selectors. <code>EVENT_READ</code>, it should be ready to read. we call <code>sock.accept()</code> and then call <code>conn.setblocking(False)</code> to put the socket in non-blocking mode.</li>
+
+<li><b>remember</b> , this is the main objective in this version of the server because we don&rsquo;t want it to block.if it blocks, then the entire server is stalled until it returns.that means other sockects are left waiting event though the server isn&rsquo;t actively working. <b>this is the dreaded &ldquo;hanging&rdquo; state that we don&rsquo;t want our server to be in.</b></li>
+
+<li>next, we create an object to hold the data that we want included along with the socket using a <a href="https://docs.python.org/3/library/types.html#types.SimpleNamespace">SimpleNamespace</a> , because we want to know when the client connection is ready for reading and writing,both of those events the client connections ready for reading and writing, both of those events are set with <b>bitwise OR</b> operators</li>
+</ul>
+
+<div class="org-src-container">
+<pre class="src src-python">
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">service_connection</span>(key, mask):
+    <span style="color: #f0c674;">sock</span> = key.fileobj
+    <span style="color: #f0c674;">data</span> = key.data
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.<span style="color: #f0c674;">EVENT_READ</span>:
+        recv_data = sock.recv(<span style="color: #81a2be;">1024</span>)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to read</span>
+        <span style="color: #b5bd68;">if</span> <span style="color: #f0c674;">recv_data</span>:
+            data.outb += recv_data
+        <span style="color: #b5bd68;">else</span>:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"closing connection to </span>{data.addr}<span style="color: #8abeb7;">"</span>)
+            sel.unregister(sock)
+            sock.close()
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.<span style="color: #f0c674;">EVENT_WRITE</span>:
+        <span style="color: #b5bd68;">if</span> data.outb:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"echoing </span>{data.outb!r}<span style="color: #8abeb7;"> to </span>{data.addr}<span style="color: #8abeb7;">"</span>)
+            sent = sock.send(data.outb)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to write</span>
+            data.<span style="color: #f0c674;">outb</span> = data.outb[sent:]
+
+</pre>
+</div>
+
+<p>
+<span class="underline">this is heart of simple multi-connection server.</span>
+</p>
+
+<ul class="org-ul">
+<li>if  the socket is ready for reading,then <code>mask &amp; selectors.EVENT_READ</code> will evaluate to True, so <code>sock.recv()</code> is called.Any data that&rsquo;s read is appended to <code>data.outb</code> so that can be sent later.</li>
+
+<li>if no data is received, this means that the client has closed their socket,so the server should too. but <b>don’t forget</b> to call <code>sel.unregister()</code> before closing, so it’s no longer monitored by <code>.select()</code>.</li>
+
+<li>when the socket is ready for wiriting, which should always be the case for a healthy socket, any received data stored in <code>data.outb</code> is echoed to the client using <code>socket.send()</code>. the bytes sent are then removed from send buffer.</li>
+
+<li>the <code>.send()</code> method returns the number of bytes sent. this number can then be used with <a href="https://docs.python.org/3/reference/expressions.html#slicings">slice notation</a></li>
+</ul>
+</div>
+</div>
+
+
+
+<div id="outline-container-org41f4dfe" class="outline-3">
+<h3 id="org41f4dfe"><span class="section-number-3">5.2.</span> code with explanation of multiconnection client</h3>
+<div class="outline-text-3" id="text-5-2">
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">import</span> sys
+<span style="color: #b5bd68;">import</span> socket
+<span style="color: #b5bd68;">import</span> selectors
+<span style="color: #b5bd68;">import</span> types
+
+<span style="color: #f0c674;">sel</span> = selectors.DefaultSelector()
+<span style="color: #f0c674;">messages</span> = [b<span style="color: #8abeb7;">"hello message 1 from client."</span>, b<span style="color: #8abeb7;">"hi message 2 from client."</span>]
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">start_connections</span>(host, port, num_conns):
+    <span style="color: #f0c674;">server_addr</span> = (host, port)
+    <span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">0</span>, num_conns):
+        <span style="color: #f0c674;">connid</span> = i + <span style="color: #81a2be;">1</span>
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"starting connection </span>{connid}<span style="color: #8abeb7;"> to </span>{server_addr}<span style="color: #8abeb7;">"</span>)
+        <span style="color: #f0c674;">sock</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setblocking(<span style="color: #81a2be;">False</span>)
+        sock.connect_ex(server_addr)
+        <span style="color: #f0c674;">events</span> = selectors.EVENT_READ | selectors.EVENT_WRITE
+        <span style="color: #f0c674;">data</span> = types.SimpleNamespace(
+            connid=connid,
+            msg_total=<span style="color: #b294bb;">sum</span>(<span style="color: #b294bb;">len</span>(m) <span style="color: #b5bd68;">for</span> m <span style="color: #b5bd68;">in</span> messages),
+            recv_total=<span style="color: #81a2be;">0</span>,
+            messages=messages.copy(),
+            outb=b<span style="color: #8abeb7;">""</span>,
+        )
+        sel.register(sock, events, data=data)
+
+</pre>
+</div>
+
+<ul class="org-ul">
+<li><code>num_conns</code> is  read from the command-line and is the number of connections to create to the server.just like server, each socket is set to non-blocking mode.</li>
+
+<li>we use <a href="https://docs.python.org/3/library/socket.html#socket.socket.connect_ex">.connect<sub>ex</sub>()</a> instead of <code>.connect()</code> because <code>.connect()</code> would immediately raise a BlockingIOError exception.The <code>.connect_ex()</code>  method innitially returns an <i>error indicator, errno.EINPROGRESS</i> , instead of raising an exception that would interfere with the connection in progress. Once the connection is completed, the socket is ready for reading and writing and is returned by <code>.select()</code>.</li>
+
+<li><p>
+after the socket is set up, the data we want to store with the socket is created using <code>SimpleNamespace</code>. the messages that client will send to server are copied using <code>.copy()</code> because each connection will call <code>socket.send()</code> and modify the list.everything needed to keep track of what the client needs to send, has sent, and has received, including total number of bytes in the messages, is stored in object data.
+</p>
+
+<p>
+<code>service_connection() for the client</code>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">service_connection</span>(key, mask):
+    <span style="color: #f0c674;">sock</span> = key.fileobj
+    <span style="color: #f0c674;">data</span> = key.data
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.<span style="color: #f0c674;">EVENT_READ</span>:
+        recv_data = sock.recv(<span style="color: #81a2be;">1024</span>)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to read</span>
+        <span style="color: #b5bd68;">if</span> <span style="color: #f0c674;">recv_data</span>:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"received </span>{recv_data!r}<span style="color: #8abeb7;"> from connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            data.recv_total += <span style="color: #b294bb;">len</span>(recv_data)
+        <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> recv_data <span style="color: #b5bd68;">or</span> data.recv_total == data.msg_total:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"closing connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            sel.unregister(sock)
+            sock.close()
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.EVENT_WRITE:
+        <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> data.outb <span style="color: #b5bd68;">and</span> data.messages:
+            data.outb = data.messages.pop(<span style="color: #81a2be;">0</span>)
+        <span style="color: #b5bd68;">if</span> data.outb:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"sending </span>{data.outb!r}<span style="color: #8abeb7;"> to connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            sent = sock.send(data.outb)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to write</span>
+            data.outb = data.outb[sent:]
+
+</pre>
+</div></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-org3b30b32" class="outline-3">
+<h3 id="org3b30b32"><span class="section-number-3">5.3.</span> src of multiconnection server</h3>
+<div class="outline-text-3" id="text-5-3">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+
+<span style="color: #b5bd68;">import</span> sys
+<span style="color: #b5bd68;">import</span> socket
+<span style="color: #b5bd68;">import</span> selectors
+<span style="color: #b5bd68;">import</span> types
+
+
+<span style="color: #f0c674;">sel</span> = selectors.DefaultSelector()
+
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">accept_wrapper</span>(sock):
+    <span style="color: #f0c674;">conn</span>, <span style="color: #f0c674;">addr</span> = sock.accept()  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to read</span>
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"accepted connection from </span>{addr}<span style="color: #8abeb7;">"</span>)
+    conn.setblocking(<span style="color: #81a2be;">False</span>)
+    <span style="color: #f0c674;">data</span> = types.SimpleNamespace(addr=addr, inb=b<span style="color: #8abeb7;">""</span>, outb=b<span style="color: #8abeb7;">""</span>)
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
+
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">service_connection</span>(key, mask):
+    sock = key.fileobj
+    data = key.data
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.EVENT_READ:
+        recv_data = sock.recv(<span style="color: #81a2be;">1024</span>)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">Should be ready to read</span>
+        <span style="color: #b5bd68;">if</span> recv_data:
+            data.outb += recv_data
+        <span style="color: #b5bd68;">else</span>:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"closing connection to </span>{data.addr}<span style="color: #8abeb7;">"</span>)
+            sel.unregister(sock)
+            sock.close()
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.EVENT_WRITE:
+        <span style="color: #b5bd68;">if</span> data.outb:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"echoing </span>{data.outb!r}<span style="color: #8abeb7;"> to </span>{data.addr}<span style="color: #8abeb7;">"</span>)
+            sent = sock.send(data.outb)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">Should be ready to write</span>
+            data.outb = data.outb[sent:]
+
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">main</span>():
+
+    <span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">len</span>(sys.argv) &lt; <span style="color: #81a2be;">2</span>:
+        <span style="color: #b5bd68;">raise</span> <span style="color: #81a2be;">Exception</span>(
+            f<span style="color: #8abeb7;">'you are not give me correct args\n args must be &lt;host&gt; and &lt;port&gt; example:\n python </span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> &lt;HOST&gt; &lt;PORT&gt;\n ./</span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> &lt;HOST&gt; &lt;PORT&gt;\n ./</span>{__file__.split("/")[-1]}<span style="color: #8abeb7;"> 127.0.0.1 5634'</span>
+        )
+
+    host, port = sys.argv[<span style="color: #81a2be;">1</span>], <span style="color: #b294bb;">int</span>(sys.argv[<span style="color: #81a2be;">2</span>])
+
+    lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    lsock.bind((host, port))
+    lsock.listen()
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"listenin on host: </span>{host}<span style="color: #8abeb7;"> port: </span>{port}<span style="color: #8abeb7;"> "</span>)
+    lsock.setblocking(<span style="color: #81a2be;">False</span>)
+    sel.register(lsock, selectors.EVENT_READ, data=<span style="color: #81a2be;">None</span>)
+
+    <span style="color: #b5bd68;">try</span>:
+        <span style="color: #b5bd68;">while</span> <span style="color: #81a2be;">True</span>:
+            events = sel.select(timeout=<span style="color: #81a2be;">None</span>)
+            <span style="color: #b5bd68;">for</span> key, mask <span style="color: #b5bd68;">in</span> events:
+                <span style="color: #b5bd68;">if</span> key.data <span style="color: #b5bd68;">is</span> <span style="color: #81a2be;">None</span>:
+                    accept_wrapper(key.fileobj)
+                <span style="color: #b5bd68;">else</span>:
+                    service_connection(key, mask)
+    <span style="color: #b5bd68;">except</span> <span style="color: #81a2be;">KeyboardInterrupt</span>:
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">"Caught keyboard interrupt, exiting"</span>)
+    <span style="color: #b5bd68;">finally</span>:
+        sel.close()
+
+
+<span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">__name__</span> == <span style="color: #8abeb7;">"__main__"</span>:
+    main()
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd19a673" class="outline-3">
+<h3 id="orgd19a673"><span class="section-number-3">5.4.</span> src of multiconnection client</h3>
+<div class="outline-text-3" id="text-5-4">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+
+<span style="color: #b5bd68;">import</span> sys
+<span style="color: #b5bd68;">import</span> socket
+<span style="color: #b5bd68;">import</span> selectors
+<span style="color: #b5bd68;">import</span> types
+
+<span style="color: #f0c674;">sel</span> = selectors.DefaultSelector()
+<span style="color: #f0c674;">messages</span> = [b<span style="color: #8abeb7;">"hello message 1 from client."</span>, b<span style="color: #8abeb7;">"hi message 2 from client."</span>]
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">start_connections</span>(host, port, num_conns):
+    <span style="color: #f0c674;">server_addr</span> = (host, port)
+    <span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">0</span>, num_conns):
+        <span style="color: #f0c674;">connid</span> = i + <span style="color: #81a2be;">1</span>
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"starting connection </span>{connid}<span style="color: #8abeb7;"> to </span>{server_addr}<span style="color: #8abeb7;">"</span>)
+        <span style="color: #f0c674;">sock</span> = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setblocking(<span style="color: #81a2be;">False</span>)
+        sock.connect_ex(server_addr)
+        <span style="color: #f0c674;">events</span> = selectors.EVENT_READ | selectors.EVENT_WRITE
+        <span style="color: #f0c674;">data</span> = types.SimpleNamespace(
+            connid=connid,
+            msg_total=<span style="color: #b294bb;">sum</span>(<span style="color: #b294bb;">len</span>(m) <span style="color: #b5bd68;">for</span> m <span style="color: #b5bd68;">in</span> messages),
+            recv_total=<span style="color: #81a2be;">0</span>,
+            messages=messages.copy(),
+            outb=b<span style="color: #8abeb7;">""</span>,
+        )
+        sel.register(sock, events, data=data)
+
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">service_connection</span>(key, mask):
+    sock = key.fileobj
+    data = key.data
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.EVENT_READ:
+        recv_data = sock.recv(<span style="color: #81a2be;">1024</span>)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to read</span>
+        <span style="color: #b5bd68;">if</span> recv_data:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"received </span>{recv_data!r}<span style="color: #8abeb7;"> from connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            data.recv_total += <span style="color: #b294bb;">len</span>(recv_data)
+        <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> recv_data <span style="color: #b5bd68;">or</span> data.recv_total == data.msg_total:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"closing connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            sel.unregister(sock)
+            sock.close()
+    <span style="color: #b5bd68;">if</span> mask &amp; selectors.EVENT_WRITE:
+        <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> data.outb <span style="color: #b5bd68;">and</span> data.messages:
+            data.outb = data.messages.pop(<span style="color: #81a2be;">0</span>)
+        <span style="color: #b5bd68;">if</span> data.outb:
+            <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"sending </span>{data.outb!r}<span style="color: #8abeb7;"> to connection </span>{data.connid}<span style="color: #8abeb7;">"</span>)
+            sent = sock.send(data.outb)  <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">should be ready to write</span>
+            data.outb = data.outb[sent:]
+
+
+<span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">len</span>(sys.argv) != <span style="color: #81a2be;">4</span>:
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">"usage: </span>{sys.argv[0]}<span style="color: #8abeb7;"> &lt;host&gt; &lt;port&gt; &lt;num_connections&gt; in example:\n </span>{sys.argv[0]}<span style="color: #8abeb7;"> 127.0.0.1 5634 2"</span>)
+    sys.<span style="color: #81a2be;">exit</span>(<span style="color: #81a2be;">1</span>)
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">main</span>():
+    host, port, num_conns = sys.argv[<span style="color: #81a2be;">1</span>:<span style="color: #81a2be;">4</span>]
+    start_connections(host, <span style="color: #b294bb;">int</span>(port), <span style="color: #b294bb;">int</span>(num_conns))
+
+    <span style="color: #b5bd68;">try</span>:
+        <span style="color: #b5bd68;">while</span> <span style="color: #81a2be;">True</span>:
+            events = sel.select(timeout=<span style="color: #81a2be;">1</span>)
+            <span style="color: #b5bd68;">if</span> events:
+                <span style="color: #b5bd68;">for</span> key, mask <span style="color: #b5bd68;">in</span> events:
+                    service_connection(key, mask)
+            <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">check for a socket being monitored to continue.</span>
+            <span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> sel.get_map():
+                <span style="color: #b5bd68;">break</span>
+    <span style="color: #b5bd68;">except</span> <span style="color: #81a2be;">KeyboardInterrupt</span>:
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">"caught keyboard interrupt, exiting ..."</span>)
+    <span style="color: #b5bd68;">finally</span>:
+        sel.close()
+
+<span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">__name__</span> == <span style="color: #8abeb7;">'__main__'</span>:
+    main()
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org539ba93" class="outline-2">
+<h2 id="org539ba93"><span class="section-number-2">6.</span> application client and server  (more advanced example of mutliconn):</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+we want a client and servert that handle errors appropriately so that other connections aren&rsquo;t effected.
+</p>
+
+<blockquote>
+<p>
+All errors raise exceptions. The normal exceptions for invalid argument types and out-of-memory conditions can be raised. Errors related to socket or address semantics raise <a href="https://docs.python.org/3/library/exceptions.html#OSError">OSError</a> or one of its subclasses.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/socket.html">source</a>
+</p>
+
+<p>
+so, one thing we need to catch <code>OSError</code>.Another important consideration in relation to erros is <b>timeout</b>.
+<b>timeouts</b> are couse a lot of trouble; hosts and routers are rebooted, switch ports go bad, cables go bad, cables get unplugged.best way to handle them is prevent them.
+</p>
+
+<p>
+when we use TCP we read data from continues stream from network. however, unlike reading a file, there&rsquo;s no <a href="https://docs.python.org/3/tutorial/inputoutput.html#methods-of-file-objects">f.seek()</a>.
+</p>
+
+<p>
+once we&rsquo;ve read them,they need to be saved somewhere, or else we will have dropped them. calling <code>.recv()</code> again reads the next stream of bytes avaliable from socket.
+</p>
+
+<p>
+we&rsquo;ll be reading from the socket in chunks. so, we need to call <code>.recv()</code> and save the data in a buffer until we&rsquo;ve read enough bytes to have a complete message that makes sens to our application.
+</p>
+
+<p>
+in other words,we need to keep up with how many bytes read, and figure out where the messages boundaries are.
+</p>
+
+<p>
+one of solution of this is send always fixed size data.but it&rsquo;s insufficent for most ways.
+</p>
+
+<p>
+we&rsquo;ll learn a generic approach, one that&rsquo;s used by many protocols,including HTTP.we&rsquo;ll prefix messages with a <b>header</b> that includes content lenght as well as any other fields we need.by doing this,we&rsquo;ll only need to keep up with the header.Once we’ve read the header, we can process it to determine the length of the message’s content. With the content length, we can then read that number of bytes to consume it.
+</p>
+
+<p>
+we&rsquo;ll implement this by creating a custom class that can send and receive messages that contain text or binary data.
+</p>
+
+<p>
+before we get started,we need to learn something.in erlier examples we&rsquo;re sending and receiving raw bytes.if we receive data and want to use it in a contex where it&rsquo;s inrerpreted as multiple bytes, for example a 4-byte interger,we&rsquo;ll need to take int o account that it could be in a format that&rsquo;s not native to our machine&rsquo;s CPU.The client or server on the other end could have a CPU that uses a diffrent byte order than our own.if this is the case, then we&rsquo;ll need to convert it to our host&rsquo;s native byte order before using it. this byte order referred to as a CPU&rsquo;s <a href="https://en.wikipedia.org/wiki/Endianness">endiannes</a>.
+</p>
+
+<p>
+we&rsquo;ll avoid this issue by takin advantage of Unicode for our message header and using the encoding UTF-8.since UTF-8 uses an 8-bit encoding, there are no byte ordering issues.
+</p>
+
+<p>
+by the way we can easily deterine the byte code of our machine by usin <code>sys.byteorder</code>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell">python -c <span style="color: #8abeb7;">'import sys; print(repr(sys.byteorder))'</span>
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orgcf2d8cf" class="outline-3">
+<h3 id="orgcf2d8cf"><span class="section-number-3">6.1.</span> application protocol header</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+the app protocol header is:
+</p>
+
+<ul class="org-ul">
+<li>variable-length text</li>
+<li>unicode with encoding UTF-8</li>
+<li>a python dict serialize by using <a href="https://docs.python.org/3/library/json.html">JSON</a></li>
+</ul>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">name</td>
+<td class="org-left">desc</td>
+</tr>
+
+<tr>
+<td class="org-left">byteorder</td>
+<td class="org-left">the byte order of the machine (uses sys.byteorder).this may not required by every application.</td>
+</tr>
+
+<tr>
+<td class="org-left">content-lenght</td>
+<td class="org-left">the lenght of content in bytes.</td>
+</tr>
+
+<tr>
+<td class="org-left">content-type</td>
+<td class="org-left">type of content in payload (text/json,binary/binary-type)</td>
+</tr>
+
+<tr>
+<td class="org-left">content-encoding</td>
+<td class="org-left">the encoding used by the content (utf-8,binary)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-org4f17d21" class="outline-3">
+<h3 id="org4f17d21"><span class="section-number-3">6.2.</span> sending an  app message</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+we have still some problem. we have a variable-lenght header,nice and flexible,but how do we know the lenght of the header when reading it with <code>.recv()</code>?
+</p>
+
+<p>
+when we previously learned about using <code>.recv()</code> and message boundaries, we also learned that fixed lenght can be insefficient. that&rsquo;s true,but we&rsquo;re goint to use a small,2-byte,fixed-lenght header to prefix the JSON header that contains its lenght.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org13a7dc5" class="outline-3">
+<h3 id="org13a7dc5"><span class="section-number-3">6.3.</span> application message class</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+to keep things simple but still demonstrate how things work in real worl applications, this example uses an application protocol that implements a basic search feature. the client sens aa search request and the server does a lookup for a match if the request sent by the client isn&rsquo;t recognized as a search, the server assumes it&rsquo;s a binary request and returns a binary response.
+</p>
+
+<p>
+general work steps like this:
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">step</td>
+<td class="org-left">endpoint</td>
+<td class="org-left">action / message content</td>
+</tr>
+
+<tr>
+<td class="org-right">1</td>
+<td class="org-left">client</td>
+<td class="org-left">sends a message containing request content</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-left">server</td>
+<td class="org-left">receives and processes client request message</td>
+</tr>
+
+<tr>
+<td class="org-right">3</td>
+<td class="org-left">server</td>
+<td class="org-left">sends a message containing response content</td>
+</tr>
+
+<tr>
+<td class="org-right">4</td>
+<td class="org-left">client</td>
+<td class="org-left">receives and processes server response message</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+file layout
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">app</td>
+<td class="org-left">file</td>
+<td class="org-left">code</td>
+</tr>
+
+<tr>
+<td class="org-left">server</td>
+<td class="org-left">app-srvr.py</td>
+<td class="org-left">the servers&rsquo;s main coode</td>
+</tr>
+
+<tr>
+<td class="org-left">server</td>
+<td class="org-left">libsrvr.py</td>
+<td class="org-left">the servers&rsquo;s message class</td>
+</tr>
+
+<tr>
+<td class="org-left">client</td>
+<td class="org-left">app-clnt.py</td>
+<td class="org-left">the client&rsquo;s main code</td>
+</tr>
+
+<tr>
+<td class="org-left">client</td>
+<td class="org-left">libclnt.py</td>
+<td class="org-left">the client&rsquo;s message class</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div id="outline-container-org55f561f" class="outline-4">
+<h4 id="org55f561f"><span class="section-number-4">6.3.1.</span> message entry point</h4>
+<div class="outline-text-4" id="text-6-3-1">
+<p>
+unders
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd7cbe71" class="outline-2">
+<h2 id="orgd7cbe71"><span class="section-number-2">7.</span> publish - subscribe example</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-orgb68524c" class="outline-3">
+<h3 id="orgb68524c"><span class="section-number-3">7.1.</span> src of publish - subscribe example</h3>
+<div class="outline-text-3" id="text-7-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;">#</span><span style="color: #969896; font-style: italic;">!/usr/bin/env python3</span>
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">main</span>():
+    <span style="color: #b5bd68;">pass</span>
+
+<span style="color: #b5bd68;">if</span> <span style="color: #b294bb;">__name__</span> == <span style="color: #8abeb7;">'__main__'</span>:
+    main()
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org483d530" class="outline-2">
+<h2 id="org483d530"><span class="section-number-2">8.</span> this document heavily used this sources</h2>
+<div class="outline-text-2" id="text-8">
+<ul class="org-ul">
+<li><a href="https://realpython.com/python-sockets/">realpython.com - python sockets</a></li>
+<li><a href="https://docs.python.org/3/library/socket.html">doc.python.org - socket</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: mal1kc</p>
+<p class="date">Created: 2023-03-14 Tue 22:11</p>
+</div>
+</body>
+</html>

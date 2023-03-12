@@ -276,3 +276,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 **/bin
+.ccls-cache/

@@ -1,0 +1,2630 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-03-14 Tue 22:09 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Threading in Python</title>
+<meta name="author" content="mal1kc" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Threading in Python</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#orgb61eec7">1. what are threads</a></li>
+<li><a href="#org167864b">2. thread vs process</a></li>
+<li><a href="#orga0951f4">3. life-cycle of thread</a></li>
+<li><a href="#orgc0d3c7f">4. run a func in thread</a>
+<ul>
+<li><a href="#org1fb3d34">4.1. how to run a func in thread</a>
+<ul>
+<li><a href="#orgc4fbc1c">4.1.1. example</a></li>
+<li><a href="#org3da95be">4.1.2. example with arguments</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org06afe36">5. extend the thread class</a>
+<ul>
+<li><a href="#org6b01f0b">5.1. possible usage cases</a></li>
+<li><a href="#org61605bf">5.2. example of extending the thread class</a></li>
+<li><a href="#orga48d5b0">5.3. example of extending the thread class with return values</a></li>
+</ul>
+</li>
+<li><a href="#org8a0cbb1">6. thread instance attributes</a>
+<ul>
+<li><a href="#org8d09d9a">6.1. thread name</a></li>
+<li><a href="#org4b909ad">6.2. thread daemon</a></li>
+<li><a href="#org1bcb0c0">6.3. thread identifier</a></li>
+<li><a href="#orga750c2f">6.4. thread native identifier</a></li>
+<li><a href="#orge200709">6.5. thread alive status</a>
+<ul>
+<li><a href="#org8f3c1a2">6.5.1. in example:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#orgc4571a3">7. configure threads</a>
+<ul>
+<li><a href="#org9c83df1">7.1. how to configure thread name</a></li>
+<li><a href="#org0ffd4ab">7.2. how to configure thread daemon</a>
+<ul>
+<li><a href="#orgec82aee">7.2.1. for example:</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org0bc99ce">8. whats main thread</a></li>
+<li><a href="#orgb23df23">9. Thread Utilities</a>
+<ul>
+<li><a href="#orgddd3866">9.1. number of active threads</a></li>
+<li><a href="#org2df4a75">9.2. current thread</a></li>
+<li><a href="#org7fb4c5a">9.3. thread identifier</a></li>
+<li><a href="#orgedc0c4f">9.4. native thread identifier</a></li>
+<li><a href="#org9190046">9.5. enumarate active threads</a></li>
+</ul>
+</li>
+<li><a href="#org7e3f08a">10. thread exception handling</a>
+<ul>
+<li><a href="#org14b6c8b">10.1. unhandled exception</a></li>
+<li><a href="#org5fbcf43">10.2. exception hook</a>
+<ul>
+<li><a href="#org9e7b965">10.2.1. example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#org86c1ed4">11. limitation of threads in cpython</a></li>
+<li><a href="#org6ef17dc">12. when to use thread</a>
+<ul>
+<li><a href="#org843939f">12.1. use threads for blocking IO</a></li>
+<li><a href="#org213e668">12.2. use threads external c code (that realses the GIL)</a></li>
+<li><a href="#org8f19c37">12.3. use threads with (some) third-party python interpreter</a></li>
+</ul>
+</li>
+<li><a href="#org4bfa08f">13. threads blocking calls</a>
+<ul>
+<li><a href="#org8dd7758">13.1. blocking calls on concurrency primitives</a></li>
+<li><a href="#orgdebcaf3">13.2. blocking calls for I/O</a></li>
+<li><a href="#org46cf0ec">13.3. blocking calls to sleep</a></li>
+</ul>
+</li>
+<li><a href="#org567e285">14. thread-local data</a>
+<ul>
+<li><a href="#org602dbdd">14.1. example</a></li>
+</ul>
+</li>
+<li><a href="#orgc6dd797">15. thread mutex lock - <i>threading.Lock</i></a>
+<ul>
+<li><a href="#org33104ae">15.1. what is mutual exclusion lock</a>
+<ul>
+<li><a href="#org8d4bade">15.1.1. why we need mutual exclusion lock</a></li>
+<li><a href="#orge07e338">15.1.2. description of mutex</a></li>
+</ul>
+</li>
+<li><a href="#orgf659670">15.2. how to use mutex lock</a>
+<ul>
+<li><a href="#org955589d">15.2.1. for example</a></li>
+</ul>
+</li>
+<li><a href="#org75bc241">15.3. example of using mutex lock</a></li>
+</ul>
+</li>
+<li><a href="#org1e71571">16. thread reentrant lock  - <i>threading.RLock</i></a>
+<ul>
+<li><a href="#org0dda612">16.1. what is reentrant lock</a>
+<ul>
+<li><a href="#orgb7fe6cd">16.1.1. why we neet reentrant lock</a></li>
+<li><a href="#org858b679">16.1.2. description of reentrant lock</a></li>
+</ul>
+</li>
+<li><a href="#org5ab5bd3">16.2. how to use reentrant lock</a></li>
+<li><a href="#org84f7220">16.3. example of using reentrant lock</a></li>
+</ul>
+</li>
+<li><a href="#org10cfe9d">17. thread condition - <i>threading.Condition</i></a>
+<ul>
+<li><a href="#org5d7de9f">17.1. what is a threading condition</a></li>
+<li><a href="#org8bbcd9c">17.2. how to use condition object</a></li>
+<li><a href="#orgd61c86a">17.3. example of wait and notify with a condition</a></li>
+</ul>
+</li>
+<li><a href="#orgce7f565">18. thread semaphore - <i>threading.Semaphore</i></a>
+<ul>
+<li><a href="#org7e11de4">18.1. what is a semaphore</a></li>
+<li><a href="#orge6d52c0">18.2. how to use a semaphore</a>
+<ul>
+<li><a href="#orge8c7e01">18.2.1. acquiring and releasing</a></li>
+</ul>
+</li>
+<li><a href="#orgb1a8a2f">18.3. example</a></li>
+</ul>
+</li>
+<li><a href="#org32fb662">19. thread event - <i>threading.Event</i></a>
+<ul>
+<li><a href="#org4cbdc61">19.1. how to use event object</a></li>
+<li><a href="#org4a9cf7f">19.2. example</a></li>
+</ul>
+</li>
+<li><a href="#org6456490">20. timer threads - <i>threading.Timer</i></a>
+<ul>
+<li><a href="#org27434f1">20.1. how to use a timer thread</a></li>
+<li><a href="#org21bbd08">20.2. example of using a timer thread</a></li>
+</ul>
+</li>
+<li><a href="#orgca329c7">21. thread barrier - <i>threading.Barrier</i></a>
+<ul>
+<li><a href="#orgc225a3e">21.1. what is barrier</a></li>
+<li><a href="#org470e822">21.2. how to use barrier</a></li>
+<li><a href="#orgec70119">21.3. example</a></li>
+</ul>
+</li>
+<li><a href="#org2c97b37">22. pyhton : threading best practices</a>
+<ul>
+<li><a href="#org2793d0a">22.1. tip 1: use context managers</a>
+<ul>
+<li><a href="#org5d65690">22.1.1. not use this</a></li>
+<li><a href="#org1d79ac9">22.1.2. use this for better control over threads (more safe)</a></li>
+<li><a href="#orgb1217ce">22.1.3. the real benefit</a></li>
+</ul>
+</li>
+<li><a href="#orga79040f">22.2. tip 2 : Use timedouts when waiting</a></li>
+<li><a href="#org4d8a233">22.3. tip 3: use a mutex to protect critical sections</a></li>
+<li><a href="#orgff17755">22.4. tip 4: acquire locks in order</a></li>
+</ul>
+</li>
+<li><a href="#org01529c2">23. python : threading common errors</a>
+<ul>
+<li><a href="#org87cbf4f">23.1. race conditions</a></li>
+<li><a href="#org54a1375">23.2. thread deadlocks</a></li>
+<li><a href="#orgf1c649a">23.3. thread livelocks</a></li>
+</ul>
+</li>
+<li><a href="#org53d1644">24. python threading common questions</a></li>
+<li><a href="#orgb6845a9">25. resources</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgb61eec7" class="outline-2">
+<h2 id="orgb61eec7"><span class="section-number-2">1.</span> what are threads</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+threads refers to thread of execution in computer program
+</p>
+
+<blockquote>
+<p>
+Thread: The operating system object that executes the instructions of a process
+</p>
+<ul class="org-ul">
+<li>book: page 273,the art of concurrency,2009.</li>
+</ul>
+</blockquote>
+
+<p>
+when we run python script, it starts an instance of python interpreter that runs our code in the main thread.
+the main threads is the default thread of a python process
+</p>
+
+<p>
+we may develop our program to  perform tasks concurrently in that case we may need threads,these are concurrent threads of execution without our program
+example of this will be:
+</p>
+
+<ul class="org-ul">
+<li>execution function calls concurrently</li>
+<li>execution object methods concurrently</li>
+</ul>
+
+<p>
+a python thread is an object representation of native thread provided by operating system
+</p>
+
+<p>
+when we create and run a new thread, Python will make system calls on the underplaying op. system and request new thread be created and start running new thread
+</p>
+
+<p>
+the code in new threads may or may not be executed in parallel,even though the threads are executed concurrently.
+</p>
+
+<p>
+these are number of reasons for this,such as:
+</p>
+
+<ul class="org-ul">
+<li>the underplaying hardware may or may not support parallel execution (e.g. one vs multiple CPU cores)</li>
+<li>the python interpreter may or may not permit multiple threads execute in parallel</li>
+</ul>
+
+<blockquote>
+<p>
+this highlights the distinction between concurrent and parallel execution
+</p>
+</blockquote>
+
+<ul class="org-ul">
+<li><b>Concurrent</b> : Code that can be executed out of order</li>
+<li><b>Parallel</b> : Capability to execute code simultaneously</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org167864b" class="outline-2">
+<h2 id="org167864b"><span class="section-number-2">2.</span> thread vs process</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+a process refers to a computer process
+</p>
+
+<blockquote>
+<p>
+process: the operating system&rsquo;s spawned and controlled entity that encapsulates an executing application.
+a process has two main functions. the first is to act as the resource holder for the application,
+and the second is to execute the instructions of the application.
+</p>
+<ul class="org-ul">
+<li>book: page 271,the art of concurrency,2009</li>
+</ul>
+</blockquote>
+
+<p>
+the op system controls how new processes are created on some system,that may require spawning a new process,and on others,it may require that process is forked.
+in Cpython implementation we not need to worry because python interpreter is manage
+creating new processes.
+</p>
+
+<p>
+a thread always exists within a process and represents the manner in which instructions or code is executed.
+</p>
+
+<p>
+a process will have at least one thread, called the main thread.Any additional
+threads that we create within the process will belong to that process.
+</p>
+
+<p>
+the python process will terminate once all(non background threads) are terminated
+</p>
+
+<ul class="org-ul">
+<li><b>process</b>: an instance of the python interpreter has at least one thread called MainThread</li>
+<li><b>thread</b>: a thread of execution within Python process,such as the MainThread or new thread.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orga0951f4" class="outline-2">
+<h2 id="orga0951f4"><span class="section-number-2">3.</span> life-cycle of thread</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+a thread in python is object instanced from  <b>threading.Thread</b> class
+</p>
+
+<p>
+once a thread is started, interpreter will interface with the operating system and request that new native thread be created. the instance of <b>threading.Thread</b>
+the provides a python-based reference to his underplaying native thread.
+</p>
+
+<p>
+each thread follows same life-cycle . understanding of its life-cycle help with
+concurrent programming in python.
+</p>
+
+<p>
+for example:
+</p>
+
+<ul class="org-ul">
+<li>the difference between creating and starting a thread</li>
+
+<li>the difference between run and start</li>
+
+<li>the difference between blocked and terminated</li>
+</ul>
+
+<p>
+while running, the thread may be executing code or may be blocked,waiting on something such as another thread or external resource.although, not all threads may block, it is optional base on specific use case for the new thread.
+</p>
+
+<ol class="org-ol">
+<li>new thread</li>
+<li>running thread
+<ol class="org-ol">
+<li>blocked thread (optimal).</li>
+</ol></li>
+<li>terminated thread.</li>
+</ol>
+
+<p>
+A new thread is a thread that has been constructed by. creating an instance of the <b>threading.Thread</b> class
+</p>
+
+<p>
+a new thread can transition to a running thread by calling the start() function.
+</p>
+
+<p>
+a running thread may block in many ways, such as reading or writing from a file or a socket or by waiting on concurrency primitive such as semaphore or a lock
+after blocking,the thread will run again.
+</p>
+
+<p>
+finally, a thread may terminate once it has finished executing its code or by raising
+error or exception
+</p>
+
+<p>
+[[./thread-life-cycle.webp][thread life cycle diagr
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc0d3c7f" class="outline-2">
+<h2 id="orgc0d3c7f"><span class="section-number-2">4.</span> run a func in thread</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+python funcs can executed in a separate thread using <b>threading.Thread</b> class
+</p>
+</div>
+
+<div id="outline-container-org1fb3d34" class="outline-3">
+<h3 id="org1fb3d34"><span class="section-number-3">4.1.</span> how to run a func in thread</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+the func executed in another thread may have args in which case can be specified as a tuple and passed to the &ldquo;<b>args</b>&rdquo; argument of the threading.threading class constructor or as dictionart to the &ldquo;<b>kwargs</b>&rdquo; argument.
+</p>
+
+<p>
+the <b>start()</b> func will return immediately and the operating system will execute    the function in a seperate thread as soon as it is able.
+</p>
+
+<p>
+we do not have control over when the thread will execute precisely or which cpu core wwill execute it. both of these are low-level responsibilities that are handled by operating system.
+</p>
+
+<blockquote>
+<p>
+doing nessesary imports for examples
+</p>
+</blockquote>
+
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">doing nessesary imports for examples</span>
+<span style="color: #b5bd68;">import</span> threading
+<span style="color: #b5bd68;">import</span> time
+
+</pre>
+</div>
+</div>
+
+
+<div id="outline-container-orgc4fbc1c" class="outline-4">
+<h4 id="orgc4fbc1c"><span class="section-number-4">4.1.1.</span> example</h4>
+<div class="outline-text-4" id="text-4-1-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>():
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for 1 second</span>
+    time.sleep(<span style="color: #81a2be;">1</span>)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">display a message</span>
+
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'this is from another thread'</span>)
+
+<span style="color: #f0c674;">thread</span> = threading.Thread(target=task)
+thread.start()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waiting fo the thread ..'</span>)
+thread.join() <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">explicitly waiting to finish thread</span>
+</pre>
+</div>
+
+<p>
+running the example first creates instance  of threeding.Thread then calls the <b>start()</b> func.This does not start the thread immediately,but instead allows to operating system to schedule the function to execute as soon as possible.
+</p>
+
+<p>
+the main thread then prints a message &rsquo;<i>waiting &#x2026;</i>&rsquo; ,then calls the <b>join()</b> function to explicitly block and wait for the new thread to finish executing.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org3da95be" class="outline-4">
+<h4 id="org3da95be"><span class="section-number-4">4.1.2.</span> example with arguments</h4>
+<div class="outline-text-4" id="text-4-1-2">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(sleep_time,message):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for 1 second</span>
+    time.sleep(sleep_time)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">display a message</span>
+    <span style="color: #b294bb;">print</span>(message)
+
+
+<span style="color: #f0c674;">thread</span> = threading.Thread(target=task,args=(<span style="color: #81a2be;">1.5</span>,<span style="color: #8abeb7;">'new message from another thread'</span>))
+thread.start()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waiting fo the thread ..'</span>)
+thread.join() <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">explicitly waiting to finish thread</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org06afe36" class="outline-2">
+<h2 id="org06afe36"><span class="section-number-2">5.</span> extend the thread class</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+we can also execute funcs in another thread by extending the <b>threading.Thread</b> class and overriding the run() function.
+</p>
+
+<p>
+In this section we will look at some examples of extending <b>thread.Thread</b> class
+</p>
+</div>
+
+<div id="outline-container-org6b01f0b" class="outline-3">
+<h3 id="org6b01f0b"><span class="section-number-3">5.1.</span> possible usage cases</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+given that it is a custom class,you can defina a constructor for the class and use it to pass in data that may be needed in the <b>run()</b> function, stored as instance variables (attributes).
+</p>
+
+<p>
+you can also define additional functions on the class to split up the work you may need to complete another thread.
+</p>
+
+<p>
+finally, attributes caan also be used to store the results of any calculation or IO performed in another thread that may be need to be retrieved afterward.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org61605bf" class="outline-3">
+<h3 id="org61605bf"><span class="section-number-3">5.2.</span> example of extending the thread class</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+example code :
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">class</span> <span style="color: #81a2be;">CustomThread</span>(Thread):
+    ...
+</pre>
+</div>
+
+<p>
+this will inherit <b>Thread</b> class to our <b>CustomThread</b> class,then we need override
+<b>run()</b> func to execute another threads funcs,overriding a function very basic as syntax:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">def</span> <span style="color: #de935f;">run</span>(<span style="color: #b5bd68;">self</span>):
+    sleep(<span style="color: #81a2be;">1</span>)
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'this is coming from another thread'</span>)
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create the thread</span>
+<span style="color: #f0c674;">thread</span> = CustomThread()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">start the thread</span>
+
+thread.start()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for the thread finish</span>
+
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waiting for the thread to finish'</span>)
+
+thread.join()
+
+</pre>
+</div>
+
+
+<p>
+complete code would be like:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">class</span> <span style="color: #81a2be;">CustomThread</span>(threading.Thread):
+    <span style="color: #b5bd68;">def</span> <span style="color: #de935f;">run</span>(<span style="color: #b5bd68;">self</span>):
+        time.sleep(<span style="color: #81a2be;">1</span>)
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'this is coming from another thread'</span>)
+
+
+<span style="color: #f0c674;">thread</span> = CustomThread()
+thread.start()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waitin for thread finish'</span>)
+thread.join()
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga48d5b0" class="outline-3">
+<h3 id="orga48d5b0"><span class="section-number-3">5.3.</span> example of extending the thread class with return values</h3>
+<div class="outline-text-3" id="text-5-3">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">class</span> <span style="color: #81a2be;">CustomThread</span>(threading.Thread):
+    <span style="color: #b5bd68;">def</span> <span style="color: #de935f;">run</span>(<span style="color: #b5bd68;">self</span>):
+        time.sleep(<span style="color: #81a2be;">1</span>)
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'this is coming from another thread'</span>)
+        <span style="color: #b5bd68;">self</span>.<span style="color: #f0c674;">value</span> = <span style="color: #81a2be;">99</span>
+
+<span style="color: #f0c674;">thread</span> = CustomThread()
+thread.start()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waitin for thread finish'</span>)
+thread.join()
+<span style="color: #f0c674;">value</span> = thread.value
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{value=}<span style="color: #8abeb7;">'</span>)
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8a0cbb1" class="outline-2">
+<h2 id="org8a0cbb1"><span class="section-number-2">6.</span> thread instance attributes</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+an instance of the thread class provides a handle of a thread of execution.
+it provides attributes that we can use to query properties and the status of the underlaying thread.
+</p>
+</div>
+
+<div id="outline-container-org8d09d9a" class="outline-3">
+<h3 id="org8d09d9a"><span class="section-number-3">6.1.</span> thread name</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+threads are named automatically in a somewhat unique manner within each process withe the form &ldquo;Thread-%d&rdquo; where %d is the integer indicating the thread number within the process,e.g. Thread-1 for the first thread created.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4b909ad" class="outline-3">
+<h3 id="org4b909ad"><span class="section-number-3">6.2.</span> thread daemon</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+a thread may be a deamon thread, daemon threads is the name givent to background threads.by default threads are non-daemon threads.
+</p>
+
+<p>
+a python program will only exit when all non-daemon threads have finished exiting. for example , the main threads is a non-daemon threads.this means that daemon threads can run in the background and do not have to finish or be explicitly excited for the program end.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1bcb0c0" class="outline-3">
+<h3 id="org1bcb0c0"><span class="section-number-3">6.3.</span> thread identifier</h3>
+<div class="outline-text-3" id="text-6-3">
+<p>
+each thread has unique identifier (id) within python process,assigned by python interpreter.
+</p>
+
+<p>
+the identifier is a read-only positive integer value and is assigned only after thread has been started.
+</p>
+
+<p>
+can be accesed via <b>&ldquo;ident&rdquo;</b> property
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga750c2f" class="outline-3">
+<h3 id="orga750c2f"><span class="section-number-3">6.4.</span> thread native identifier</h3>
+<div class="outline-text-3" id="text-6-4">
+<p>
+each thread has unique identifier assigned by the operating system.
+</p>
+
+<p>
+python threads (cpython) are real native threads,means that each thread we created is actually created and managed (scheduled) by operating system.As such, the operating system will assing a unique integer to each thread that is created on the system (across processes).
+</p>
+
+<p>
+can be acced via <b>&ldquo;native<sub>id</sub>&rdquo;</b> property
+</p>
+
+<p>
+it is assigned after thread has been started
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge200709" class="outline-3">
+<h3 id="orge200709"><span class="section-number-3">6.5.</span> thread alive status</h3>
+<div class="outline-text-3" id="text-6-5">
+<p>
+thread class property that holds is thread running or dead (non-started or finished)
+</p>
+</div>
+
+<div id="outline-container-org8f3c1a2" class="outline-4">
+<h4 id="org8f3c1a2"><span class="section-number-4">6.5.1.</span> in example:</h4>
+<div class="outline-text-4" id="text-6-5-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create instance of Thread object with lambda func</span>
+<span style="color: #f0c674;">thread</span> = threading.Thread(target=<span style="color: #b5bd68;">lambda</span>:(
+time.sleep(<span style="color: #81a2be;">0.2</span>),
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'this is from another thread'</span>)
+))
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report thread alive status</span>
+is_alive = thread.is_alive()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread\'s </span>{is_alive=}<span style="color: #8abeb7;">'</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report thread identifier value</span>
+ident = thread.ident
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{ident=}<span style="color: #8abeb7;">'</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report thread daemon property</span>
+daemon = thread.daemon
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{daemon=}<span style="color: #8abeb7;">'</span>)
+name = thread.name
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{name=}<span style="color: #8abeb7;">'</span>)
+thread.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report thread native id property</span>
+native_id = thread.native_id
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{native_id=}<span style="color: #8abeb7;">'</span>)
+is_alive = thread.is_alive()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{is_alive=}<span style="color: #8abeb7;">'</span>)
+ident = thread.ident
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{ident=}<span style="color: #8abeb7;">'</span>)
+thread.join()
+is_alive = thread.is_alive()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{is_alive=}<span style="color: #8abeb7;">'</span>)
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc4571a3" class="outline-2">
+<h2 id="orgc4571a3"><span class="section-number-2">7.</span> configure threads</h2>
+<div class="outline-text-2" id="text-7">
+</div>
+<div id="outline-container-org9c83df1" class="outline-3">
+<h3 id="org9c83df1"><span class="section-number-3">7.1.</span> how to configure thread name</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+the name of a thread can be ser via the <b>&ldquo;name&rdquo;</b> argument in the threading.Thread constructor
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-org0ffd4ab" class="outline-3">
+<h3 id="org0ffd4ab"><span class="section-number-3">7.2.</span> how to configure thread daemon</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+a thread may be configured to be a daemon or not,and most threads in concurrent programming,including the main thread,are non-daemon threads(no background threads) by default
+</p>
+
+<p>
+can be configured via setting <b>&ldquo;daemon&rdquo;</b> argument to True in the constructor
+</p>
+</div>
+
+<div id="outline-container-orgec82aee" class="outline-4">
+<h4 id="orgec82aee"><span class="section-number-4">7.2.1.</span> for example:</h4>
+<div class="outline-text-4" id="text-7-2-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #f0c674;">thread</span> = threading.Thread(name=<span style="color: #8abeb7;">'daemon Thread'</span>,daemon=<span style="color: #81a2be;">True</span>,target=<span style="color: #b5bd68;">lambda</span>:<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'this message is from daemon thread'</span>))
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{thread.daemon=}<span style="color: #8abeb7;">'</span>)
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{thread.name=}<span style="color: #8abeb7;">'</span>)
+thread.start()
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0bc99ce" class="outline-2">
+<h2 id="org0bc99ce"><span class="section-number-2">8.</span> whats main thread</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+each python process is created with one default thread called the <b>&ldquo;the main thread&rdquo;</b>
+</p>
+
+<p>
+when we execute a python program, it is executing in the main thread.
+</p>
+
+<p>
+the main thread is created for each python process
+</p>
+
+<blockquote>
+<p>
+in normal conditions, the main thread is thread from which the python interpreter was started.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/threading.html">threading &#x2013; Thread-based parallelism</a>
+</p>
+
+<p>
+the main thread in each python process always has the name <b>&ldquo;MainThread&rdquo;</b> and is not a daemon thread.Once the <b>&ldquo;main thread&rdquo;</b> exists,the Python will exit,assuming there are non-daemon threads running.
+</p>
+
+<blockquote>
+<p>
+there is a &ldquo;main thread&rdquo; object;this corresponds to initial thread of control in python program.It is not a daemon thread.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/threading.html">threading &#x2013; Thread-based parallelism</a>
+</p>
+
+<p>
+we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">from</span> threading <span style="color: #b5bd68;">import</span> current_thread
+<span style="color: #f0c674;">thread</span> = current_thread()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread;\n</span>{thread.name=}<span style="color: #8abeb7;">,</span>{thread.daemon=}<span style="color: #8abeb7;">,</span>{thread.ident=}<span style="color: #8abeb7;">'</span>)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb23df23" class="outline-2">
+<h2 id="orgb23df23"><span class="section-number-2">9.</span> Thread Utilities</h2>
+<div class="outline-text-2" id="text-9">
+</div>
+<div id="outline-container-orgddd3866" class="outline-3">
+<h3 id="orgddd3866"><span class="section-number-3">9.1.</span> number of active threads</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+<b>threading.active<sub>count</sub>()</b> gives integer that indicates number of threads that are &ldquo;alive&rdquo;
+</p>
+</div>
+</div>
+
+<div id="outline-container-org2df4a75" class="outline-3">
+<h3 id="org2df4a75"><span class="section-number-3">9.2.</span> current thread</h3>
+<div class="outline-text-3" id="text-9-2">
+<p>
+<b>threading.current<sub>thread</sub>()</b> gives <b>threading.Thread</b> instance of thread running the current code
+</p>
+</div>
+</div>
+
+<div id="outline-container-org7fb4c5a" class="outline-3">
+<h3 id="org7fb4c5a"><span class="section-number-3">9.3.</span> thread identifier</h3>
+<div class="outline-text-3" id="text-9-3">
+<p>
+<b>threading.get<sub>ident</sub>()</b> gives current threads identifier integer
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgedc0c4f" class="outline-3">
+<h3 id="orgedc0c4f"><span class="section-number-3">9.4.</span> native thread identifier</h3>
+<div class="outline-text-3" id="text-9-4">
+<p>
+<b>threading.get<sub>ident</sub>()</b> gives current threads identifier integer that assigned by operating system
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9190046" class="outline-3">
+<h3 id="org9190046"><span class="section-number-3">9.5.</span> enumarate active threads</h3>
+<div class="outline-text-3" id="text-9-5">
+<p>
+we can get a list of active threads via calling <b>threading.enumarate()</b> function,it returns list of active threads
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #f0c674;">active_thread_count</span> = threading.active_count()
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{active_thread_count=}<span style="color: #8abeb7;">'</span>)
+current_thread = threading.current_thread()
+current_thread.name=<span style="color: #8abeb7;">"main thread"</span>
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{current_thread=}<span style="color: #8abeb7;">'</span>)
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{threading.get_ident()=}<span style="color: #8abeb7;">'</span>)
+thread = threading.Thread(name=<span style="color: #8abeb7;">'other thread'</span>,target=<span style="color: #b5bd68;">lambda</span>:<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'this message is from daemon thread'</span>))
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{threading.get_native_id()=}<span style="color: #8abeb7;">'</span>)
+thread.start()
+threads = threading.<span style="color: #b294bb;">enumerate</span>()
+<span style="color: #b5bd68;">for</span> th <span style="color: #b5bd68;">in</span> threads:
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'</span>{th.name=}<span style="color: #8abeb7;">'</span>)
+thread.join()
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7e3f08a" class="outline-2">
+<h2 id="org7e3f08a"><span class="section-number-2">10.</span> thread exception handling</h2>
+<div class="outline-text-2" id="text-10">
+</div>
+<div id="outline-container-org14b6c8b" class="outline-3">
+<h3 id="org14b6c8b"><span class="section-number-3">10.1.</span> unhandled exception</h3>
+<div class="outline-text-3" id="text-10-1">
+<p>
+an unhandled exception can occur in a new thread.
+</p>
+
+<p>
+the effect will be that the thread will unwind and report the message on standart
+error.Unwinding the thread means that the thread will stop executing at the point of the (or error) and that the exception will bubble up the stack in the thread until it reaches the top level,e.g. the run() funtion.
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">work</span>():
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'working .'</span>,end=<span style="color: #8abeb7;">''</span>)
+    <span style="color: #b5bd68;">for</span> ti <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">10</span>):
+        time.sleep(<span style="color: #81a2be;">0.5</span>)
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'. .'</span>,end=<span style="color: #8abeb7;">''</span>)
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'..'</span>)
+    <span style="color: #b5bd68;">raise</span> <span style="color: #81a2be;">Exception</span>(<span style="color: #8abeb7;">'something bad happened'</span>)
+thread = threading.Thread(target=work)
+thread.start()
+thread.join()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'continuing on ...'</span>)
+time.sleep(<span style="color: #81a2be;">0.2</span>)
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'finished'</span>)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5fbcf43" class="outline-3">
+<h3 id="org5fbcf43"><span class="section-number-3">10.2.</span> exception hook</h3>
+<div class="outline-text-3" id="text-10-2">
+<p>
+we can specify how to handle unhandled errors aand exceptions that occuur within new threads via the exception hook
+</p>
+
+<p>
+by default,there is no exception hook, in which case the <b><a href="https://docs.python.org/3/library/sys.html#sys.excepthook">sys.excepthook function</a></b>
+is called that reports the familiar message.
+</p>
+
+<p>
+first, we must define a function that takes a single argument that will be an instance of the <b>ExceptHookArgs</b> class,containing details of the exception and thread
+</p>
+</div>
+
+<div id="outline-container-org9e7b965" class="outline-4">
+<h4 id="org9e7b965"><span class="section-number-4">10.2.1.</span> example</h4>
+<div class="outline-text-4" id="text-10-2-1">
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">work</span>():
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'working .'</span>,end=<span style="color: #8abeb7;">''</span>)
+    <span style="color: #b5bd68;">for</span> ti <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">10</span>):
+        time.sleep(<span style="color: #81a2be;">0.5</span>)
+        <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'. .'</span>,end=<span style="color: #8abeb7;">''</span>)
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'..'</span>)
+    <span style="color: #b5bd68;">raise</span> <span style="color: #81a2be;">Exception</span>(<span style="color: #8abeb7;">'something bad happened'</span>)
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">custom_hook</span>(args):
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread failed:</span>{args.exc_value}<span style="color: #8abeb7;">'</span>)
+threading.excepthook = custom_hook
+thread = threading.Thread(target=work)
+thread.start()
+thread.join()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'continuing on ...'</span>)
+time.sleep(<span style="color: #81a2be;">0.2</span>)
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'finished'</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org86c1ed4" class="outline-2">
+<h2 id="org86c1ed4"><span class="section-number-2">11.</span> limitation of threads in cpython</h2>
+<div class="outline-text-2" id="text-11">
+<p>
+python interpreter generally does not permit more than one thread to run at a time
+</p>
+
+<p>
+this is achieved via mutal exclusion (mutex) lock within interpreter that ensures that only one thread at a time can execute python bytecodes in python virtual machine .
+</p>
+
+<blockquote>
+<p>
+In CPython, due to the Global Interpreter Lock, only one thread can execute Python code at once (even though certain performance-oriented libraries might overcome this limitation).
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/threading.html">threading &#x2013; Thread-based parallelism</a>
+</p>
+
+<p>
+this lock is referred to as the <b>Global interpreter Lock</b> or <b>GIL</b> for short.
+</p>
+<blockquote>
+<p>
+In CPython, the global interpreter lock, or GIL, is a mutex that protects access to Python objects, preventing multiple threads from executing Python bytecodes at once. The GIL prevents race conditions and ensures thread safety.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://wiki.python.org/moin/GlobalInterpreterLock">GLOBAL INTERPRETER LOCK, PYTHON WIKI</a>
+</p>
+
+<p>
+this means that although we might write concurent code  with threads and run our code  on hardware with many CPU cores, we may not be able to execute our code in parallel
+</p>
+
+<p>
+there are some exceptions to this.
+</p>
+
+<p>
+specially, the <b>GIL</b> is released by the Python interpreter sometimes to allow other threads to run.
+</p>
+
+<p>
+such as when the thread is blocked ,such as performing IO with socket or file, or often if the thread is executing computationally intesive code in C library,like hashing bytes.
+</p>
+
+<blockquote>
+<p>
+Luckily, many potentially blocking or long-running operations, such as I/O, image processing, and NumPy number crunching, happen outside the GIL. Therefore it is only in multithreaded programs that spend a lot of time inside the GIL, interpreting CPython bytecode, that the GIL becomes a bottleneck.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://wiki.python.org/moin/GlobalInterpreterLock">GLOBAL INTERPRETER LOCK, PYTHON WIKI</a>
+</p>
+
+<p>
+therefore, although in most cases Cpython will prevent parallel execution of threads, it is allowed in some circumstances,these  circumstances represent the base use case for adopting threads in our python programs.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6ef17dc" class="outline-2">
+<h2 id="org6ef17dc"><span class="section-number-2">12.</span> when to use thread</h2>
+<div class="outline-text-2" id="text-12">
+<p>
+there are times when the GIL lock is released by the interpreter and we can achieve  parallel execution of our concurent code in python.
+</p>
+
+<p>
+<b>examples of when lock is released include:</b>
+</p>
+
+<ul class="org-ul">
+<li>when thread is performing blocking IO</li>
+
+<li>when a thread is executing C code  and explicitly releases</li>
+</ul>
+
+<p>
+<b>there are also ways of avoiding the lock entirely,such a:</b>
+</p>
+
+<ul class="org-ul">
+<li>using third-party interpreter to execute python code</li>
+</ul>
+</div>
+
+<div id="outline-container-org843939f" class="outline-3">
+<h3 id="org843939f"><span class="section-number-3">12.1.</span> use threads for blocking IO</h3>
+<div class="outline-text-3" id="text-12-1">
+<p>
+should use threads for IO bound tasks.
+</p>
+
+<p>
+an IO-bound task is a type of tash that involves reading from or writing to device, file, or socket connection.
+</p>
+
+<p>
+modern CPUs, like a 4GHz CPU, can execute 4 billion instructions per second, and you likely have more than one CPU core in your system.
+</p>
+
+<p>
+doing IO is very slow compared to the speed of CPUs.
+</p>
+
+<p>
+interacting with devices,reading  and writing files and socket connections involves calling instructions in your operating system ,which will wait for the operation to complete. If this operation is the main focus for your Cpu ,such as executing in the main thread of your python program,then your cpu is going to wait many milliseconds or even many seconds doing nothing.
+</p>
+
+<p>
+that is probably preventing billions of operations from executing.
+</p>
+
+<p>
+a thread performing an IO operation will block for the duration of the operation.While blocked,this signals to the operating system that a thread can be suspended and onether thread can execute, called a context switch.
+</p>
+
+<p>
+additonally, python interpreter will release the GIL when performing blocking IO operations,allowing other threads within the python process to execute.
+</p>
+
+<p>
+therefore, blocking IO provides an excellent use case for using threads in python.
+</p>
+
+<p>
+examples of blocking IO operations include:
+</p>
+
+<ul class="org-ul">
+<li>reading or writing a file from the hard drive.</li>
+
+<li>reading or writing to standart output, input or error(stdin,stdout,stderr).</li>
+
+<li>printing a document.</li>
+
+<li>reading or writing bytes on a socket connection with a server.</li>
+
+<li>downloading or uplading a file.</li>
+
+<li>query a server.</li>
+
+<li>query a database.</li>
+
+<li>taking a photo.</li>
+
+<li>everythin that includes disk write read</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org213e668" class="outline-3">
+<h3 id="org213e668"><span class="section-number-3">12.2.</span> use threads external c code (that realses the GIL)</h3>
+<div class="outline-text-3" id="text-12-2">
+<p>
+we may make function calls that themselves call down into a third-party C library.
+</p>
+
+<p>
+Often these function calls will realase the GIL as the C library being called will not interact with the intpreter.
+</p>
+
+<p>
+this provides an opputunity for other threads in the python process to run.
+</p>
+
+<p>
+<b>for example</b>,when using the &ldquo;<b>hash</b>&rdquo; module in python std library,the GIL is released when hashing the data via the <a href="https://docs.python.org/3/library/hashlib.html#hashlib.hash.update">hash.update() function</a>
+</p>
+
+<blockquote>
+<p>
+The Python GIL is released to allow other threads to run while hash updates on data larger than 2047 bytes is taking place when using hash algorithms supplied by OpenSSL.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/hashlib.html">HASHLIB — SECURE HASHES AND MESSAGE DIGESTS</a>
+</p>
+
+<p>
+Another example is the NumPy library for managing arrays of data which will release the GIL when performing functions on arrays.
+</p>
+
+<blockquote>
+<p>
+The exceptions are few but important: while a thread is waiting for IO (for you to type something, say, or for something to come in the network) python releases the GIL so other threads can run. And, more importantly for us, while numpy is doing an array operation, python also releases the GIL.
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://scipy-cookbook.readthedocs.io/items/ParallelProgramming.html">WRITE MULTITHREADED OR MULTIPROCESS CODE, SCIPY COOKBOOK</a>
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8f19c37" class="outline-3">
+<h3 id="org8f19c37"><span class="section-number-3">12.3.</span> use threads with (some) third-party python interpreter</h3>
+<div class="outline-text-3" id="text-12-3">
+<p>
+there are alternate commericial and open source python interpreters that you can acquire and use to execute your python code.
+</p>
+
+<p>
+some python interpreters may implement a GIL and release it more or less than Cpython. Other interpreters remove the GIL entirely and allow multiple python concurent threads to execute in parallel.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4bfa08f" class="outline-2">
+<h2 id="org4bfa08f"><span class="section-number-2">13.</span> threads blocking calls</h2>
+<div class="outline-text-2" id="text-13">
+<p>
+a blocking call is a function call that does not return until is complete.
+</p>
+
+<p>
+all normal functions are blocking calls.
+</p>
+
+<p>
+blocking call are calls to functions that will wait for a specific condition and signal to the operating system that nothing interesting going on while the thread is waiting.
+</p>
+
+<p>
+the os may notice that a thread is making a blocking function call and decide to context switch to another thread.
+</p>
+
+<p>
+you may recall that the os manages what threads should run and when to run them.it achieves this using a type of multitasking where a running thread is suspended and suspended thread is restored and continues running.This suspending and restoring of threads is called a context switch.
+</p>
+
+<p>
+the os prefers to context switch away from blocked threads, allowing non-blocked threads to run.
+</p>
+
+<p>
+this means if a thread makes a blocking function call,a call that waits, then it is likely to signal that the thread can be suspended and allow other threads to run.
+</p>
+
+<p>
+similarly, many function calls that we may traditionally think block may have non-blocking versions in modern non-blocking concurrency APIs, like asyncio.
+</p>
+
+<p>
+there are three types of blocking function calls you need to consider in concurrent programming, they are:
+</p>
+
+<ul class="org-ul">
+<li>blocking calls on concurent primitives</li>
+
+<li>blocking calls for IO</li>
+
+<li>blocking calls to sleep</li>
+</ul>
+</div>
+
+<div id="outline-container-org8dd7758" class="outline-3">
+<h3 id="org8dd7758"><span class="section-number-3">13.1.</span> blocking calls on concurrency primitives</h3>
+<div class="outline-text-3" id="text-13-1">
+<p>
+there are many blocking calls in concurrent programming
+</p>
+
+<p>
+common ways are;
+</p>
+
+<ul class="org-ul">
+<li>waiting for a lock,e.g. calling acquire() from &rsquo;threading.Lock&rsquo; class</li>
+<li>waiting to be notified,e.g. calling wait() from &rsquo;threading.Condition&rsquo; class</li>
+<li>waiting for a thread to terminate ,e.g. calling join() from &rsquo;threading.Thread&rsquo; class</li>
+<li>waiting for an event,e.g. calling wait() from &rsquo;threading.Event&rsquo; class</li>
+<li>waiting for a barrier,e.g. calling wait() from &rsquo;threading.Barrier&rsquo; class</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgdebcaf3" class="outline-3">
+<h3 id="orgdebcaf3"><span class="section-number-3">13.2.</span> blocking calls for I/O</h3>
+<div class="outline-text-3" id="text-13-2">
+<p>
+conventionally,function calls that interact with I/O are mostly blocking calls.they are blocking in same sencse as blocking calls in concurency primitives
+the wait for the I/O device respond is another signal to operating system that the thread can be context switched.
+</p>
+
+<p>
+common examples are;
+</p>
+
+<ul class="org-ul">
+<li><b>hdd(hard disk drive)</b> :reading,writing,appending,renaming,deleting,.. files</li>
+<li><b>perpheral devices</b>    :mouse,keyboard,screen,printe,camera,serial device etc.</li>
+<li><b>database</b>             :sql queries</li>
+<li><b>internet</b>             :downloading,uplading,http requests,etc.
+<ul class="org-ul">
+<li><b>email</b>                :send,receieve,querry inbox,etc.</li>
+</ul></li>
+<li><b>and more,mostly other socket related things</b></li>
+</ul>
+
+<p>
+performing I/O operations with devices is typically very slow compared to CPU operations.
+</p>
+
+<p>
+the I/O with devices is coordinated by the operating system and the device.this means the operating system can gather or sen some bytes from or to device.this means operating system can gather or send some bytes from or to the device then context switch back to the blocking thread when needed allowing the function call to progress.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org46cf0ec" class="outline-3">
+<h3 id="org46cf0ec"><span class="section-number-3">13.3.</span> blocking calls to sleep</h3>
+<div class="outline-text-3" id="text-13-3">
+<p>
+the sleep() function is a capability provided by the underlying operating system that we can make use of within our program.
+</p>
+
+<p>
+it is a blocking function call that pauses the thread to block for a fixed time in seconds.
+in cpython this can be achieved via <b>&rsquo;sleep(seconds)&rsquo;</b> function call from built-in <b>time</b> module
+</p>
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">sleep for 5 seconds</span>
+<span style="color: #b5bd68;">import</span> time
+...
+time.sleep(<span style="color: #81a2be;">5</span>)
+...
+</pre>
+</div>
+<p>
+it is a blocking call it signals to the operating system that the thread is waiting and is a good candidate for a context switch.
+</p>
+
+<p>
+sleeps are often ısed when timing is important in an application.
+</p>
+
+<p>
+in programming, adding a sleep can be useful way to simulate waiting within fixed interval.
+</p>
+
+<p>
+sleep often used in worked examples when demonstrating concurrency programming,but adding sleeps to code can also aid in unit testing and debugging concurency failure conditions,such as race conditions by forcing mistiming of events within a dynamic application
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org567e285" class="outline-2">
+<h2 id="org567e285"><span class="section-number-2">14.</span> thread-local data</h2>
+<div class="outline-text-2" id="text-14">
+<p>
+threads can store local data via an instance of the <b>threading.local</b> class
+</p>
+
+<p>
+example
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">import</span> threading
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a instance of local class</span>
+
+<span style="color: #f0c674;">local</span> = threading.local()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">store some data</span>
+local.<span style="color: #f0c674;">custom</span> = <span style="color: #81a2be;">33</span>
+</pre>
+</div>
+
+<p>
+importantly,other threads can use the same property names on local but the values will be limited to each thread.
+this is like a namespace limited to each thread and is called &ldquo;thread-local data&rdquo;.it means that threads cannot acces or read the local data of other threads.
+importantly, each thread must hang on to the &ldquo;local&rdquo; instance in order to acces the stored data.
+</p>
+</div>
+
+<div id="outline-container-org602dbdd" class="outline-3">
+<h3 id="org602dbdd"><span class="section-number-3">14.1.</span> example</h3>
+<div class="outline-text-3" id="text-14-1">
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(<span style="color: #f0c674;">value</span>:<span style="color: #b294bb;">int</span>):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create local storage</span>
+    local=threading.local()
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">store value in local storage</span>
+    local.<span style="color: #f0c674;">value</span> = value
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for given time</span>
+    time.sleep(value)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">retrieve given value</span>
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'stored value: </span>{local.value}<span style="color: #8abeb7;">'</span>)
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create thread and start thread</span>
+threading.Thread(target=task,args=(<span style="color: #81a2be;">1</span>,)).start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create another thread and start it</span>
+threading.Thread(target=task,args=(<span style="color: #81a2be;">2</span>,)).start()
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgc6dd797" class="outline-2">
+<h2 id="orgc6dd797"><span class="section-number-2">15.</span> thread mutex lock - <i>threading.Lock</i></h2>
+<div class="outline-text-2" id="text-15">
+</div>
+<div id="outline-container-org33104ae" class="outline-3">
+<h3 id="org33104ae"><span class="section-number-3">15.1.</span> what is mutual exclusion lock</h3>
+<div class="outline-text-3" id="text-15-1">
+</div>
+<div id="outline-container-org8d4bade" class="outline-4">
+<h4 id="org8d4bade"><span class="section-number-4">15.1.1.</span> why we need mutual exclusion lock</h4>
+<div class="outline-text-4" id="text-15-1-1">
+<div class="org-center">
+<p>
+a <span class="underline">mutual exclusion lock</span> is a synchronization primitive intented to prevent a race condition.
+</p>
+
+<p>
+a race conditions is a concurency failure case when two threads run same code and access or update same resource leaving the resource unkown and inconsistent state.
+these censitive parts of cade that can be executed by multiple threads concurently and may result in race conditions are called critical sections, a critical
+section may refer to single block of code, but is also refers to multiple accesses to the same data variable or resource from multiple functions.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-orge07e338" class="outline-4">
+<h4 id="orge07e338"><span class="section-number-4">15.1.2.</span> description of mutex</h4>
+<div class="outline-text-4" id="text-15-1-2">
+<div class="org-center">
+<p>
+mutual exclusion lock also known as mutex,is synchronization mechanism used to control acces to a shared resource in concurent system.A mutex is essentially a binary semaphore (e.g railroad switch signals) with two states;locked and unlocked.When a thread acquires a mutex,it sets the lock to locked state,preventing other threads from also acquiring the lock.The thread that acquire the lock is said to have exclusive acces to the shared resource.When the thread releases the lock.The thread that acquired the lock is said to gave exclusive access to the shared resource.When the thread releases the lock,it sets the lock to the unlocked state, allowing other thread to acquire the lock and gain access to the shared resource.this mechanism ensures that only one thread can access resource at a time, preventing race conditions and other synchronization issues.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-orgf659670" class="outline-3">
+<h3 id="orgf659670"><span class="section-number-3">15.2.</span> how to use mutex lock</h3>
+<div class="outline-text-3" id="text-15-2">
+<div class="org-center">
+<p>
+the class implementing primitive lock objects.
+</p>
+
+<p>
+NOTE : that <span class="underline">Lock</span> is actually a factory function which returns an instance of the most efficient version of the concrete Lock class that is supported by the platform
+</p>
+</div>
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a lock</span>
+<span style="color: #f0c674;">lock</span> = threading.Lock()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">...</span>
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">release the lock</span>
+lock.release()
+</pre>
+</div>
+<p>
+only one thread can acquire lock,if lock not released it cannot be acquired again.
+</p>
+
+<p>
+the thread attempting to acquire the lock will block until the lock is acquired, such as if another thread currently holds the lock then releases it.
+</p>
+
+<p>
+we can attempt to acquire the lock without blocking by setting the &ldquo;blocking&rdquo; arg to <b>False</b>. if the lock cannot be acquired,a value of <b>False</b> is returned.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock without blocking</span>
+lock.acquire(blocking=false)
+</pre>
+</div>
+
+<p>
+we can also attempt to acquire the lock with a timeout,If the lock cannot be acquired a <b>False</b> returned.
+</p>
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock with a timeout</span>
+lock.acquire(timeout=<span style="color: #81a2be;">10</span>)
+</pre>
+</div>
+</div>
+
+<div id="outline-container-org955589d" class="outline-4">
+<h4 id="org955589d"><span class="section-number-4">15.2.1.</span> for example</h4>
+<div class="outline-text-4" id="text-15-2-1">
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a lock</span>
+<span style="color: #f0c674;">lock</span> = threading.Lock()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+<span style="color: #b5bd68;">with</span> lock:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">...</span>
+</pre>
+</div>
+
+<p>
+this is preffered usage as it makes it clear where the protected code starts and ends,and ensures that the lock is always released, even if there is an exception or error within the critical section.
+</p>
+
+<p>
+also we can check if the lock is currently acquired by a thread
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">if</span> lock.locked():
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">if lock is acquired runs this indent block of code</span>
+<span style="color: #b5bd68;">else</span>:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">if not lock is acquired runs this indent block of code</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org75bc241" class="outline-3">
+<h3 id="org75bc241"><span class="section-number-3">15.3.</span> example of using mutex lock</h3>
+<div class="outline-text-3" id="text-15-3">
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #b5bd68;">from</span> random <span style="color: #b5bd68;">import</span> random
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(lock,identifier,value:<span style="color: #b294bb;">int</span>|<span style="color: #b294bb;">float</span>):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+    <span style="color: #b5bd68;">with</span> lock:
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'&gt;thread </span>{identifier}<span style="color: #8abeb7;"> got the lock,sleepin for </span>{value}<span style="color: #8abeb7;">'</span>)
+        time.sleep(value)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create shared lock</span>
+<span style="color: #f0c674;">lock</span> = threading.Lock()
+<span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">10</span>):
+    threading.Thread(target=task, args=(lock, i, random())).start()
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1e71571" class="outline-2">
+<h2 id="org1e71571"><span class="section-number-2">16.</span> thread reentrant lock  - <i>threading.RLock</i></h2>
+<div class="outline-text-2" id="text-16">
+</div>
+<div id="outline-container-org0dda612" class="outline-3">
+<h3 id="org0dda612"><span class="section-number-3">16.1.</span> what is reentrant lock</h3>
+<div class="outline-text-3" id="text-16-1">
+<p>
+a reentrant mutual exclusion lock aka &ldquo;reenrant mutex&rdquo; or &ldquo;reentrant lock&rdquo; for short, is like a mutex lock except it allows a thread to acquire the lock more than once.
+</p>
+<blockquote>
+<p>
+a reentrant lock is synchranization primitive that may be acquired multiple times by the same thread [&#x2026;] In the locked state,some thread owns the lock;in the unlocked state no thread owns it
+</p>
+</blockquote>
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/threading.html#rlock-objects.html">rlock objects &#x2013; Thread-based parallelism</a>
+</p>
+</div>
+<div id="outline-container-orgb7fe6cd" class="outline-4">
+<h4 id="orgb7fe6cd"><span class="section-number-4">16.1.1.</span> why we neet reentrant lock</h4>
+<div class="outline-text-4" id="text-16-1-1">
+<p>
+we can imagine critical sections spread across a number of funcstions,each protected by the same lock.A thread may call across these functions in course of normal execution and may call into one critical section from another critical section.
+</p>
+
+<p>
+a limitation of a (non-reentrant) mutex lock is that if a thread has acquired the lock that it cannot acquire it again.In fact, this situation will result in a deadblock as it will wait forever for the lock to be released so that it can be acquired, but it holds the lock and will not release it.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org858b679" class="outline-4">
+<h4 id="org858b679"><span class="section-number-4">16.1.2.</span> description of reentrant lock</h4>
+<div class="outline-text-4" id="text-16-1-2">
+<p>
+a reenrant lock will allow a thread to acquire the same lock again if it has already acquired it.This allows the thread to execute critical sections from within critical sections,as long as they are protected by same reentrant lock.
+</p>
+
+<p>
+each time a thread acquires the lock it must also release it, meaning that are recursive levels of acquire and release for the owning thread.As such,this type of lock is sometimes called a &ldquo;recursive mutex lock&rdquo;.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5ab5bd3" class="outline-3">
+<h3 id="org5ab5bd3"><span class="section-number-3">16.2.</span> how to use reentrant lock</h3>
+<div class="outline-text-3" id="text-16-2">
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create reentrant lock</span>
+<span style="color: #f0c674;">lock</span> = RLock()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquires the lock</span>
+lock.acquire()
+...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">release the lock</span>
+lock.release()
+</pre>
+</div>
+
+<p>
+the thread attempting to acquire the lock will block until the lock is acquired, such as if another thread currently holds the lock (once or more than once) then releases it.
+</p>
+
+<p>
+we can use &ldquo;<b>blocking</b>&rdquo; argument and &ldquo;<b>timeout</b>&rdquo; argument like normal mutex lock.
+bonus: we can use via &rsquo;<b>with</b>&rsquo; keyword for safety.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org84f7220" class="outline-3">
+<h3 id="org84f7220"><span class="section-number-3">16.3.</span> example of using reentrant lock</h3>
+<div class="outline-text-3" id="text-16-3">
+<div class="org-src-container">
+<pre class="src src-python">
+<span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #b5bd68;">from</span> random <span style="color: #b5bd68;">import</span> random
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">report</span>(lock,identifier):
+    <span style="color: #b5bd68;">with</span> lock:
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'&gt;thread </span>{identifier}<span style="color: #8abeb7;"> done'</span>)
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(lock,identifier,value):
+    <span style="color: #b5bd68;">with</span> lock:
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'&gt; thread </span>{identifier}<span style="color: #8abeb7;"> sleeping for </span>{value}<span style="color: #8abeb7;">'</span>)
+        time.sleep(value)
+        report(lock,identifier)
+<span style="color: #f0c674;">lock</span> = threading.RLock()
+<span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">10</span>):
+    threading.Thread(target=task,args=(lock,i,random())).start()
+
+</pre>
+</div>
+
+<p>
+running the examples creates 10 threads with target as task function.
+then executes them.only one thread can acquire the lock at time,and then once acquired,blocks and then reenters the same lock again to report the done message.
+</p>
+
+<p>
+if non-reentrant lock,e.g. a threading.Lock was used instead,then the thread would block forever waiting for the lock to become available,which it can&rsquo;t because the thread already holds the lock.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-org10cfe9d" class="outline-2">
+<h2 id="org10cfe9d"><span class="section-number-2">17.</span> thread condition - <i>threading.Condition</i></h2>
+<div class="outline-text-2" id="text-17">
+</div>
+<div id="outline-container-org5d7de9f" class="outline-3">
+<h3 id="org5d7de9f"><span class="section-number-3">17.1.</span> what is a threading condition</h3>
+<div class="outline-text-3" id="text-17-1">
+<p>
+in concurency,a condition (also called a monitor) allows multiple threads to be notified about some result.
+</p>
+
+<p>
+it combines both a mutual exclusion lock(mutex) and a conditional variable.
+</p>
+
+<p>
+a mutex allow can be used to protect a critical section, but it cannot be used to alert other threads that a condition has changed or been met.
+</p>
+
+<p>
+a condition can be acquired by a thread(like a mutex) after which it canbe wait to be notified by another thread that something has changed. while waiting, the thread is blocked and releases the lock for other threads to acquire.
+</p>
+
+<p>
+another thread can then acquire the condition, make change, and notify one, all, or a subset of threads waiting on the condition that something has changed. the waiting thread can then wake-up (be scheduled by the op. sys.), reacquire the condition  (mutex), perform checks on any changed state and perform required actions.
+</p>
+
+<p>
+this highlights that a condition and to allow threads to notify other threads waiting on the condition.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8bbcd9c" class="outline-3">
+<h3 id="org8bbcd9c"><span class="section-number-3">17.2.</span> how to use condition object</h3>
+<div class="outline-text-3" id="text-17-2">
+<p>
+we can create condition object by default it will create a new reentrant mutex lock (<b>threading.RLock</b>).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a new condition</span>
+
+<span style="color: #f0c674;">condition</span> = threading.Condition()
+
+</pre>
+</div>
+
+<p>
+we may have a reentrant or non-reentrant mutex that we wish to reuse in the condition for some good reason, in which case we can provide it to the constructor.
+</p>
+
+<p>
+this is unrecommended unless you know your use case has this requirement.The chance of getting into trouble is high.
+</p>
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a new condition with custom lock</span>
+
+<span style="color: #f0c674;">condition</span> = threading.Condition(lock=my_lock)
+
+</pre>
+</div>
+
+<p>
+<b>we can aquire and release conditions like the Locks</b>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the condition</span>
+condition.acquire()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait to be notified</span>
+condition.wait()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">release the condition</span>
+condition.release()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">alternate way of doing same things</span>
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the condition</span>
+<span style="color: #b5bd68;">with</span> condition:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait to be notified</span>
+    condition.wait()
+</pre>
+</div>
+
+<p>
+we can notify a single waitinh thread viaa the notify function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the condition</span>
+<span style="color: #b5bd68;">with</span> condition:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">notify a waiting thread</span>
+    condition.notify()
+...
+
+</pre>
+</div>
+
+<p>
+the notified thread will stop-blocking as soon as it can re-acquire the mutex within condition.This will be attemted automatically as part of its call to wait(), you do not need to do anything extra.
+</p>
+
+<p>
+if there are more than one thread waiting on the condition, we will not know which thread will be notified.
+</p>
+
+<p>
+we can notify all threads waitinh on yhe condition via the notify<sub>all</sub>() function.
+</p>
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the condition</span>
+<span style="color: #b5bd68;">with</span> condition:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">notify all threads waiting on the condition</span>
+    condition.notify_all()
+...
+
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd61c86a" class="outline-3">
+<h3 id="orgd61c86a"><span class="section-number-3">17.3.</span> example of wait and notify with a condition</h3>
+<div class="outline-text-3" id="text-17-3">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(condition, work_list):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for a moment</span>
+    time.sleep(<span style="color: #81a2be;">1</span>)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">add data to the work list</span>
+    work_list.append(<span style="color: #81a2be;">2</span>)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">notify a waiting thread that work is done</span>
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'thread sending notif...'</span>)
+    <span style="color: #b5bd68;">with</span> <span style="color: #f0c674;">condition</span>:
+        condition.notify()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a condition</span>
+condition = threading.Condition()
+<span style="color: #f0c674;">work_list</span> = <span style="color: #b294bb;">list</span>()
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'main thread waiting for data ...'</span>)
+<span style="color: #b5bd68;">with</span> <span style="color: #f0c674;">condition</span>:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">start a new thread to perform some work</span>
+    worker = threading.Thread(target=task, args=(condition,work_list))
+    worker.start()
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait to be notified</span>
+    condition.wait()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">we know the data is ready</span>
+<span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'got data: </span>{work_list}<span style="color: #8abeb7;">'</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgce7f565" class="outline-2">
+<h2 id="orgce7f565"><span class="section-number-2">18.</span> thread semaphore - <i>threading.Semaphore</i></h2>
+<div class="outline-text-2" id="text-18">
+<p>
+a semaphore is essentially a counter protected by a mutex lock used to limit the number of threads that can acces a resource.
+</p>
+</div>
+
+<div id="outline-container-org7e11de4" class="outline-3">
+<h3 id="org7e11de4"><span class="section-number-3">18.1.</span> what is a semaphore</h3>
+<div class="outline-text-3" id="text-18-1">
+<p>
+a semaphore is a concurency primitive that allows a limit on the number of threads that can acquire a lock protecting a critical section.
+</p>
+
+<p>
+it is an extension of a mutual exclusion (mutex) lock that adds a count for the number of threads that can acquire the lock before additional threads will block. once full, new threads can only acquire a position on the semaphore once existing thread holding the semaphore releases a position.
+</p>
+
+<p>
+internally, the semaphore maintains a counter protected by a mutex lock that is incremented each time the semphore is acquired and decremented each time it released.
+</p>
+
+<p>
+when semaphore is created, the upper limit on the counter is set. If it is set to be 1, then the semphore will operate like a mutex lock.
+</p>
+
+<p>
+A semaphore provides a useful concurency, in examples:
+</p>
+<ul class="org-ul">
+<li>limiting concurent;
+<ul class="org-ul">
+<li>socket connections to a server.</li>
+<li>file operations on a hard drive.</li>
+<li>calculations</li>
+</ul></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orge6d52c0" class="outline-3">
+<h3 id="orge6d52c0"><span class="section-number-3">18.2.</span> how to use a semaphore</h3>
+<div class="outline-text-3" id="text-18-2">
+<p>
+the <b>threading.Semaphore</b> instance must be configured when it is created to set the limit on the internal counter.This limit will match the number of concurrent threads that can hold the semaphore.
+</p>
+
+<p>
+in example
+</p>
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a semaphore with a limit of 100</span>
+<span style="color: #f0c674;">semaphore</span> = Semaphore(<span style="color: #81a2be;">100</span>)
+</pre>
+</div>
+
+<p>
+in this implementation,each time the semaphore is acquired,the internal counter is decremented. each time the semaphore is released, the internal counter is incremented.The semephore cannot be acquired if the semphore has no avaliable positions in which case, threads attempting to acquire it must block until a postion becomes avaliable.
+</p>
+</div>
+
+<div id="outline-container-orge8c7e01" class="outline-4">
+<h4 id="orge8c7e01"><span class="section-number-4">18.2.1.</span> acquiring and releasing</h4>
+<div class="outline-text-4" id="text-18-2-1">
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the semphore without blocking</span>
+semphore.acquire(blocking=<span style="color: #81a2be;">False</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the semaphore with a timeout</span>
+semaphore.acquire(timeout=<span style="color: #81a2be;">19</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">release the semaphore</span>
+semaphore.release()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the semphore</span>
+<span style="color: #b5bd68;">with</span> semphore:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">...</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb1a8a2f" class="outline-3">
+<h3 id="orgb1a8a2f"><span class="section-number-3">18.3.</span> example</h3>
+<div class="outline-text-3" id="text-18-3">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #b5bd68;">from</span> random <span style="color: #b5bd68;">import</span> random
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(semaphore, <span style="color: #f0c674;">number</span>:<span style="color: #b294bb;">int</span>):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">attempt to acquire the semaphore</span>
+    <span style="color: #b5bd68;">with</span> semaphore:
+        <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">process</span>
+        value = random()
+        time.sleep(value)
+        <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report result</span>
+        <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread </span>{number}<span style="color: #8abeb7;"> got </span>{value}<span style="color: #8abeb7;">'</span>)
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a semaphore</span>
+<span style="color: #f0c674;">semaphore</span> = threading.Semaphore()
+<span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">10</span>):
+    <span style="color: #f0c674;">worker</span> = threading.Thread(target=task,args=(semaphore, i))
+    worker.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for all workers to complete ...</span>
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org32fb662" class="outline-2">
+<h2 id="org32fb662"><span class="section-number-2">19.</span> thread event - <i>threading.Event</i></h2>
+<div class="outline-text-2" id="text-19">
+<p>
+an event is a thread-safe boolean flag.
+</p>
+</div>
+<div id="outline-container-org4cbdc61" class="outline-3">
+<h3 id="org4cbdc61"><span class="section-number-3">19.1.</span> how to use event object</h3>
+<div class="outline-text-3" id="text-19-1">
+<p>
+an event is a simple pritimitve that allows communitcation between threads.
+</p>
+
+<p>
+a <b>threading.Event</b> object wraps a boolean variable that can either be &ldquo;set&rdquo; (<b>True</b>) or &ldquo;not set&rdquo; (<b>False</b>). threads sharing the event instance can check if the event is set and set the event or clear event (make it not set), or wait for the event to be set.
+</p>
+
+<p>
+the <b>threading.Event</b> provides an easy way to share a boolean variable between threads that can act as a trigger for an action.
+</p>
+
+<blockquote>
+<p>
+this is one of the simplest mechanism for communitcation between threads: one thread signals an event and other threads wait for it.
+</p>
+</blockquote>
+
+<p>
+&#x2013; <a href="https://docs.python.org/3/library/threading.html#event-objects">Event objects,threading &#x2013; thread-based parallelism</a>
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create an instance of an event</span>
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">! and the event will be in the "not set" state.</span>
+<span style="color: #f0c674;">event</span> = threading.Event()
+
+...
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">check if the event is set</span>
+<span style="color: #b5bd68;">if</span> event.is_set():
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">do something ...</span>
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">set the event</span>
+event.<span style="color: #b294bb;">set</span>()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">mark the event as not sets</span>
+event.clear()
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for the event to be sets</span>
+event.wait()
+</pre>
+</div>
+
+<div class="org-center">
+<p>
+NOTE ⚠: waiting threads are only notified when <b>set()</b> function is called, not when <b>clear()</b> function is called
+</p>
+</div>
+
+<p>
+a &ldquo;<b>timeout</b>&rdquo; argument can be passed to the <b>wait()</b> function which will limit how long a thread will return True if the event was set while waiting, otherwise a value <b>False</b> returned indicates that the event was not set and called timedout.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for the event to be set with a timeout</span>
+event.wait(timeout=<span style="color: #81a2be;">10</span>)
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org4a9cf7f" class="outline-3">
+<h3 id="org4a9cf7f"><span class="section-number-3">19.2.</span> example</h3>
+<div class="outline-text-3" id="text-19-2">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #b5bd68;">from</span> random <span style="color: #b5bd68;">import</span> random
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(event, number):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for the event to be set</span>
+    event.wait()
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">begin processing</span>
+    <span style="color: #f0c674;">value</span> = random()
+    time.sleep(value)
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread </span>{number}<span style="color: #8abeb7;"> got </span>{value}<span style="color: #8abeb7;">'</span>)
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a shared event object</span>
+<span style="color: #f0c674;">event</span> = threading.Event()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a suite of threads</span>
+<span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">5</span>):
+    <span style="color: #f0c674;">thread</span> = threading.Thread(target=task,args=(event,i))
+    thread.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for a moment</span>
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">' main thread blocking ...'</span>)
+time.sleep(<span style="color: #81a2be;">2</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">start processing in all threads</span>
+event.<span style="color: #b294bb;">set</span>()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for all threads to finnish ...</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-org6456490" class="outline-2">
+<h2 id="org6456490"><span class="section-number-2">20.</span> timer threads - <i>threading.Timer</i></h2>
+<div class="outline-text-2" id="text-20">
+<p>
+a timer thread will execute a function after a time delay.
+</p>
+</div>
+<div id="outline-container-org27434f1" class="outline-3">
+<h3 id="org27434f1"><span class="section-number-3">20.1.</span> how to use a timer thread</h3>
+<div class="outline-text-3" id="text-20-1">
+<p>
+the <b>threading.Timer</b> is an extension of fhe <b>threading.Thread</b> class because of this reason
+we can use it just like a normal thread instance.
+</p>
+
+<p>
+first, we can create an instance of the timer and configure it.This includes the time to wait before executing in seconds, the function to execute once triggered, adn any arguments to the target function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create with configuration a timer  thread</span>
+<span style="color: #f0c674;">timerT</span> = threading.Timer(<span style="color: #81a2be;">10</span>,task,args=(arg1,arg2))
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">to start timer func we use</span>
+timerT.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">if we decide cancel the timer before target function has executed,we can use timerthread's cancel() method</span>
+
+timerT.cancel()
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org21bbd08" class="outline-3">
+<h3 id="org21bbd08"><span class="section-number-3">20.2.</span> example of using a timer thread</h3>
+<div class="outline-text-3" id="text-20-2">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(message):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report the message</span>
+    <span style="color: #b294bb;">print</span>(message)
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a thread timer object</span>
+<span style="color: #f0c674;">timerT</span> = threading.Timer(<span style="color: #81a2be;">3</span>, task, args=(<span style="color: #8abeb7;">'hello world'</span>,))
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">start the timer object</span>
+timerT.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for the timer to finish</span>
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'waiting for the timer ...'</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgca329c7" class="outline-2">
+<h2 id="orgca329c7"><span class="section-number-2">21.</span> thread barrier - <i>threading.Barrier</i></h2>
+<div class="outline-text-2" id="text-21">
+</div>
+<div id="outline-container-orgc225a3e" class="outline-3">
+<h3 id="orgc225a3e"><span class="section-number-3">21.1.</span> what is barrier</h3>
+<div class="outline-text-3" id="text-21-1">
+<p>
+a barrier is a synchranization primitive.
+</p>
+
+<p>
+it allows multiple threads to wait on the same barrier object instance (e.g. at the same point in code) until a predefined fixed number of threads arrive (e.g. barrier is full), after which all threads are then notified and released to continue their execution.
+</p>
+
+<p>
+internally, a barrier maintains a count of the number of threads waiting on the barrier and a configured maximum number of parties (threads) that are expected. Once the expected number of parties reaches the pre-defined maximum, all waiting threads are notified.
+</p>
+</div>
+</div>
+<div id="outline-container-org470e822" class="outline-3">
+<h3 id="org470e822"><span class="section-number-3">21.2.</span> how to use barrier</h3>
+<div class="outline-text-3" id="text-21-2">
+<p>
+a barrier instance must first be created and configured via the constructor specifying the number of parties (threads) that must arrive before the barrier will be lifted.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a barrier</span>
+<span style="color: #f0c674;">Tbarrier</span> = threading.Barrier(<span style="color: #81a2be;">10</span>)
+</pre>
+</div>
+
+<p>
+we can also perform an action once all threads reach the barrier which can be specified via &ldquo;action&rdquo; arg in the constructor.
+</p>
+
+<p>
+this action mus be callable such as a function or a lambda that does not take any arguments and will be executed by one thread once all threads reach the barrier and call the <b>wait()</b> function.
+</p>
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #f0c674;">Tbarrier</span> = threading.Barrier(<span style="color: #81a2be;">10</span>,action=my_func)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">we can use timeout too</span>
+Tbarrier = threading.Barrier(<span style="color: #81a2be;">10</span>,action=my_func,timedout=<span style="color: #81a2be;">5</span>)
+Tbarrier = threading.Barrier(<span style="color: #81a2be;">10</span>,timedout=<span style="color: #81a2be;">5</span>)
+</pre>
+</div>
+
+<p>
+a thread can reach and wait on the barrier via the <b>wait()</b> function.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait on the barrier for all other threads to arrive</span>
+barrier.wait()
+</pre>
+</div>
+
+<p>
+this iss a blocking call and will return once all other threads (the pre-configured number of parties) have reached the barrier.
+</p>
+
+<p>
+the wait function does return an integer indicating the number of parties remaining to arrive at the barrier.If a thread was the last thread to arrive, then the return value will be zero.This is helpful if you want the last thread or one thread to perform an action after the barrier is released, and alternative to using the &ldquo;<b>action</b>&rdquo; arg in constructor.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait on the barrier</span>
+<span style="color: #f0c674;">remaining</span> = barrier.wait()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">after released, check if this was the last party</span>
+<span style="color: #b5bd68;">if</span> remaining == <span style="color: #81a2be;">0</span>:
+    <span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'i was last ..'</span>)
+</pre>
+</div>
+
+<p>
+a timeout can be set on the call to wait in second via the &ldquo;<b>timeout</b>&rdquo; argument.If the timeout expires before all parties reach the  barrier, a <b>BrokenBarrierError</b> will be raised
+in all threads waiting on the barrier and the barrier will be marked as broken.
+</p>
+
+<p>
+if a timeout is used via &ldquo;<b>timeout</b>&rdquo; argument  or the default timeout in the constructor, then all calls to the <b>wait()</b> function may need to handle the <b>BrokenBarrierError</b>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait on the barrier for all other threads to arrive</span>
+<span style="color: #b5bd68;">try</span>:
+    barrier.wait()
+<span style="color: #b5bd68;">except</span> BrokenBarrierError:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">...</span>
+</pre>
+</div>
+
+<p>
+we can also abort the barrier.aborting the barrier means that all threads waiting on the barrier via the <b>wait()</b> function will raise <b>BrokenBarrierError</b> and the barrier will be put in the broken state.
+</p>
+
+<p>
+to abort the barrier we use <b>abort()</b> function
+</p>
+<div class="org-src-container">
+<pre class="src src-py">barrier.abort()
+</pre>
+</div>
+
+<p>
+a broken barrier cannot be used.Caalls to <b>wait()</b> will raise <b>BrokenBarrierError</b>.
+</p>
+
+<p>
+a barrier can be fixed and made ready for use again by calling the <b>reset()</b> function.
+</p>
+
+<p>
+if you cancel a coodination effort although you wish to retry it again with same barrier instance.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">reset a broken barrier</span>
+barrier.reset()
+</pre>
+</div>
+
+<p>
+the status of the barrier can be checked via attributes.
+</p>
+
+<ul class="org-ul">
+<li><b>parties</b>: reports the canfigured number of parties that must reach the barrier for it to be lifted.</li>
+<li><b>n<sub>waiting</sub></b>: reports the current number of threads waiting on the barrier.</li>
+<li><b>broken</b>: attribute indicates whether the barrier is currently is currently broken or not.</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgec70119" class="outline-3">
+<h3 id="orgec70119"><span class="section-number-3">21.3.</span> example</h3>
+<div class="outline-text-3" id="text-21-3">
+<p>
+in this example we will create a suite of threads, each required to perform some blocking calculation we will use a barrier to coodinate all threads after they have finished their work and perform some action in the main thread. this is a good proxy for the types of coodination we may need to perform with a barrier.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
+<span style="color: #b5bd68;">from</span> random <span style="color: #b5bd68;">import</span> random
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">target function to prepare some work</span>
+<span style="color: #b5bd68;">def</span> <span style="color: #de935f;">task</span>(barrier, number):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">generate a unique value</span>
+    <span style="color: #f0c674;">value</span> = random() * <span style="color: #81a2be;">10</span>
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">block for a moment</span>
+    time.sleep(value)
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report result</span>
+    <span style="color: #b294bb;">print</span>(f<span style="color: #8abeb7;">'thread </span>{number}<span style="color: #8abeb7;"> done, got: </span>{value}<span style="color: #8abeb7;">'</span>)
+    barrier.wait()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create a barrier</span>
+Tbarrier = threading.Barrier(<span style="color: #81a2be;">5</span>+<span style="color: #81a2be;">1</span>)
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">create the worker threads</span>
+<span style="color: #b5bd68;">for</span> i <span style="color: #b5bd68;">in</span> <span style="color: #b294bb;">range</span>(<span style="color: #81a2be;">5</span>):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">start a new thread to perform some work</span>
+    <span style="color: #f0c674;">worker</span> = threading.Thread(target=task,args=(Tbarrier,i))
+    worker.start()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">wait for all thread to finish</span>
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'main thread waiting on all results ...'</span>)
+Tbarrier.wait()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">report once all threads are done</span>
+<span style="color: #b294bb;">print</span>(<span style="color: #8abeb7;">'all threads have their result'</span>)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2c97b37" class="outline-2">
+<h2 id="org2c97b37"><span class="section-number-2">22.</span> pyhton : threading best practices</h2>
+<div class="outline-text-2" id="text-22">
+</div>
+<div id="outline-container-org2793d0a" class="outline-3">
+<h3 id="org2793d0a"><span class="section-number-3">22.1.</span> tip 1: use context managers</h3>
+<div class="outline-text-3" id="text-22-1">
+<p>
+acquire and release locks using a context manager, wherever possible.
+</p>
+</div>
+
+<div id="outline-container-org5d65690" class="outline-4">
+<h4 id="org5d65690"><span class="section-number-4">22.1.1.</span> not use this</h4>
+<div class="outline-text-4" id="text-22-1-1">
+<div class="org-src-container">
+<pre class="src src-python">...
+
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock manually</span>
+lock.acquire()
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">critical section...</span>
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">release the lock</span>
+lock.release()
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org1d79ac9" class="outline-4">
+<h4 id="org1d79ac9"><span class="section-number-4">22.1.2.</span> use this for better control over threads (more safe)</h4>
+<div class="outline-text-4" id="text-22-1-2">
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+lock.acquire()
+<span style="color: #b5bd68;">try</span>:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">critical section ...</span>
+<span style="color: #b5bd68;">finally</span>:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">always release the lock</span>
+    lock.release()
+
+</pre>
+</div>
+
+<p>
+same but less code
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+<span style="color: #b5bd68;">with</span> lock:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">critical section ...</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgb1217ce" class="outline-4">
+<h4 id="orgb1217ce"><span class="section-number-4">22.1.3.</span> the real benefit</h4>
+<div class="outline-text-4" id="text-22-1-3">
+<p>
+the benefit of the context manager is that the lock is always released as soon as the block exited,regardless of how it is exited, e.g normally, a return, an error, or an exception.
+</p>
+
+<p>
+this applies to a number of concurency primitives,such as:
+</p>
+
+<ul class="org-ul">
+<li>acquiring ;
+<ul class="org-ul">
+<li>mutex lock via <b>threading.Lock</b> class</li>
+<li>reentrant mutex lock via <b>threading.RLock</b> class</li>
+<li>semaphore via <b>threading.Semaphore</b> class</li>
+<li>condition via <b>threading.Condition</b> class</li>
+</ul></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga79040f" class="outline-3">
+<h3 id="orga79040f"><span class="section-number-3">22.2.</span> tip 2 : Use timedouts when waiting</h3>
+<div class="outline-text-3" id="text-22-2">
+<p>
+always use a timedout when waiting on a blocking call.
+</p>
+
+<p>
+many calls made on concurency primitives may block.
+</p>
+
+<p>
+examples:
+</p>
+
+<ul class="org-ul">
+<li>waiting to acquire a <b>threading.Lock()</b> via <b>acquire()</b>.</li>
+<li>waiting for a thread to terminate via <b>join()</b>.</li>
+<li>waiting to be notified on a <b>threading.Condition</b> via <b>wait()</b>.</li>
+<li>and more.</li>
+</ul>
+
+<p>
+All blocking calls on concurrency primitives take a &ldquo;<b>timeout</b>&rdquo; argument and return <b>True</b> if the call was successful or <b>False</b> otherwise.
+</p>
+
+<p>
+Do not call a blocking call without a timedout,wherever possible.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+<span style="color: #b5bd68;">if</span> <span style="color: #b5bd68;">not</span> lock.acquire(timedout=<span style="color: #81a2be;">2</span>*<span style="color: #81a2be;">60</span>):
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">handle failure case ...</span>
+</pre>
+</div>
+
+<p>
+this allow the waiting thread to give-up waiting after a fixed time limit and then attempt to rectify the situation, e.g. report and error, force termination, etc.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4d8a233" class="outline-3">
+<h3 id="org4d8a233"><span class="section-number-3">22.3.</span> tip 3: use a mutex to protect critical sections</h3>
+<div class="outline-text-3" id="text-22-3">
+<p>
+always use a mutual exclusion (mutex) lock to protect critical sections in code.
+</p>
+
+<p>
+Critical sections are sensitive parts of code that can be executed by multiple threads concurency and may result in race conditions.
+</p>
+
+<p>
+a critical section maay refer to a single block code, but it also refers to multiple accesses oto the same data variable or a resource from multiple functions.
+</p>
+
+<p>
+a mutex lock can be used to ensure that only one thread at a time executes a critical section of code at time, while all other threads trying to execute the same code must wait until the currently executing thread is finished with the critical section and releases the lock.
+</p>
+
+<p>
+each thread must attempt to acquire the lock at the beginning of the critical section.if the lock has not been obtained,then thread will acquire it and other threads must wait until the thread that acquired the lock releases it.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python">...
+<span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">acquire the lock</span>
+<span style="color: #b5bd68;">with</span> lock:
+    <span style="color: #969896; font-style: italic;"># </span><span style="color: #969896; font-style: italic;">critical section ...</span>
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-orgff17755" class="outline-3">
+<h3 id="orgff17755"><span class="section-number-3">22.4.</span> tip 4: acquire locks in order</h3>
+<div class="outline-text-3" id="text-22-4">
+<p>
+acquire locks in the same order throught the application, wherever possible.
+</p>
+
+<p>
+this is called &ldquo;lock ordering&rdquo;.
+</p>
+
+<p>
+in some applications you may be able to abstract the acquisition of lock using a list of <b>threading.Lock</b> object that may be itered  and acquired in order, or a function call that acquired locks in sonsistent order.
+</p>
+
+<p>
+when this is not possible, you may need to audit your code to confirm that all paths throught the code acquire the locks in same order.
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org01529c2" class="outline-2">
+<h2 id="org01529c2"><span class="section-number-2">23.</span> python : threading common errors</h2>
+<div class="outline-text-2" id="text-23">
+</div>
+<div id="outline-container-org87cbf4f" class="outline-3">
+<h3 id="org87cbf4f"><span class="section-number-3">23.1.</span> race conditions</h3>
+</div>
+<div id="outline-container-org54a1375" class="outline-3">
+<h3 id="org54a1375"><span class="section-number-3">23.2.</span> thread deadlocks</h3>
+</div>
+<div id="outline-container-orgf1c649a" class="outline-3">
+<h3 id="orgf1c649a"><span class="section-number-3">23.3.</span> thread livelocks</h3>
+</div>
+</div>
+<div id="outline-container-org53d1644" class="outline-2">
+<h2 id="org53d1644"><span class="section-number-2">24.</span> python threading common questions</h2>
+<div class="outline-text-2" id="text-24">
+<p>
+<b>*
+*</b>
+<b>*
+*</b>
+<b>*
+*</b>
+<b>*
+*</b>
+<b>*
+*</b>
+**
+</p>
+</div>
+</div>
+<div id="outline-container-orgb6845a9" class="outline-2">
+<h2 id="orgb6845a9"><span class="section-number-2">25.</span> resources</h2>
+<div class="outline-text-2" id="text-25">
+<ul class="org-ul">
+<li><a href="https://superfastpython.com/threading-in-python/#Python_Threads">https://superfastpython.com/threading-in-python/#Python_Threads</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: mal1kc</p>
+<p class="date">Created: 2023-03-14 Tue 22:09</p>
+</div>
+</body>
+</html>

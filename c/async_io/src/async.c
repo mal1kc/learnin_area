@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
   ret = aio_return(aio);
   fclose(fp);
 
-  printf("While we were reading, we counted up %lu times\n", counter);
+  printf("while we were reading, we counted up %lu times\n", counter);
 
   if (ret > 0) {
     printf("got %d bytes:\n", ret);

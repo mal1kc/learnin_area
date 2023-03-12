@@ -2,7 +2,7 @@
 
 > all operators in C
 >
-> * && logial AND
+> * && logical AND
 > * || logical OR
 > * ! logical NOT
 > * ^ logical XOR
@@ -12,8 +12,8 @@
 > * ~ bitwise NOT
 > * << bitwise left shift
 > * \>> bitwise right shift
-> * ++ increment + assign
-> * -- decrement + assign
+> * ++ increment + assigment
+> * -- decrement + assigment
 > * += increment + assigment
 > * -= decrement + assigment
 > * *= multiplication

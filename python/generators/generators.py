@@ -12,8 +12,8 @@ def get_values():
     yield 'word'
     yield 123
     # return 42 # very uncommon to return something
-    # return doesnt return in next call
-    # it raies StopIteration: ReturnValue  Exception
+    # return doesn't return in next call
+    # it raise StopIteration: ReturnValue  Exception
     # -> this function gives StopIteration: 42
 
 
@@ -80,7 +80,7 @@ class MyDataPoint(NamedTuple):
 # because file size not matter while reading
 # if you read line by line with generators
 
-# if file is 1GiB it doesnt matter because you reading
+# if file is 1GiB it doesn't matter because you reading
 # line by line with generator,program not hold all data in memory it holds
 # which line current line is and next line is
 
@@ -149,7 +149,7 @@ def example_collatz():
     for i in collatz_list(n):
         if not (next(collatz_gen) == i):
             print(f'it not work same:{next(print_collatz_gen)} == {i}')
-            # this line never work beacuse it will work with less memory
+            # this line never work because it will work with less memory
 
     # first = True
     # for i in collatz(n):
@@ -161,7 +161,7 @@ def example_collatz():
     #
     # print(collatz_list(n))
 
-# generators can be used other sequencess that we know infinite
+# generators can be used other sequences that we know infinite
 
 
 def powers_of_two():
@@ -194,7 +194,7 @@ def example_gen_comp():
 
 
 def example_composable():
-    # this all works lazzly (memory efficent)
+    # this all works lazily (memory efficient)
     with open('./nums.txt') as file:
         nums = (row.partition("#")[0].rstrip() for row in file)
         nums = (row for row in nums if row)

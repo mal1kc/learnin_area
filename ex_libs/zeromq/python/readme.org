@@ -1,0 +1,143 @@
+#+title: basics of pyzmq (zmq with python) with examples
+#+author: mal1kc
+
+* about this file
+
+this file heavly uses examples of https://zguide.zeromq.org/docs/
+
+* hello world server-client
+
+the REQ-REP socket pair is in lockstep.the client issues [[http://api.zeromq.org/master:zmq_send][zmq_send()]] and then [[http://api.zeromq.org/master:zmq_recv()][zmq_recv()]], in a loop (or once if that's all it needs). doing any other sequence ( like sending two messages in a row) will result in a return code of -1 from the send or recv call. Similarly, the service issues  [[http://api.zeromq.org/master:zmq_recv][zmq_recv()]] and then [[http://api.zeromq.org/master:zmq_send][zmq_send()]] in that order, as often it needs to.
+
+
+server
+
+#+begin_src python :tangle hello_srvr.py :shebang "#!./.venv/bin/python"
+#
+#   Hello World server in Python
+#   Binds REP socket to tcp://*:5555
+#   Expects b"Hello" from client, replies with b"World"
+
+import time
+import zmq
+
+context = zmq.Context()
+socket = context.socket(zmq.REP)
+socket.bind("tcp://*:5555")
+
+while True:
+    #  Wait for next request from client
+    message = socket.recv()
+    print(f"received request: {message}")
+
+    #  Do some 'work'
+    time.sleep(1)
+
+    #  Send reply back to client
+    socket.send_string("world")
+#+end_src
+
+client
+
+#+begin_src python :tangle hello_clint.py :shebang "#!./.venv/bin/python"
+#
+#   Hello World client in Python
+#   Connects REQ socket to tcp://localhost:5555
+#   Sends "Hello" to server, expects "World" back
+#
+
+import zmq
+
+context = zmq.Context()
+
+#  Socket to talk to server
+print("connecting to hello world server...")
+socket = context.socket(zmq.REQ)
+socket.connect("tcp://localhost:5555")
+
+#  Do 10 requests, waiting each time for a response
+for request in range(10):
+    print(f"sending request {request} ...")
+    socket.send_string("Hello")
+
+    #  Get the reply.
+    message = socket.recv()
+    print(f"received reply {request} [ {message} ]")
+#+end_src
+
+* weather update example - server, client
+
+There’s no start and no end to this stream of updates, it’s like a never ending broadcast.
+
+server :
+
+#+begin_src python :tangle wu_srvr.py :shebang "#!./.venv/bin/python"
+#
+#   Weather update server
+#   Binds PUB socket to tcp://*:5556
+#   Publishes random weather updates
+#
+
+import zmq
+from random import randrange
+
+
+context = zmq.Context()
+socket = context.socket(zmq.PUB)
+socket.bind("tcp://*:5556")
+
+
+try: # to not give us error when closing
+    while True:
+        zipcode = randrange(1, 100000)
+        temperature = randrange(-20, 50)
+        relhumidity = randrange(10, 60)
+
+        socket.send_string(f"{zipcode} {temperature} {relhumidity}")
+except KeyboardInterrupt:
+    print("KeyboardInterrupt catched exiting ...")
+#+end_src
+
+client:
+
+#+begin_src python :tangle wu_clint.py :shebang "#!./.venv/bin/python"
+#   Weather update client
+#   Connects SUB socket to tcp://localhost:5556
+#   Collects weather updates and finds avg temp in zip-code
+#
+
+import sys
+import zmq
+
+
+#  Socket to talk to server
+context = zmq.Context()
+socket = context.socket(zmq.SUB)
+
+print("Collecting updates from weather server...")
+socket.connect("tcp://localhost:5556")
+
+# Subscribe to zipcode, default is NYC, 10001
+zip_filter = sys.argv[1] if len(sys.argv) > 1 else "10001"
+socket.setsockopt_string(zmq.SUBSCRIBE, zip_filter)
+
+# Process 5 updates
+total_temp = 0
+for update_nbr in range(5):
+    string = socket.recv_string()
+    zipcode, temperature, relhumidity = string.split()
+    total_temp += int(temperature)
+
+    print((f"Average temperature for zipcode "
+       f"'{zip_filter}' was {total_temp / (update_nbr+1)} ℃ "))
+#+end_src
+
+* publish-subsribe
+
+- *Note that when you use a SUB socket you must set a subscription using ~zmq_setsockopt()~ and SUBSCRIBE, as in this code. If you don’t set any subscription, you won’t get any messages. It’s a common mistake for beginners. The subscriber can set many subscriptions, which are added together. That is, if an update matches ANY subscription, the subscriber receives it. The subscriber can also cancel specific subscriptions. A subscription is often, but not always, a printable string. See [[http://api.zeromq.org/master:zmq_setsockopt][zmq_setsockopt()]] for how this works.*
+
+- *The PUB-SUB socket pair is asynchronous. The client does ~zmq_recv()~, in a loop (or once if that’s all it needs). Trying to send a message to a SUB socket will cause an error. Similarly, the service does ~zmq_send()~ as often as it needs to, but must not do ~zmq_recv()~ on a PUB socket.*
+
+- In theory with ZeroMQ sockets, it does not matter which end connects and which end binds. However, in practice there are undocumented differences that I’ll come to later. For now, bind the PUB and connect the SUB, unless your network design makes that impossible.
+
+- *There is one more important thing to know about PUB-SUB sockets: you do not know precisely when a subscriber starts to get messages. Even if you start a subscriber, wait a while, and then start the publisher, the subscriber will always miss the first messages that the publisher sends. This is because as the subscriber connects to the publisher (something that takes a small but non-zero time), the publisher may already be sending messages out.*

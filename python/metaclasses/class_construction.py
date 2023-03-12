@@ -10,7 +10,7 @@ class A:
 
 
 def make_A():
-    # how class maked
+    # how class made
     name = "A"
     bases = ()
 
@@ -45,7 +45,7 @@ def make_A_more_accurate():
     return A
 
 
-# metaclasses is point of custumization in class creation progress
+# metaclasses is point of customization in class creation progress
 
 
 class MyMetaClass(type):

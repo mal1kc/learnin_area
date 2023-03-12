@@ -21,7 +21,7 @@ int write_file_Ios_filemode() {
 
   std::ofstream outf{"sample.txt", std::ios::app};
   if (!outf) {
-    std::cerr << "nope thats not right, sample.txt could not be openeed for "
+    std::cerr << "nope that's not right, sample.txt could not be openeed for "
                  "writing\n";
     return 1;
   }
@@ -73,7 +73,7 @@ int read_sample() {
 
 int write_sample() {
   // ofstream is usde for writing files
-  std::ofstream outf{"sample.txt"}; // created outfilestream for writing
+  std::ofstream outf{"sample.txt"}; // created out filestream for writing
 
   if (!outf) // checked for can we write
   {

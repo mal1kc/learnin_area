@@ -27,7 +27,7 @@
  *  std::regex_match is used to validated that string follows a pattern
  * \ (a date, a phone number, and so on)
  *
- *  std::search is used to perform the equivalent of a greo in piece of text
+ *  std::search is used to perform the equivalent of a grep in piece of text
  */
 
 int example_regexlib_usage() {
