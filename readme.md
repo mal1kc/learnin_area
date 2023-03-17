@@ -1,3 +1,3 @@
 # learnin_area
 
-my learning notes
+notes and source codes that i take while i learn stuff
