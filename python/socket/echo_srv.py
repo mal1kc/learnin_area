@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+!#/bin/env python3
 import socket
 
 HOST = "127.0.0.1"  # localhost or "127.0.0.1" (standart loopback interface address)

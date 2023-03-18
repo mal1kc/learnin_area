@@ -1386,21 +1386,7 @@ in some applications you may be able to abstract the acquisition of lock using a
 
 when this is not possible, you may need to audit your code to confirm that all paths throught the code acquire the locks in same order.
 
-* python : threading common errors
-** race conditions
-** thread deadlocks
-** thread livelocks
-* python threading common questions
-**
-**
-**
-**
-**
-**
-**
-**
-**
-**
-**
-* resources
+
+* resources - read more about
  - https://superfastpython.com/threading-in-python/#Python_Threads
+ - https://superfastpython.com/

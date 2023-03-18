@@ -1,100 +1,95 @@
 
 # Table of Contents
 
-1.  [what are threads](#orga830521)
-2.  [thread vs process](#org552037d)
-3.  [life-cycle of thread](#org852c72b)
-4.  [run a func in thread](#orgd5c4186)
-    1.  [how to run a func in thread](#orgb8cc8b8)
-        1.  [example](#org7ac3d68)
-        2.  [example with arguments](#org2497906)
-5.  [extend the thread class](#org037b407)
-    1.  [possible usage cases](#orgbbfd58a)
-    2.  [example of extending the thread class](#orgf660015)
-    3.  [example of extending the thread class with return values](#orgc6605cf)
-6.  [thread instance attributes](#org5415813)
-    1.  [thread name](#orgf3f6491)
-    2.  [thread daemon](#orgd491053)
-    3.  [thread identifier](#org47eecf5)
-    4.  [thread native identifier](#orgebd124b)
-    5.  [thread alive status](#org9de7c37)
-        1.  [in example:](#org0a7d8e4)
-7.  [configure threads](#org14e2fa2)
-    1.  [how to configure thread name](#org0eea998)
-    2.  [how to configure thread daemon](#orga70ac9c)
-        1.  [for example:](#org5207c55)
-8.  [whats main thread](#org1e9762d)
-9.  [Thread Utilities](#org77698e3)
-    1.  [number of active threads](#org060da00)
-    2.  [current thread](#orgf0b2b84)
-    3.  [thread identifier](#org89785d9)
-    4.  [native thread identifier](#orgdfb373e)
-    5.  [enumarate active threads](#org28c665e)
-10. [thread exception handling](#org0e3c2c5)
-    1.  [unhandled exception](#orgdb45f9d)
-    2.  [exception hook](#org2795341)
-        1.  [example](#orgbc1cc89)
-11. [limitation of threads in cpython](#orgc334cdd)
-12. [when to use thread](#org71fb41e)
-    1.  [use threads for blocking IO](#org09709ca)
-    2.  [use threads external c code (that realses the GIL)](#org64f24a8)
-    3.  [use threads with (some) third-party python interpreter](#org751fd6e)
-13. [threads blocking calls](#org03fd57c)
-    1.  [blocking calls on concurrency primitives](#orgc37660c)
-    2.  [blocking calls for I/O](#orgdbb4501)
-    3.  [blocking calls to sleep](#org6670dfe)
-14. [thread-local data](#org3cadbff)
-    1.  [example](#orgcac5e85)
-15. [thread mutex lock - *threading.Lock*](#org8208a23)
-    1.  [what is mutual exclusion lock](#orgeed7e81)
-        1.  [why we need mutual exclusion lock](#org3184eec)
-        2.  [description of mutex](#org8f885e3)
-    2.  [how to use mutex lock](#org5eb3e47)
-        1.  [for example](#org2b52043)
-    3.  [example of using mutex lock](#orgd823b35)
-16. [thread reentrant lock  - *threading.RLock*](#org37098c4)
-    1.  [what is reentrant lock](#org1f33438)
-        1.  [why we neet reentrant lock](#org231f100)
-        2.  [description of reentrant lock](#orgeb0a41d)
-    2.  [how to use reentrant lock](#org0b3a718)
-    3.  [example of using reentrant lock](#org9b774bd)
-17. [thread condition - *threading.Condition*](#org60fdc5b)
-    1.  [what is a threading condition](#org9611345)
-    2.  [how to use condition object](#org7e0e99c)
-    3.  [example of wait and notify with a condition](#orgc89440b)
-18. [thread semaphore - *threading.Semaphore*](#org30a0e55)
-    1.  [what is a semaphore](#orgb74d2da)
-    2.  [how to use a semaphore](#orgda7c16d)
-        1.  [acquiring and releasing](#org758f8ad)
-    3.  [example](#orgdde4761)
-19. [thread event - *threading.Event*](#orgd108cfb)
-    1.  [how to use event object](#org30308a7)
-    2.  [example](#orgc994d92)
-20. [timer threads - *threading.Timer*](#orgab7eb34)
-    1.  [how to use a timer thread](#orgead3047)
-    2.  [example of using a timer thread](#org389c626)
-21. [thread barrier - *threading.Barrier*](#org7e863f5)
-    1.  [what is barrier](#org483d237)
-    2.  [how to use barrier](#orga45a656)
-    3.  [example](#orge013f9d)
-22. [pyhton : threading best practices](#orgced8351)
-    1.  [tip 1: use context managers](#orgc7bd03a)
-        1.  [not use this](#org8e8932b)
-        2.  [use this for better control over threads (more safe)](#org329282e)
-        3.  [the real benefit](#orge21d617)
-    2.  [tip 2 : Use timedouts when waiting](#org899a1df)
-    3.  [tip 3: use a mutex to protect critical sections](#org052bd9c)
-    4.  [tip 4: acquire locks in order](#org919af00)
-23. [python : threading common errors](#org5d8efe7)
-    1.  [race conditions](#org3bec44a)
-    2.  [thread deadlocks](#orga72c9ab)
-    3.  [thread livelocks](#org5179bab)
-24. [python threading common questions](#orgc0ab234)
-25. [resources](#orgd723a0a)
+1.  [what are threads](#orgcf6e498)
+2.  [thread vs process](#org9335253)
+3.  [life-cycle of thread](#org744349d)
+4.  [run a func in thread](#org4c6fab3)
+    1.  [how to run a func in thread](#org4426654)
+        1.  [example](#org71b7a62)
+        2.  [example with arguments](#org503189b)
+5.  [extend the thread class](#orge7aff0a)
+    1.  [possible usage cases](#orgc9fe10c)
+    2.  [example of extending the thread class](#orgee0a207)
+    3.  [example of extending the thread class with return values](#org3b36ab6)
+6.  [thread instance attributes](#org992af7f)
+    1.  [thread name](#org366cfc9)
+    2.  [thread daemon](#org379488f)
+    3.  [thread identifier](#org9d5d3bc)
+    4.  [thread native identifier](#orged41eba)
+    5.  [thread alive status](#org47d81db)
+        1.  [in example:](#org50bcc63)
+7.  [configure threads](#orgaaa42b4)
+    1.  [how to configure thread name](#orgb42dbc2)
+    2.  [how to configure thread daemon](#orge9e5952)
+        1.  [for example:](#org65a4a42)
+8.  [whats main thread](#orga6268da)
+9.  [Thread Utilities](#org7bca341)
+    1.  [number of active threads](#org6490d15)
+    2.  [current thread](#org9672123)
+    3.  [thread identifier](#orgceba026)
+    4.  [native thread identifier](#org78786ab)
+    5.  [enumarate active threads](#org3c0b699)
+10. [thread exception handling](#org47122aa)
+    1.  [unhandled exception](#orgde50c0b)
+    2.  [exception hook](#orgb209cb8)
+        1.  [example](#org0d5efa9)
+11. [limitation of threads in cpython](#orgdb161aa)
+12. [when to use thread](#orgb24b47f)
+    1.  [use threads for blocking IO](#org543eb72)
+    2.  [use threads external c code (that realses the GIL)](#org12d4b10)
+    3.  [use threads with (some) third-party python interpreter](#orga17cc0d)
+13. [threads blocking calls](#org7e68a89)
+    1.  [blocking calls on concurrency primitives](#orgb2bdae8)
+    2.  [blocking calls for I/O](#org4eb22d3)
+    3.  [blocking calls to sleep](#org3ae67ea)
+14. [thread-local data](#org2117660)
+    1.  [example](#org0df91df)
+15. [thread mutex lock - *threading.Lock*](#orgd6d8a95)
+    1.  [what is mutual exclusion lock](#orgc6ad994)
+        1.  [why we need mutual exclusion lock](#orgf0ace02)
+        2.  [description of mutex](#org408ef10)
+    2.  [how to use mutex lock](#orge049d82)
+        1.  [for example](#org517ead9)
+    3.  [example of using mutex lock](#org3e84334)
+16. [thread reentrant lock  - *threading.RLock*](#orgfae16de)
+    1.  [what is reentrant lock](#org6e2364c)
+        1.  [why we neet reentrant lock](#org0059070)
+        2.  [description of reentrant lock](#org6c11d7c)
+    2.  [how to use reentrant lock](#org5261bb1)
+    3.  [example of using reentrant lock](#org0a7c07c)
+17. [thread condition - *threading.Condition*](#orgc942cd2)
+    1.  [what is a threading condition](#org8590788)
+    2.  [how to use condition object](#org29dd753)
+    3.  [example of wait and notify with a condition](#org8218e09)
+18. [thread semaphore - *threading.Semaphore*](#orge3f3be0)
+    1.  [what is a semaphore](#org92a58a0)
+    2.  [how to use a semaphore](#org27aa1ee)
+        1.  [acquiring and releasing](#org961a242)
+    3.  [example](#org5adb2ea)
+19. [thread event - *threading.Event*](#org3357e88)
+    1.  [how to use event object](#orgc7f1f5f)
+    2.  [example](#org21a2fca)
+20. [timer threads - *threading.Timer*](#org697496e)
+    1.  [how to use a timer thread](#org51fc538)
+    2.  [example of using a timer thread](#org7071e07)
+21. [thread barrier - *threading.Barrier*](#org69b2f17)
+    1.  [what is barrier](#orgfdd0cfa)
+    2.  [how to use barrier](#org0cb927b)
+    3.  [example](#org43274a9)
+22. [pyhton : threading best practices](#orgae218ad)
+    1.  [tip 1: use context managers](#org065dcee)
+        1.  [not use this](#org0c4e4c9)
+        2.  [use this for better control over threads (more safe)](#orgc7d13b8)
+        3.  [the real benefit](#org1978ada)
+    2.  [tip 2 : Use timedouts when waiting](#org4e53ccc)
+    3.  [tip 3: use a mutex to protect critical sections](#org3a493df)
+    4.  [tip 4: acquire locks in order](#org8f36c11)
+23. [resources - read more about](#org56057a3)
 
 
 
-<a id="orga830521"></a>
+<a id="orgcf6e498"></a>
 
 # what are threads
 
@@ -130,7 +125,7 @@ these are number of reasons for this,such as:
 -   **Parallel** : Capability to execute code simultaneously
 
 
-<a id="org552037d"></a>
+<a id="org9335253"></a>
 
 # thread vs process
 
@@ -157,7 +152,7 @@ the python process will terminate once all(non background threads) are terminate
 -   **thread**: a thread of execution within Python process,such as the MainThread or new thread.
 
 
-<a id="org852c72b"></a>
+<a id="org744349d"></a>
 
 # life-cycle of thread
 
@@ -197,14 +192,14 @@ error or exception
 [[./thread-life-cycle.webp][thread life cycle diagr
 
 
-<a id="orgd5c4186"></a>
+<a id="org4c6fab3"></a>
 
 # run a func in thread
 
 python funcs can executed in a separate thread using **threading.Thread** class
 
 
-<a id="orgb8cc8b8"></a>
+<a id="org4426654"></a>
 
 ## how to run a func in thread
 
@@ -222,7 +217,7 @@ we do not have control over when the thread will execute precisely or which cpu 
     import time
 
 
-<a id="org7ac3d68"></a>
+<a id="org71b7a62"></a>
 
 ### example
 
@@ -245,7 +240,7 @@ running the example first creates instance  of threeding.Thread then calls the *
 the main thread then prints a message &rsquo;*waiting &#x2026;*&rsquo; ,then calls the **join()** function to explicitly block and wait for the new thread to finish executing.
 
 
-<a id="org2497906"></a>
+<a id="org503189b"></a>
 
 ### example with arguments
 
@@ -264,7 +259,7 @@ the main thread then prints a message &rsquo;*waiting &#x2026;*&rsquo; ,then cal
     thread.join() # explicitly waiting to finish thread
 
 
-<a id="org037b407"></a>
+<a id="orge7aff0a"></a>
 
 # extend the thread class
 
@@ -273,7 +268,7 @@ we can also execute funcs in another thread by extending the **threading.Thread*
 In this section we will look at some examples of extending **thread.Thread** class
 
 
-<a id="orgbbfd58a"></a>
+<a id="orgc9fe10c"></a>
 
 ## possible usage cases
 
@@ -284,7 +279,7 @@ you can also define additional functions on the class to split up the work you m
 finally, attributes caan also be used to store the results of any calculation or IO performed in another thread that may be need to be retrieved afterward.
 
 
-<a id="orgf660015"></a>
+<a id="orgee0a207"></a>
 
 ## example of extending the thread class
 
@@ -329,7 +324,7 @@ complete code would be like:
     thread.join()
 
 
-<a id="orgc6605cf"></a>
+<a id="org3b36ab6"></a>
 
 ## example of extending the thread class with return values
 
@@ -349,7 +344,7 @@ complete code would be like:
     print(f'{value=}')
 
 
-<a id="org5415813"></a>
+<a id="org992af7f"></a>
 
 # thread instance attributes
 
@@ -357,14 +352,14 @@ an instance of the thread class provides a handle of a thread of execution.
 it provides attributes that we can use to query properties and the status of the underlaying thread.
 
 
-<a id="orgf3f6491"></a>
+<a id="org366cfc9"></a>
 
 ## thread name
 
 threads are named automatically in a somewhat unique manner within each process withe the form &ldquo;Thread-%d&rdquo; where %d is the integer indicating the thread number within the process,e.g. Thread-1 for the first thread created.
 
 
-<a id="orgd491053"></a>
+<a id="org379488f"></a>
 
 ## thread daemon
 
@@ -373,7 +368,7 @@ a thread may be a deamon thread, daemon threads is the name givent to background
 a python program will only exit when all non-daemon threads have finished exiting. for example , the main threads is a non-daemon threads.this means that daemon threads can run in the background and do not have to finish or be explicitly excited for the program end.
 
 
-<a id="org47eecf5"></a>
+<a id="org9d5d3bc"></a>
 
 ## thread identifier
 
@@ -384,7 +379,7 @@ the identifier is a read-only positive integer value and is assigned only after 
 can be accesed via **&ldquo;ident&rdquo;** property
 
 
-<a id="orgebd124b"></a>
+<a id="orged41eba"></a>
 
 ## thread native identifier
 
@@ -397,14 +392,14 @@ can be acced via **&ldquo;native<sub>id</sub>&rdquo;** property
 it is assigned after thread has been started
 
 
-<a id="org9de7c37"></a>
+<a id="org47d81db"></a>
 
 ## thread alive status
 
 thread class property that holds is thread running or dead (non-started or finished)
 
 
-<a id="org0a7d8e4"></a>
+<a id="org50bcc63"></a>
 
 ### in example:
 
@@ -439,19 +434,19 @@ thread class property that holds is thread running or dead (non-started or finis
     print(f'{is_alive=}')
 
 
-<a id="org14e2fa2"></a>
+<a id="orgaaa42b4"></a>
 
 # configure threads
 
 
-<a id="org0eea998"></a>
+<a id="orgb42dbc2"></a>
 
 ## how to configure thread name
 
 the name of a thread can be ser via the **&ldquo;name&rdquo;** argument in the threading.Thread constructor
 
 
-<a id="orga70ac9c"></a>
+<a id="orge9e5952"></a>
 
 ## how to configure thread daemon
 
@@ -460,7 +455,7 @@ a thread may be configured to be a daemon or not,and most threads in concurrent 
 can be configured via setting **&ldquo;daemon&rdquo;** argument to True in the constructor
 
 
-<a id="org5207c55"></a>
+<a id="org65a4a42"></a>
 
 ### for example:
 
@@ -471,7 +466,7 @@ can be configured via setting **&ldquo;daemon&rdquo;** argument to True in the c
     thread.start()
 
 
-<a id="org1e9762d"></a>
+<a id="orga6268da"></a>
 
 # whats main thread
 
@@ -500,40 +495,40 @@ we can acquire a main thread by calling **threadin.current<sub>thread</sub>()**
     print(f'thread;\n{thread.name=},{thread.daemon=},{thread.ident=}')
 
 
-<a id="org77698e3"></a>
+<a id="org7bca341"></a>
 
 # Thread Utilities
 
 
-<a id="org060da00"></a>
+<a id="org6490d15"></a>
 
 ## number of active threads
 
 **threading.active<sub>count</sub>()** gives integer that indicates number of threads that are &ldquo;alive&rdquo;
 
 
-<a id="orgf0b2b84"></a>
+<a id="org9672123"></a>
 
 ## current thread
 
 **threading.current<sub>thread</sub>()** gives **threading.Thread** instance of thread running the current code
 
 
-<a id="org89785d9"></a>
+<a id="orgceba026"></a>
 
 ## thread identifier
 
 **threading.get<sub>ident</sub>()** gives current threads identifier integer
 
 
-<a id="orgdfb373e"></a>
+<a id="org78786ab"></a>
 
 ## native thread identifier
 
 **threading.get<sub>ident</sub>()** gives current threads identifier integer that assigned by operating system
 
 
-<a id="org28c665e"></a>
+<a id="org3c0b699"></a>
 
 ## enumarate active threads
 
@@ -556,12 +551,12 @@ we can get a list of active threads via calling **threading.enumarate()** functi
     thread.join()
 
 
-<a id="org0e3c2c5"></a>
+<a id="org47122aa"></a>
 
 # thread exception handling
 
 
-<a id="orgdb45f9d"></a>
+<a id="orgde50c0b"></a>
 
 ## unhandled exception
 
@@ -587,7 +582,7 @@ error.Unwinding the thread means that the thread will stop executing at the poin
     print('finished')
 
 
-<a id="org2795341"></a>
+<a id="orgb209cb8"></a>
 
 ## exception hook
 
@@ -599,7 +594,7 @@ is called that reports the familiar message.
 first, we must define a function that takes a single argument that will be an instance of the **ExceptHookArgs** class,containing details of the exception and thread
 
 
-<a id="orgbc1cc89"></a>
+<a id="org0d5efa9"></a>
 
 ### example
 
@@ -624,7 +619,7 @@ first, we must define a function that takes a single argument that will be an in
     print('finished')
 
 
-<a id="orgc334cdd"></a>
+<a id="orgdb161aa"></a>
 
 # limitation of threads in cpython
 
@@ -657,7 +652,7 @@ such as when the thread is blocked ,such as performing IO with socket or file, o
 therefore, although in most cases Cpython will prevent parallel execution of threads, it is allowed in some circumstances,these  circumstances represent the base use case for adopting threads in our python programs.
 
 
-<a id="org71fb41e"></a>
+<a id="orgb24b47f"></a>
 
 # when to use thread
 
@@ -674,7 +669,7 @@ there are times when the GIL lock is released by the interpreter and we can achi
 -   using third-party interpreter to execute python code
 
 
-<a id="org09709ca"></a>
+<a id="org543eb72"></a>
 
 ## use threads for blocking IO
 
@@ -717,7 +712,7 @@ examples of blocking IO operations include:
 -   everythin that includes disk write read
 
 
-<a id="org64f24a8"></a>
+<a id="org12d4b10"></a>
 
 ## use threads external c code (that realses the GIL)
 
@@ -740,7 +735,7 @@ Another example is the NumPy library for managing arrays of data which will rele
 &#x2013; [WRITE MULTITHREADED OR MULTIPROCESS CODE, SCIPY COOKBOOK](https://scipy-cookbook.readthedocs.io/items/ParallelProgramming.html)
 
 
-<a id="org751fd6e"></a>
+<a id="orga17cc0d"></a>
 
 ## use threads with (some) third-party python interpreter
 
@@ -749,7 +744,7 @@ there are alternate commericial and open source python interpreters that you can
 some python interpreters may implement a GIL and release it more or less than Cpython. Other interpreters remove the GIL entirely and allow multiple python concurent threads to execute in parallel.
 
 
-<a id="org03fd57c"></a>
+<a id="org7e68a89"></a>
 
 # threads blocking calls
 
@@ -778,7 +773,7 @@ there are three types of blocking function calls you need to consider in concurr
 -   blocking calls to sleep
 
 
-<a id="orgc37660c"></a>
+<a id="orgb2bdae8"></a>
 
 ## blocking calls on concurrency primitives
 
@@ -793,7 +788,7 @@ common ways are;
 -   waiting for a barrier,e.g. calling wait() from &rsquo;threading.Barrier&rsquo; class
 
 
-<a id="orgdbb4501"></a>
+<a id="org4eb22d3"></a>
 
 ## blocking calls for I/O
 
@@ -814,7 +809,7 @@ performing I/O operations with devices is typically very slow compared to CPU op
 the I/O with devices is coordinated by the operating system and the device.this means the operating system can gather or sen some bytes from or to device.this means operating system can gather or send some bytes from or to the device then context switch back to the blocking thread when needed allowing the function call to progress.
 
 
-<a id="org6670dfe"></a>
+<a id="org3ae67ea"></a>
 
 ## blocking calls to sleep
 
@@ -839,7 +834,7 @@ in programming, adding a sleep can be useful way to simulate waiting within fixe
 sleep often used in worked examples when demonstrating concurrency programming,but adding sleeps to code can also aid in unit testing and debugging concurency failure conditions,such as race conditions by forcing mistiming of events within a dynamic application
 
 
-<a id="org3cadbff"></a>
+<a id="org2117660"></a>
 
 # thread-local data
 
@@ -860,7 +855,7 @@ this is like a namespace limited to each thread and is called &ldquo;thread-loca
 importantly, each thread must hang on to the &ldquo;local&rdquo; instance in order to acces the stored data.
 
 
-<a id="orgcac5e85"></a>
+<a id="org0df91df"></a>
 
 ## example
 
@@ -883,17 +878,17 @@ importantly, each thread must hang on to the &ldquo;local&rdquo; instance in ord
     threading.Thread(target=task,args=(2,)).start()
 
 
-<a id="org8208a23"></a>
+<a id="orgd6d8a95"></a>
 
 # thread mutex lock - *threading.Lock*
 
 
-<a id="orgeed7e81"></a>
+<a id="orgc6ad994"></a>
 
 ## what is mutual exclusion lock
 
 
-<a id="org3184eec"></a>
+<a id="orgf0ace02"></a>
 
 ### why we need mutual exclusion lock
 
@@ -910,7 +905,7 @@ section may refer to single block of code, but is also refers to multiple access
 </div>
 
 
-<a id="org8f885e3"></a>
+<a id="org408ef10"></a>
 
 ### description of mutex
 
@@ -921,7 +916,7 @@ mutual exclusion lock also known as mutex,is synchronization mechanism used to c
 </div>
 
 
-<a id="org5eb3e47"></a>
+<a id="orge049d82"></a>
 
 ## how to use mutex lock
 
@@ -959,7 +954,7 @@ we can also attempt to acquire the lock with a timeout,If the lock cannot be acq
     lock.acquire(timeout=10)
 
 
-<a id="org2b52043"></a>
+<a id="org517ead9"></a>
 
 ### for example
 
@@ -980,7 +975,7 @@ also we can check if the lock is currently acquired by a thread
         # if not lock is acquired runs this indent block of code
 
 
-<a id="orgd823b35"></a>
+<a id="org3e84334"></a>
 
 ## example of using mutex lock
 
@@ -999,12 +994,12 @@ also we can check if the lock is currently acquired by a thread
         threading.Thread(target=task, args=(lock, i, random())).start()
 
 
-<a id="org37098c4"></a>
+<a id="orgfae16de"></a>
 
 # thread reentrant lock  - *threading.RLock*
 
 
-<a id="org1f33438"></a>
+<a id="org6e2364c"></a>
 
 ## what is reentrant lock
 
@@ -1015,7 +1010,7 @@ a reentrant mutual exclusion lock aka &ldquo;reenrant mutex&rdquo; or &ldquo;ree
 &#x2013; [rlock objects &#x2013; Thread-based parallelism](https://docs.python.org/3/library/threading.html#rlock-objects.html)
 
 
-<a id="org231f100"></a>
+<a id="org0059070"></a>
 
 ### why we neet reentrant lock
 
@@ -1024,7 +1019,7 @@ we can imagine critical sections spread across a number of funcstions,each prote
 a limitation of a (non-reentrant) mutex lock is that if a thread has acquired the lock that it cannot acquire it again.In fact, this situation will result in a deadblock as it will wait forever for the lock to be released so that it can be acquired, but it holds the lock and will not release it.
 
 
-<a id="orgeb0a41d"></a>
+<a id="org6c11d7c"></a>
 
 ### description of reentrant lock
 
@@ -1033,7 +1028,7 @@ a reenrant lock will allow a thread to acquire the same lock again if it has alr
 each time a thread acquires the lock it must also release it, meaning that are recursive levels of acquire and release for the owning thread.As such,this type of lock is sometimes called a &ldquo;recursive mutex lock&rdquo;.
 
 
-<a id="org0b3a718"></a>
+<a id="org5261bb1"></a>
 
 ## how to use reentrant lock
 
@@ -1052,7 +1047,7 @@ we can use &ldquo;**blocking**&rdquo; argument and &ldquo;**timeout**&rdquo; arg
 bonus: we can use via &rsquo;**with**&rsquo; keyword for safety.
 
 
-<a id="org9b774bd"></a>
+<a id="org0a7c07c"></a>
 
 ## example of using reentrant lock
 
@@ -1079,12 +1074,12 @@ then executes them.only one thread can acquire the lock at time,and then once ac
 if non-reentrant lock,e.g. a threading.Lock was used instead,then the thread would block forever waiting for the lock to become available,which it can&rsquo;t because the thread already holds the lock.
 
 
-<a id="org60fdc5b"></a>
+<a id="orgc942cd2"></a>
 
 # thread condition - *threading.Condition*
 
 
-<a id="org9611345"></a>
+<a id="org8590788"></a>
 
 ## what is a threading condition
 
@@ -1101,7 +1096,7 @@ another thread can then acquire the condition, make change, and notify one, all,
 this highlights that a condition and to allow threads to notify other threads waiting on the condition.
 
 
-<a id="org7e0e99c"></a>
+<a id="org29dd753"></a>
 
 ## how to use condition object
 
@@ -1161,7 +1156,7 @@ we can notify all threads waitinh on yhe condition via the notify<sub>all</sub>(
     ...
 
 
-<a id="orgc89440b"></a>
+<a id="org8218e09"></a>
 
 ## example of wait and notify with a condition
 
@@ -1191,14 +1186,14 @@ we can notify all threads waitinh on yhe condition via the notify<sub>all</sub>(
     print(f'got data: {work_list}')
 
 
-<a id="org30a0e55"></a>
+<a id="orge3f3be0"></a>
 
 # thread semaphore - *threading.Semaphore*
 
 a semaphore is essentially a counter protected by a mutex lock used to limit the number of threads that can acces a resource.
 
 
-<a id="orgb74d2da"></a>
+<a id="org92a58a0"></a>
 
 ## what is a semaphore
 
@@ -1218,7 +1213,7 @@ A semaphore provides a useful concurency, in examples:
     -   calculations
 
 
-<a id="orgda7c16d"></a>
+<a id="org27aa1ee"></a>
 
 ## how to use a semaphore
 
@@ -1233,7 +1228,7 @@ in example
 in this implementation,each time the semaphore is acquired,the internal counter is decremented. each time the semaphore is released, the internal counter is incremented.The semephore cannot be acquired if the semphore has no avaliable positions in which case, threads attempting to acquire it must block until a postion becomes avaliable.
 
 
-<a id="org758f8ad"></a>
+<a id="org961a242"></a>
 
 ### acquiring and releasing
 
@@ -1250,7 +1245,7 @@ in this implementation,each time the semaphore is acquired,the internal counter 
         # ...
 
 
-<a id="orgdde4761"></a>
+<a id="org5adb2ea"></a>
 
 ## example
 
@@ -1274,14 +1269,14 @@ in this implementation,each time the semaphore is acquired,the internal counter 
     # wait for all workers to complete ...
 
 
-<a id="orgd108cfb"></a>
+<a id="org3357e88"></a>
 
 # thread event - *threading.Event*
 
 an event is a thread-safe boolean flag.
 
 
-<a id="org30308a7"></a>
+<a id="orgc7f1f5f"></a>
 
 ## how to use event object
 
@@ -1326,7 +1321,7 @@ a &ldquo;**timeout**&rdquo; argument can be passed to the **wait()** function wh
     event.wait(timeout=10)
 
 
-<a id="orgc994d92"></a>
+<a id="org21a2fca"></a>
 
 ## example
 
@@ -1355,14 +1350,14 @@ a &ldquo;**timeout**&rdquo; argument can be passed to the **wait()** function wh
     # wait for all threads to finnish ...
 
 
-<a id="orgab7eb34"></a>
+<a id="org697496e"></a>
 
 # timer threads - *threading.Timer*
 
 a timer thread will execute a function after a time delay.
 
 
-<a id="orgead3047"></a>
+<a id="org51fc538"></a>
 
 ## how to use a timer thread
 
@@ -1382,7 +1377,7 @@ first, we can create an instance of the timer and configure it.This includes the
     timerT.cancel()
 
 
-<a id="org389c626"></a>
+<a id="org7071e07"></a>
 
 ## example of using a timer thread
 
@@ -1400,12 +1395,12 @@ first, we can create an instance of the timer and configure it.This includes the
     print('waiting for the timer ...')
 
 
-<a id="org7e863f5"></a>
+<a id="org69b2f17"></a>
 
 # thread barrier - *threading.Barrier*
 
 
-<a id="org483d237"></a>
+<a id="orgfdd0cfa"></a>
 
 ## what is barrier
 
@@ -1416,7 +1411,7 @@ it allows multiple threads to wait on the same barrier object instance (e.g. at 
 internally, a barrier maintains a count of the number of threads waiting on the barrier and a configured maximum number of parties (threads) that are expected. Once the expected number of parties reaches the pre-defined maximum, all waiting threads are notified.
 
 
-<a id="orga45a656"></a>
+<a id="org0cb927b"></a>
 
 ## how to use barrier
 
@@ -1488,7 +1483,7 @@ the status of the barrier can be checked via attributes.
 -   **broken**: attribute indicates whether the barrier is currently is currently broken or not.
 
 
-<a id="orge013f9d"></a>
+<a id="org43274a9"></a>
 
 ## example
 
@@ -1520,19 +1515,19 @@ in this example we will create a suite of threads, each required to perform some
     print('all threads have their result')
 
 
-<a id="orgced8351"></a>
+<a id="orgae218ad"></a>
 
 # pyhton : threading best practices
 
 
-<a id="orgc7bd03a"></a>
+<a id="org065dcee"></a>
 
 ## tip 1: use context managers
 
 acquire and release locks using a context manager, wherever possible.
 
 
-<a id="org8e8932b"></a>
+<a id="org0c4e4c9"></a>
 
 ### not use this
 
@@ -1545,7 +1540,7 @@ acquire and release locks using a context manager, wherever possible.
     lock.release()
 
 
-<a id="org329282e"></a>
+<a id="orgc7d13b8"></a>
 
 ### use this for better control over threads (more safe)
 
@@ -1566,7 +1561,7 @@ same but less code
         # critical section ...
 
 
-<a id="orge21d617"></a>
+<a id="org1978ada"></a>
 
 ### the real benefit
 
@@ -1581,7 +1576,7 @@ this applies to a number of concurency primitives,such as:
     -   condition via **threading.Condition** class
 
 
-<a id="org899a1df"></a>
+<a id="org4e53ccc"></a>
 
 ## tip 2 : Use timedouts when waiting
 
@@ -1608,7 +1603,7 @@ Do not call a blocking call without a timedout,wherever possible.
 this allow the waiting thread to give-up waiting after a fixed time limit and then attempt to rectify the situation, e.g. report and error, force termination, etc.
 
 
-<a id="org052bd9c"></a>
+<a id="org3a493df"></a>
 
 ## tip 3: use a mutex to protect critical sections
 
@@ -1628,7 +1623,7 @@ each thread must attempt to acquire the lock at the beginning of the critical se
         # critical section ...
 
 
-<a id="org919af00"></a>
+<a id="org8f36c11"></a>
 
 ## tip 4: acquire locks in order
 
@@ -1641,46 +1636,10 @@ in some applications you may be able to abstract the acquisition of lock using a
 when this is not possible, you may need to audit your code to confirm that all paths throught the code acquire the locks in same order.
 
 
-<a id="org5d8efe7"></a>
+<a id="org56057a3"></a>
 
-# python : threading common errors
-
-
-<a id="org3bec44a"></a>
-
-## race conditions
-
-
-<a id="orga72c9ab"></a>
-
-## thread deadlocks
-
-
-<a id="org5179bab"></a>
-
-## thread livelocks
-
-
-<a id="orgc0ab234"></a>
-
-# python threading common questions
-
-**\*
-\***
-**\*
-\***
-**\*
-\***
-**\*
-\***
-**\*
-\***
-\*\*
-
-
-<a id="orgd723a0a"></a>
-
-# resources
+# resources - read more about
 
 -   <https://superfastpython.com/threading-in-python/#Python_Threads>
+-   <https://superfastpython.com/>
 

@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-03-14 Tue 22:09 -->
+<!-- 2023-03-18 Sat 19:24 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Threading in Python</title>
@@ -201,183 +201,175 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orgb61eec7">1. what are threads</a></li>
-<li><a href="#org167864b">2. thread vs process</a></li>
-<li><a href="#orga0951f4">3. life-cycle of thread</a></li>
-<li><a href="#orgc0d3c7f">4. run a func in thread</a>
+<li><a href="#org5b5a497">1. what are threads</a></li>
+<li><a href="#orgacc6255">2. thread vs process</a></li>
+<li><a href="#orgbbaeaca">3. life-cycle of thread</a></li>
+<li><a href="#orgc107397">4. run a func in thread</a>
 <ul>
-<li><a href="#org1fb3d34">4.1. how to run a func in thread</a>
+<li><a href="#org252bdd4">4.1. how to run a func in thread</a>
 <ul>
-<li><a href="#orgc4fbc1c">4.1.1. example</a></li>
-<li><a href="#org3da95be">4.1.2. example with arguments</a></li>
+<li><a href="#orgcde6a60">4.1.1. example</a></li>
+<li><a href="#org73208fc">4.1.2. example with arguments</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org06afe36">5. extend the thread class</a>
+<li><a href="#orgde10f3c">5. extend the thread class</a>
 <ul>
-<li><a href="#org6b01f0b">5.1. possible usage cases</a></li>
-<li><a href="#org61605bf">5.2. example of extending the thread class</a></li>
-<li><a href="#orga48d5b0">5.3. example of extending the thread class with return values</a></li>
+<li><a href="#org8eecc9f">5.1. possible usage cases</a></li>
+<li><a href="#org667594a">5.2. example of extending the thread class</a></li>
+<li><a href="#org92b05ef">5.3. example of extending the thread class with return values</a></li>
 </ul>
 </li>
-<li><a href="#org8a0cbb1">6. thread instance attributes</a>
+<li><a href="#org42cff7d">6. thread instance attributes</a>
 <ul>
-<li><a href="#org8d09d9a">6.1. thread name</a></li>
-<li><a href="#org4b909ad">6.2. thread daemon</a></li>
-<li><a href="#org1bcb0c0">6.3. thread identifier</a></li>
-<li><a href="#orga750c2f">6.4. thread native identifier</a></li>
-<li><a href="#orge200709">6.5. thread alive status</a>
+<li><a href="#orgcfce487">6.1. thread name</a></li>
+<li><a href="#org3a2d036">6.2. thread daemon</a></li>
+<li><a href="#orgc39f437">6.3. thread identifier</a></li>
+<li><a href="#orgbbdc847">6.4. thread native identifier</a></li>
+<li><a href="#org8662fb7">6.5. thread alive status</a>
 <ul>
-<li><a href="#org8f3c1a2">6.5.1. in example:</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#orgc4571a3">7. configure threads</a>
-<ul>
-<li><a href="#org9c83df1">7.1. how to configure thread name</a></li>
-<li><a href="#org0ffd4ab">7.2. how to configure thread daemon</a>
-<ul>
-<li><a href="#orgec82aee">7.2.1. for example:</a></li>
+<li><a href="#org774987b">6.5.1. in example:</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org0bc99ce">8. whats main thread</a></li>
-<li><a href="#orgb23df23">9. Thread Utilities</a>
+<li><a href="#orgd17ee5f">7. configure threads</a>
 <ul>
-<li><a href="#orgddd3866">9.1. number of active threads</a></li>
-<li><a href="#org2df4a75">9.2. current thread</a></li>
-<li><a href="#org7fb4c5a">9.3. thread identifier</a></li>
-<li><a href="#orgedc0c4f">9.4. native thread identifier</a></li>
-<li><a href="#org9190046">9.5. enumarate active threads</a></li>
-</ul>
-</li>
-<li><a href="#org7e3f08a">10. thread exception handling</a>
+<li><a href="#org8e98489">7.1. how to configure thread name</a></li>
+<li><a href="#orgac14bc1">7.2. how to configure thread daemon</a>
 <ul>
-<li><a href="#org14b6c8b">10.1. unhandled exception</a></li>
-<li><a href="#org5fbcf43">10.2. exception hook</a>
-<ul>
-<li><a href="#org9e7b965">10.2.1. example</a></li>
+<li><a href="#orgeddd3ab">7.2.1. for example:</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#org86c1ed4">11. limitation of threads in cpython</a></li>
-<li><a href="#org6ef17dc">12. when to use thread</a>
+<li><a href="#org9b86902">8. whats main thread</a></li>
+<li><a href="#org92c83d7">9. Thread Utilities</a>
 <ul>
-<li><a href="#org843939f">12.1. use threads for blocking IO</a></li>
-<li><a href="#org213e668">12.2. use threads external c code (that realses the GIL)</a></li>
-<li><a href="#org8f19c37">12.3. use threads with (some) third-party python interpreter</a></li>
+<li><a href="#orgb8b02c8">9.1. number of active threads</a></li>
+<li><a href="#org394243e">9.2. current thread</a></li>
+<li><a href="#org8a16476">9.3. thread identifier</a></li>
+<li><a href="#org4e79a34">9.4. native thread identifier</a></li>
+<li><a href="#orgde16240">9.5. enumarate active threads</a></li>
 </ul>
 </li>
-<li><a href="#org4bfa08f">13. threads blocking calls</a>
+<li><a href="#org4fc4695">10. thread exception handling</a>
 <ul>
-<li><a href="#org8dd7758">13.1. blocking calls on concurrency primitives</a></li>
-<li><a href="#orgdebcaf3">13.2. blocking calls for I/O</a></li>
-<li><a href="#org46cf0ec">13.3. blocking calls to sleep</a></li>
+<li><a href="#org2081b70">10.1. unhandled exception</a></li>
+<li><a href="#org55cf8ce">10.2. exception hook</a>
+<ul>
+<li><a href="#org7027f4a">10.2.1. example</a></li>
 </ul>
 </li>
-<li><a href="#org567e285">14. thread-local data</a>
-<ul>
-<li><a href="#org602dbdd">14.1. example</a></li>
 </ul>
 </li>
-<li><a href="#orgc6dd797">15. thread mutex lock - <i>threading.Lock</i></a>
+<li><a href="#orgbf26cc0">11. limitation of threads in cpython</a></li>
+<li><a href="#org6e88a61">12. when to use thread</a>
 <ul>
-<li><a href="#org33104ae">15.1. what is mutual exclusion lock</a>
-<ul>
-<li><a href="#org8d4bade">15.1.1. why we need mutual exclusion lock</a></li>
-<li><a href="#orge07e338">15.1.2. description of mutex</a></li>
+<li><a href="#orgb55bc73">12.1. use threads for blocking IO</a></li>
+<li><a href="#org91342bf">12.2. use threads external c code (that realses the GIL)</a></li>
+<li><a href="#org6da4ea1">12.3. use threads with (some) third-party python interpreter</a></li>
 </ul>
 </li>
-<li><a href="#orgf659670">15.2. how to use mutex lock</a>
+<li><a href="#orgb3781ad">13. threads blocking calls</a>
 <ul>
-<li><a href="#org955589d">15.2.1. for example</a></li>
+<li><a href="#orge52ee29">13.1. blocking calls on concurrency primitives</a></li>
+<li><a href="#orgf0fc03d">13.2. blocking calls for I/O</a></li>
+<li><a href="#org1bbfe27">13.3. blocking calls to sleep</a></li>
 </ul>
 </li>
-<li><a href="#org75bc241">15.3. example of using mutex lock</a></li>
-</ul>
-</li>
-<li><a href="#org1e71571">16. thread reentrant lock  - <i>threading.RLock</i></a>
+<li><a href="#orgea76199">14. thread-local data</a>
 <ul>
-<li><a href="#org0dda612">16.1. what is reentrant lock</a>
+<li><a href="#org2ec5ee7">14.1. example</a></li>
+</ul>
+</li>
+<li><a href="#org60ff535">15. thread mutex lock - <i>threading.Lock</i></a>
 <ul>
-<li><a href="#orgb7fe6cd">16.1.1. why we neet reentrant lock</a></li>
-<li><a href="#org858b679">16.1.2. description of reentrant lock</a></li>
-</ul>
-</li>
-<li><a href="#org5ab5bd3">16.2. how to use reentrant lock</a></li>
-<li><a href="#org84f7220">16.3. example of using reentrant lock</a></li>
-</ul>
-</li>
-<li><a href="#org10cfe9d">17. thread condition - <i>threading.Condition</i></a>
+<li><a href="#org4ee7019">15.1. what is mutual exclusion lock</a>
 <ul>
-<li><a href="#org5d7de9f">17.1. what is a threading condition</a></li>
-<li><a href="#org8bbcd9c">17.2. how to use condition object</a></li>
-<li><a href="#orgd61c86a">17.3. example of wait and notify with a condition</a></li>
+<li><a href="#orge389146">15.1.1. why we need mutual exclusion lock</a></li>
+<li><a href="#org04406eb">15.1.2. description of mutex</a></li>
 </ul>
 </li>
-<li><a href="#orgce7f565">18. thread semaphore - <i>threading.Semaphore</i></a>
+<li><a href="#orge5c6e65">15.2. how to use mutex lock</a>
 <ul>
-<li><a href="#org7e11de4">18.1. what is a semaphore</a></li>
-<li><a href="#orge6d52c0">18.2. how to use a semaphore</a>
+<li><a href="#orgab977d5">15.2.1. for example</a></li>
+</ul>
+</li>
+<li><a href="#org953eaee">15.3. example of using mutex lock</a></li>
+</ul>
+</li>
+<li><a href="#orgb6ca8aa">16. thread reentrant lock  - <i>threading.RLock</i></a>
 <ul>
-<li><a href="#orge8c7e01">18.2.1. acquiring and releasing</a></li>
-</ul>
-</li>
-<li><a href="#orgb1a8a2f">18.3. example</a></li>
-</ul>
-</li>
-<li><a href="#org32fb662">19. thread event - <i>threading.Event</i></a>
+<li><a href="#orgfbf6754">16.1. what is reentrant lock</a>
 <ul>
-<li><a href="#org4cbdc61">19.1. how to use event object</a></li>
-<li><a href="#org4a9cf7f">19.2. example</a></li>
+<li><a href="#org2172de4">16.1.1. why we neet reentrant lock</a></li>
+<li><a href="#org480c647">16.1.2. description of reentrant lock</a></li>
 </ul>
 </li>
-<li><a href="#org6456490">20. timer threads - <i>threading.Timer</i></a>
+<li><a href="#orga09f5d3">16.2. how to use reentrant lock</a></li>
+<li><a href="#org051bace">16.3. example of using reentrant lock</a></li>
+</ul>
+</li>
+<li><a href="#org27f0bf2">17. thread condition - <i>threading.Condition</i></a>
 <ul>
-<li><a href="#org27434f1">20.1. how to use a timer thread</a></li>
-<li><a href="#org21bbd08">20.2. example of using a timer thread</a></li>
+<li><a href="#org74fa807">17.1. what is a threading condition</a></li>
+<li><a href="#orgb2af3e1">17.2. how to use condition object</a></li>
+<li><a href="#org89afc7b">17.3. example of wait and notify with a condition</a></li>
 </ul>
 </li>
-<li><a href="#orgca329c7">21. thread barrier - <i>threading.Barrier</i></a>
+<li><a href="#orgaa21f5a">18. thread semaphore - <i>threading.Semaphore</i></a>
 <ul>
-<li><a href="#orgc225a3e">21.1. what is barrier</a></li>
-<li><a href="#org470e822">21.2. how to use barrier</a></li>
-<li><a href="#orgec70119">21.3. example</a></li>
-</ul>
-</li>
-<li><a href="#org2c97b37">22. pyhton : threading best practices</a>
+<li><a href="#orgd33eebb">18.1. what is a semaphore</a></li>
+<li><a href="#org3c1bb4e">18.2. how to use a semaphore</a>
 <ul>
-<li><a href="#org2793d0a">22.1. tip 1: use context managers</a>
+<li><a href="#orgeaf2f03">18.2.1. acquiring and releasing</a></li>
+</ul>
+</li>
+<li><a href="#org887aa54">18.3. example</a></li>
+</ul>
+</li>
+<li><a href="#org651d57e">19. thread event - <i>threading.Event</i></a>
 <ul>
-<li><a href="#org5d65690">22.1.1. not use this</a></li>
-<li><a href="#org1d79ac9">22.1.2. use this for better control over threads (more safe)</a></li>
-<li><a href="#orgb1217ce">22.1.3. the real benefit</a></li>
+<li><a href="#org8fa2fc6">19.1. how to use event object</a></li>
+<li><a href="#orga313864">19.2. example</a></li>
 </ul>
 </li>
-<li><a href="#orga79040f">22.2. tip 2 : Use timedouts when waiting</a></li>
-<li><a href="#org4d8a233">22.3. tip 3: use a mutex to protect critical sections</a></li>
-<li><a href="#orgff17755">22.4. tip 4: acquire locks in order</a></li>
-</ul>
-</li>
-<li><a href="#org01529c2">23. python : threading common errors</a>
+<li><a href="#org176217c">20. timer threads - <i>threading.Timer</i></a>
 <ul>
-<li><a href="#org87cbf4f">23.1. race conditions</a></li>
-<li><a href="#org54a1375">23.2. thread deadlocks</a></li>
-<li><a href="#orgf1c649a">23.3. thread livelocks</a></li>
+<li><a href="#orgb67c5b4">20.1. how to use a timer thread</a></li>
+<li><a href="#org417600c">20.2. example of using a timer thread</a></li>
 </ul>
 </li>
-<li><a href="#org53d1644">24. python threading common questions</a></li>
-<li><a href="#orgb6845a9">25. resources</a></li>
+<li><a href="#org7db988d">21. thread barrier - <i>threading.Barrier</i></a>
+<ul>
+<li><a href="#org520cbaa">21.1. what is barrier</a></li>
+<li><a href="#org02b4ea3">21.2. how to use barrier</a></li>
+<li><a href="#orgc41fd04">21.3. example</a></li>
+</ul>
+</li>
+<li><a href="#org13ef674">22. pyhton : threading best practices</a>
+<ul>
+<li><a href="#orga6cbfa8">22.1. tip 1: use context managers</a>
+<ul>
+<li><a href="#org4c8c98c">22.1.1. not use this</a></li>
+<li><a href="#org5ab1b38">22.1.2. use this for better control over threads (more safe)</a></li>
+<li><a href="#org0f0be12">22.1.3. the real benefit</a></li>
+</ul>
+</li>
+<li><a href="#orgfbb0fee">22.2. tip 2 : Use timedouts when waiting</a></li>
+<li><a href="#org8b389b9">22.3. tip 3: use a mutex to protect critical sections</a></li>
+<li><a href="#org3d9e114">22.4. tip 4: acquire locks in order</a></li>
+</ul>
+</li>
+<li><a href="#org31583f8">23. resources - read more about</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgb61eec7" class="outline-2">
-<h2 id="orgb61eec7"><span class="section-number-2">1.</span> what are threads</h2>
+<div id="outline-container-org5b5a497" class="outline-2">
+<h2 id="org5b5a497"><span class="section-number-2">1.</span> what are threads</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 threads refers to thread of execution in computer program
@@ -441,8 +433,8 @@ this highlights the distinction between concurrent and parallel execution
 </div>
 </div>
 
-<div id="outline-container-org167864b" class="outline-2">
-<h2 id="org167864b"><span class="section-number-2">2.</span> thread vs process</h2>
+<div id="outline-container-orgacc6255" class="outline-2">
+<h2 id="orgacc6255"><span class="section-number-2">2.</span> thread vs process</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 a process refers to a computer process
@@ -485,8 +477,8 @@ the python process will terminate once all(non background threads) are terminate
 </div>
 </div>
 
-<div id="outline-container-orga0951f4" class="outline-2">
-<h2 id="orga0951f4"><span class="section-number-2">3.</span> life-cycle of thread</h2>
+<div id="outline-container-orgbbaeaca" class="outline-2">
+<h2 id="orgbbaeaca"><span class="section-number-2">3.</span> life-cycle of thread</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 a thread in python is object instanced from  <b>threading.Thread</b> class
@@ -551,16 +543,16 @@ error or exception
 </div>
 </div>
 
-<div id="outline-container-orgc0d3c7f" class="outline-2">
-<h2 id="orgc0d3c7f"><span class="section-number-2">4.</span> run a func in thread</h2>
+<div id="outline-container-orgc107397" class="outline-2">
+<h2 id="orgc107397"><span class="section-number-2">4.</span> run a func in thread</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 python funcs can executed in a separate thread using <b>threading.Thread</b> class
 </p>
 </div>
 
-<div id="outline-container-org1fb3d34" class="outline-3">
-<h3 id="org1fb3d34"><span class="section-number-3">4.1.</span> how to run a func in thread</h3>
+<div id="outline-container-org252bdd4" class="outline-3">
+<h3 id="org252bdd4"><span class="section-number-3">4.1.</span> how to run a func in thread</h3>
 <div class="outline-text-3" id="text-4-1">
 <p>
 the func executed in another thread may have args in which case can be specified as a tuple and passed to the &ldquo;<b>args</b>&rdquo; argument of the threading.threading class constructor or as dictionart to the &ldquo;<b>kwargs</b>&rdquo; argument.
@@ -591,8 +583,8 @@ doing nessesary imports for examples
 </div>
 
 
-<div id="outline-container-orgc4fbc1c" class="outline-4">
-<h4 id="orgc4fbc1c"><span class="section-number-4">4.1.1.</span> example</h4>
+<div id="outline-container-orgcde6a60" class="outline-4">
+<h4 id="orgcde6a60"><span class="section-number-4">4.1.1.</span> example</h4>
 <div class="outline-text-4" id="text-4-1-1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -621,8 +613,8 @@ the main thread then prints a message &rsquo;<i>waiting &#x2026;</i>&rsquo; ,the
 </div>
 </div>
 
-<div id="outline-container-org3da95be" class="outline-4">
-<h4 id="org3da95be"><span class="section-number-4">4.1.2.</span> example with arguments</h4>
+<div id="outline-container-org73208fc" class="outline-4">
+<h4 id="org73208fc"><span class="section-number-4">4.1.2.</span> example with arguments</h4>
 <div class="outline-text-4" id="text-4-1-2">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -645,8 +637,8 @@ thread.join() <span style="color: #969896; font-style: italic;"># </span><span s
 </div>
 </div>
 
-<div id="outline-container-org06afe36" class="outline-2">
-<h2 id="org06afe36"><span class="section-number-2">5.</span> extend the thread class</h2>
+<div id="outline-container-orgde10f3c" class="outline-2">
+<h2 id="orgde10f3c"><span class="section-number-2">5.</span> extend the thread class</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 we can also execute funcs in another thread by extending the <b>threading.Thread</b> class and overriding the run() function.
@@ -657,8 +649,8 @@ In this section we will look at some examples of extending <b>thread.Thread</b> 
 </p>
 </div>
 
-<div id="outline-container-org6b01f0b" class="outline-3">
-<h3 id="org6b01f0b"><span class="section-number-3">5.1.</span> possible usage cases</h3>
+<div id="outline-container-org8eecc9f" class="outline-3">
+<h3 id="org8eecc9f"><span class="section-number-3">5.1.</span> possible usage cases</h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 given that it is a custom class,you can defina a constructor for the class and use it to pass in data that may be needed in the <b>run()</b> function, stored as instance variables (attributes).
@@ -674,8 +666,8 @@ finally, attributes caan also be used to store the results of any calculation or
 </div>
 </div>
 
-<div id="outline-container-org61605bf" class="outline-3">
-<h3 id="org61605bf"><span class="section-number-3">5.2.</span> example of extending the thread class</h3>
+<div id="outline-container-org667594a" class="outline-3">
+<h3 id="org667594a"><span class="section-number-3">5.2.</span> example of extending the thread class</h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 example code :
@@ -736,8 +728,8 @@ thread.join()
 </div>
 </div>
 
-<div id="outline-container-orga48d5b0" class="outline-3">
-<h3 id="orga48d5b0"><span class="section-number-3">5.3.</span> example of extending the thread class with return values</h3>
+<div id="outline-container-org92b05ef" class="outline-3">
+<h3 id="org92b05ef"><span class="section-number-3">5.3.</span> example of extending the thread class with return values</h3>
 <div class="outline-text-3" id="text-5-3">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -761,8 +753,8 @@ thread.join()
 </div>
 </div>
 
-<div id="outline-container-org8a0cbb1" class="outline-2">
-<h2 id="org8a0cbb1"><span class="section-number-2">6.</span> thread instance attributes</h2>
+<div id="outline-container-org42cff7d" class="outline-2">
+<h2 id="org42cff7d"><span class="section-number-2">6.</span> thread instance attributes</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 an instance of the thread class provides a handle of a thread of execution.
@@ -770,8 +762,8 @@ it provides attributes that we can use to query properties and the status of the
 </p>
 </div>
 
-<div id="outline-container-org8d09d9a" class="outline-3">
-<h3 id="org8d09d9a"><span class="section-number-3">6.1.</span> thread name</h3>
+<div id="outline-container-orgcfce487" class="outline-3">
+<h3 id="orgcfce487"><span class="section-number-3">6.1.</span> thread name</h3>
 <div class="outline-text-3" id="text-6-1">
 <p>
 threads are named automatically in a somewhat unique manner within each process withe the form &ldquo;Thread-%d&rdquo; where %d is the integer indicating the thread number within the process,e.g. Thread-1 for the first thread created.
@@ -779,8 +771,8 @@ threads are named automatically in a somewhat unique manner within each process 
 </div>
 </div>
 
-<div id="outline-container-org4b909ad" class="outline-3">
-<h3 id="org4b909ad"><span class="section-number-3">6.2.</span> thread daemon</h3>
+<div id="outline-container-org3a2d036" class="outline-3">
+<h3 id="org3a2d036"><span class="section-number-3">6.2.</span> thread daemon</h3>
 <div class="outline-text-3" id="text-6-2">
 <p>
 a thread may be a deamon thread, daemon threads is the name givent to background threads.by default threads are non-daemon threads.
@@ -792,8 +784,8 @@ a python program will only exit when all non-daemon threads have finished exitin
 </div>
 </div>
 
-<div id="outline-container-org1bcb0c0" class="outline-3">
-<h3 id="org1bcb0c0"><span class="section-number-3">6.3.</span> thread identifier</h3>
+<div id="outline-container-orgc39f437" class="outline-3">
+<h3 id="orgc39f437"><span class="section-number-3">6.3.</span> thread identifier</h3>
 <div class="outline-text-3" id="text-6-3">
 <p>
 each thread has unique identifier (id) within python process,assigned by python interpreter.
@@ -809,8 +801,8 @@ can be accesed via <b>&ldquo;ident&rdquo;</b> property
 </div>
 </div>
 
-<div id="outline-container-orga750c2f" class="outline-3">
-<h3 id="orga750c2f"><span class="section-number-3">6.4.</span> thread native identifier</h3>
+<div id="outline-container-orgbbdc847" class="outline-3">
+<h3 id="orgbbdc847"><span class="section-number-3">6.4.</span> thread native identifier</h3>
 <div class="outline-text-3" id="text-6-4">
 <p>
 each thread has unique identifier assigned by the operating system.
@@ -830,16 +822,16 @@ it is assigned after thread has been started
 </div>
 </div>
 
-<div id="outline-container-orge200709" class="outline-3">
-<h3 id="orge200709"><span class="section-number-3">6.5.</span> thread alive status</h3>
+<div id="outline-container-org8662fb7" class="outline-3">
+<h3 id="org8662fb7"><span class="section-number-3">6.5.</span> thread alive status</h3>
 <div class="outline-text-3" id="text-6-5">
 <p>
 thread class property that holds is thread running or dead (non-started or finished)
 </p>
 </div>
 
-<div id="outline-container-org8f3c1a2" class="outline-4">
-<h4 id="org8f3c1a2"><span class="section-number-4">6.5.1.</span> in example:</h4>
+<div id="outline-container-org774987b" class="outline-4">
+<h4 id="org774987b"><span class="section-number-4">6.5.1.</span> in example:</h4>
 <div class="outline-text-4" id="text-6-5-1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -879,12 +871,12 @@ is_alive = thread.is_alive()
 </div>
 </div>
 
-<div id="outline-container-orgc4571a3" class="outline-2">
-<h2 id="orgc4571a3"><span class="section-number-2">7.</span> configure threads</h2>
+<div id="outline-container-orgd17ee5f" class="outline-2">
+<h2 id="orgd17ee5f"><span class="section-number-2">7.</span> configure threads</h2>
 <div class="outline-text-2" id="text-7">
 </div>
-<div id="outline-container-org9c83df1" class="outline-3">
-<h3 id="org9c83df1"><span class="section-number-3">7.1.</span> how to configure thread name</h3>
+<div id="outline-container-org8e98489" class="outline-3">
+<h3 id="org8e98489"><span class="section-number-3">7.1.</span> how to configure thread name</h3>
 <div class="outline-text-3" id="text-7-1">
 <p>
 the name of a thread can be ser via the <b>&ldquo;name&rdquo;</b> argument in the threading.Thread constructor
@@ -894,8 +886,8 @@ the name of a thread can be ser via the <b>&ldquo;name&rdquo;</b> argument in th
 
 
 
-<div id="outline-container-org0ffd4ab" class="outline-3">
-<h3 id="org0ffd4ab"><span class="section-number-3">7.2.</span> how to configure thread daemon</h3>
+<div id="outline-container-orgac14bc1" class="outline-3">
+<h3 id="orgac14bc1"><span class="section-number-3">7.2.</span> how to configure thread daemon</h3>
 <div class="outline-text-3" id="text-7-2">
 <p>
 a thread may be configured to be a daemon or not,and most threads in concurrent programming,including the main thread,are non-daemon threads(no background threads) by default
@@ -906,8 +898,8 @@ can be configured via setting <b>&ldquo;daemon&rdquo;</b> argument to True in th
 </p>
 </div>
 
-<div id="outline-container-orgec82aee" class="outline-4">
-<h4 id="orgec82aee"><span class="section-number-4">7.2.1.</span> for example:</h4>
+<div id="outline-container-orgeddd3ab" class="outline-4">
+<h4 id="orgeddd3ab"><span class="section-number-4">7.2.1.</span> for example:</h4>
 <div class="outline-text-4" id="text-7-2-1">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -922,8 +914,8 @@ thread.start()
 </div>
 </div>
 
-<div id="outline-container-org0bc99ce" class="outline-2">
-<h2 id="org0bc99ce"><span class="section-number-2">8.</span> whats main thread</h2>
+<div id="outline-container-org9b86902" class="outline-2">
+<h2 id="org9b86902"><span class="section-number-2">8.</span> whats main thread</h2>
 <div class="outline-text-2" id="text-8">
 <p>
 each python process is created with one default thread called the <b>&ldquo;the main thread&rdquo;</b>
@@ -974,12 +966,12 @@ we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</
 </div>
 </div>
 
-<div id="outline-container-orgb23df23" class="outline-2">
-<h2 id="orgb23df23"><span class="section-number-2">9.</span> Thread Utilities</h2>
+<div id="outline-container-org92c83d7" class="outline-2">
+<h2 id="org92c83d7"><span class="section-number-2">9.</span> Thread Utilities</h2>
 <div class="outline-text-2" id="text-9">
 </div>
-<div id="outline-container-orgddd3866" class="outline-3">
-<h3 id="orgddd3866"><span class="section-number-3">9.1.</span> number of active threads</h3>
+<div id="outline-container-orgb8b02c8" class="outline-3">
+<h3 id="orgb8b02c8"><span class="section-number-3">9.1.</span> number of active threads</h3>
 <div class="outline-text-3" id="text-9-1">
 <p>
 <b>threading.active<sub>count</sub>()</b> gives integer that indicates number of threads that are &ldquo;alive&rdquo;
@@ -987,8 +979,8 @@ we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</
 </div>
 </div>
 
-<div id="outline-container-org2df4a75" class="outline-3">
-<h3 id="org2df4a75"><span class="section-number-3">9.2.</span> current thread</h3>
+<div id="outline-container-org394243e" class="outline-3">
+<h3 id="org394243e"><span class="section-number-3">9.2.</span> current thread</h3>
 <div class="outline-text-3" id="text-9-2">
 <p>
 <b>threading.current<sub>thread</sub>()</b> gives <b>threading.Thread</b> instance of thread running the current code
@@ -996,8 +988,8 @@ we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</
 </div>
 </div>
 
-<div id="outline-container-org7fb4c5a" class="outline-3">
-<h3 id="org7fb4c5a"><span class="section-number-3">9.3.</span> thread identifier</h3>
+<div id="outline-container-org8a16476" class="outline-3">
+<h3 id="org8a16476"><span class="section-number-3">9.3.</span> thread identifier</h3>
 <div class="outline-text-3" id="text-9-3">
 <p>
 <b>threading.get<sub>ident</sub>()</b> gives current threads identifier integer
@@ -1005,8 +997,8 @@ we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</
 </div>
 </div>
 
-<div id="outline-container-orgedc0c4f" class="outline-3">
-<h3 id="orgedc0c4f"><span class="section-number-3">9.4.</span> native thread identifier</h3>
+<div id="outline-container-org4e79a34" class="outline-3">
+<h3 id="org4e79a34"><span class="section-number-3">9.4.</span> native thread identifier</h3>
 <div class="outline-text-3" id="text-9-4">
 <p>
 <b>threading.get<sub>ident</sub>()</b> gives current threads identifier integer that assigned by operating system
@@ -1014,8 +1006,8 @@ we can acquire a main thread by calling <b>threadin.current<sub>thread</sub>()</
 </div>
 </div>
 
-<div id="outline-container-org9190046" class="outline-3">
-<h3 id="org9190046"><span class="section-number-3">9.5.</span> enumarate active threads</h3>
+<div id="outline-container-orgde16240" class="outline-3">
+<h3 id="orgde16240"><span class="section-number-3">9.5.</span> enumarate active threads</h3>
 <div class="outline-text-3" id="text-9-5">
 <p>
 we can get a list of active threads via calling <b>threading.enumarate()</b> function,it returns list of active threads
@@ -1044,12 +1036,12 @@ thread.join()
 </div>
 </div>
 
-<div id="outline-container-org7e3f08a" class="outline-2">
-<h2 id="org7e3f08a"><span class="section-number-2">10.</span> thread exception handling</h2>
+<div id="outline-container-org4fc4695" class="outline-2">
+<h2 id="org4fc4695"><span class="section-number-2">10.</span> thread exception handling</h2>
 <div class="outline-text-2" id="text-10">
 </div>
-<div id="outline-container-org14b6c8b" class="outline-3">
-<h3 id="org14b6c8b"><span class="section-number-3">10.1.</span> unhandled exception</h3>
+<div id="outline-container-org2081b70" class="outline-3">
+<h3 id="org2081b70"><span class="section-number-3">10.1.</span> unhandled exception</h3>
 <div class="outline-text-3" id="text-10-1">
 <p>
 an unhandled exception can occur in a new thread.
@@ -1082,8 +1074,8 @@ time.sleep(<span style="color: #81a2be;">0.2</span>)
 </div>
 </div>
 
-<div id="outline-container-org5fbcf43" class="outline-3">
-<h3 id="org5fbcf43"><span class="section-number-3">10.2.</span> exception hook</h3>
+<div id="outline-container-org55cf8ce" class="outline-3">
+<h3 id="org55cf8ce"><span class="section-number-3">10.2.</span> exception hook</h3>
 <div class="outline-text-3" id="text-10-2">
 <p>
 we can specify how to handle unhandled errors aand exceptions that occuur within new threads via the exception hook
@@ -1099,8 +1091,8 @@ first, we must define a function that takes a single argument that will be an in
 </p>
 </div>
 
-<div id="outline-container-org9e7b965" class="outline-4">
-<h4 id="org9e7b965"><span class="section-number-4">10.2.1.</span> example</h4>
+<div id="outline-container-org7027f4a" class="outline-4">
+<h4 id="org7027f4a"><span class="section-number-4">10.2.1.</span> example</h4>
 <div class="outline-text-4" id="text-10-2-1">
 <div class="org-src-container">
 <pre class="src src-python">
@@ -1129,8 +1121,8 @@ time.sleep(<span style="color: #81a2be;">0.2</span>)
 </div>
 </div>
 
-<div id="outline-container-org86c1ed4" class="outline-2">
-<h2 id="org86c1ed4"><span class="section-number-2">11.</span> limitation of threads in cpython</h2>
+<div id="outline-container-orgbf26cc0" class="outline-2">
+<h2 id="orgbf26cc0"><span class="section-number-2">11.</span> limitation of threads in cpython</h2>
 <div class="outline-text-2" id="text-11">
 <p>
 python interpreter generally does not permit more than one thread to run at a time
@@ -1192,8 +1184,8 @@ therefore, although in most cases Cpython will prevent parallel execution of thr
 </div>
 </div>
 
-<div id="outline-container-org6ef17dc" class="outline-2">
-<h2 id="org6ef17dc"><span class="section-number-2">12.</span> when to use thread</h2>
+<div id="outline-container-org6e88a61" class="outline-2">
+<h2 id="org6e88a61"><span class="section-number-2">12.</span> when to use thread</h2>
 <div class="outline-text-2" id="text-12">
 <p>
 there are times when the GIL lock is released by the interpreter and we can achieve  parallel execution of our concurent code in python.
@@ -1218,8 +1210,8 @@ there are times when the GIL lock is released by the interpreter and we can achi
 </ul>
 </div>
 
-<div id="outline-container-org843939f" class="outline-3">
-<h3 id="org843939f"><span class="section-number-3">12.1.</span> use threads for blocking IO</h3>
+<div id="outline-container-orgb55bc73" class="outline-3">
+<h3 id="orgb55bc73"><span class="section-number-3">12.1.</span> use threads for blocking IO</h3>
 <div class="outline-text-3" id="text-12-1">
 <p>
 should use threads for IO bound tasks.
@@ -1283,8 +1275,8 @@ examples of blocking IO operations include:
 </div>
 </div>
 
-<div id="outline-container-org213e668" class="outline-3">
-<h3 id="org213e668"><span class="section-number-3">12.2.</span> use threads external c code (that realses the GIL)</h3>
+<div id="outline-container-org91342bf" class="outline-3">
+<h3 id="org91342bf"><span class="section-number-3">12.2.</span> use threads external c code (that realses the GIL)</h3>
 <div class="outline-text-3" id="text-12-2">
 <p>
 we may make function calls that themselves call down into a third-party C library.
@@ -1326,8 +1318,8 @@ The exceptions are few but important: while a thread is waiting for IO (for you 
 </div>
 </div>
 
-<div id="outline-container-org8f19c37" class="outline-3">
-<h3 id="org8f19c37"><span class="section-number-3">12.3.</span> use threads with (some) third-party python interpreter</h3>
+<div id="outline-container-org6da4ea1" class="outline-3">
+<h3 id="org6da4ea1"><span class="section-number-3">12.3.</span> use threads with (some) third-party python interpreter</h3>
 <div class="outline-text-3" id="text-12-3">
 <p>
 there are alternate commericial and open source python interpreters that you can acquire and use to execute your python code.
@@ -1340,8 +1332,8 @@ some python interpreters may implement a GIL and release it more or less than Cp
 </div>
 </div>
 
-<div id="outline-container-org4bfa08f" class="outline-2">
-<h2 id="org4bfa08f"><span class="section-number-2">13.</span> threads blocking calls</h2>
+<div id="outline-container-orgb3781ad" class="outline-2">
+<h2 id="orgb3781ad"><span class="section-number-2">13.</span> threads blocking calls</h2>
 <div class="outline-text-2" id="text-13">
 <p>
 a blocking call is a function call that does not return until is complete.
@@ -1388,8 +1380,8 @@ there are three types of blocking function calls you need to consider in concurr
 </ul>
 </div>
 
-<div id="outline-container-org8dd7758" class="outline-3">
-<h3 id="org8dd7758"><span class="section-number-3">13.1.</span> blocking calls on concurrency primitives</h3>
+<div id="outline-container-orge52ee29" class="outline-3">
+<h3 id="orge52ee29"><span class="section-number-3">13.1.</span> blocking calls on concurrency primitives</h3>
 <div class="outline-text-3" id="text-13-1">
 <p>
 there are many blocking calls in concurrent programming
@@ -1409,8 +1401,8 @@ common ways are;
 </div>
 </div>
 
-<div id="outline-container-orgdebcaf3" class="outline-3">
-<h3 id="orgdebcaf3"><span class="section-number-3">13.2.</span> blocking calls for I/O</h3>
+<div id="outline-container-orgf0fc03d" class="outline-3">
+<h3 id="orgf0fc03d"><span class="section-number-3">13.2.</span> blocking calls for I/O</h3>
 <div class="outline-text-3" id="text-13-2">
 <p>
 conventionally,function calls that interact with I/O are mostly blocking calls.they are blocking in same sencse as blocking calls in concurency primitives
@@ -1442,8 +1434,8 @@ the I/O with devices is coordinated by the operating system and the device.this 
 </div>
 </div>
 
-<div id="outline-container-org46cf0ec" class="outline-3">
-<h3 id="org46cf0ec"><span class="section-number-3">13.3.</span> blocking calls to sleep</h3>
+<div id="outline-container-org1bbfe27" class="outline-3">
+<h3 id="org1bbfe27"><span class="section-number-3">13.3.</span> blocking calls to sleep</h3>
 <div class="outline-text-3" id="text-13-3">
 <p>
 the sleep() function is a capability provided by the underlying operating system that we can make use of within our program.
@@ -1481,8 +1473,8 @@ sleep often used in worked examples when demonstrating concurrency programming,b
 </div>
 </div>
 
-<div id="outline-container-org567e285" class="outline-2">
-<h2 id="org567e285"><span class="section-number-2">14.</span> thread-local data</h2>
+<div id="outline-container-orgea76199" class="outline-2">
+<h2 id="orgea76199"><span class="section-number-2">14.</span> thread-local data</h2>
 <div class="outline-text-2" id="text-14">
 <p>
 threads can store local data via an instance of the <b>threading.local</b> class
@@ -1509,8 +1501,8 @@ importantly, each thread must hang on to the &ldquo;local&rdquo; instance in ord
 </p>
 </div>
 
-<div id="outline-container-org602dbdd" class="outline-3">
-<h3 id="org602dbdd"><span class="section-number-3">14.1.</span> example</h3>
+<div id="outline-container-org2ec5ee7" class="outline-3">
+<h3 id="org2ec5ee7"><span class="section-number-3">14.1.</span> example</h3>
 <div class="outline-text-3" id="text-14-1">
 <div class="org-src-container">
 <pre class="src src-python">
@@ -1536,16 +1528,16 @@ threading.Thread(target=task,args=(<span style="color: #81a2be;">2</span>,)).sta
 </div>
 </div>
 
-<div id="outline-container-orgc6dd797" class="outline-2">
-<h2 id="orgc6dd797"><span class="section-number-2">15.</span> thread mutex lock - <i>threading.Lock</i></h2>
+<div id="outline-container-org60ff535" class="outline-2">
+<h2 id="org60ff535"><span class="section-number-2">15.</span> thread mutex lock - <i>threading.Lock</i></h2>
 <div class="outline-text-2" id="text-15">
 </div>
-<div id="outline-container-org33104ae" class="outline-3">
-<h3 id="org33104ae"><span class="section-number-3">15.1.</span> what is mutual exclusion lock</h3>
+<div id="outline-container-org4ee7019" class="outline-3">
+<h3 id="org4ee7019"><span class="section-number-3">15.1.</span> what is mutual exclusion lock</h3>
 <div class="outline-text-3" id="text-15-1">
 </div>
-<div id="outline-container-org8d4bade" class="outline-4">
-<h4 id="org8d4bade"><span class="section-number-4">15.1.1.</span> why we need mutual exclusion lock</h4>
+<div id="outline-container-orge389146" class="outline-4">
+<h4 id="orge389146"><span class="section-number-4">15.1.1.</span> why we need mutual exclusion lock</h4>
 <div class="outline-text-4" id="text-15-1-1">
 <div class="org-center">
 <p>
@@ -1560,8 +1552,8 @@ section may refer to single block of code, but is also refers to multiple access
 </div>
 </div>
 </div>
-<div id="outline-container-orge07e338" class="outline-4">
-<h4 id="orge07e338"><span class="section-number-4">15.1.2.</span> description of mutex</h4>
+<div id="outline-container-org04406eb" class="outline-4">
+<h4 id="org04406eb"><span class="section-number-4">15.1.2.</span> description of mutex</h4>
 <div class="outline-text-4" id="text-15-1-2">
 <div class="org-center">
 <p>
@@ -1571,8 +1563,8 @@ mutual exclusion lock also known as mutex,is synchronization mechanism used to c
 </div>
 </div>
 </div>
-<div id="outline-container-orgf659670" class="outline-3">
-<h3 id="orgf659670"><span class="section-number-3">15.2.</span> how to use mutex lock</h3>
+<div id="outline-container-orge5c6e65" class="outline-3">
+<h3 id="orge5c6e65"><span class="section-number-3">15.2.</span> how to use mutex lock</h3>
 <div class="outline-text-3" id="text-15-2">
 <div class="org-center">
 <p>
@@ -1624,8 +1616,8 @@ lock.acquire(timeout=<span style="color: #81a2be;">10</span>)
 </div>
 </div>
 
-<div id="outline-container-org955589d" class="outline-4">
-<h4 id="org955589d"><span class="section-number-4">15.2.1.</span> for example</h4>
+<div id="outline-container-orgab977d5" class="outline-4">
+<h4 id="orgab977d5"><span class="section-number-4">15.2.1.</span> for example</h4>
 <div class="outline-text-4" id="text-15-2-1">
 <div class="org-src-container">
 <pre class="src src-python">...
@@ -1656,8 +1648,8 @@ also we can check if the lock is currently acquired by a thread
 </div>
 </div>
 
-<div id="outline-container-org75bc241" class="outline-3">
-<h3 id="org75bc241"><span class="section-number-3">15.3.</span> example of using mutex lock</h3>
+<div id="outline-container-org953eaee" class="outline-3">
+<h3 id="org953eaee"><span class="section-number-3">15.3.</span> example of using mutex lock</h3>
 <div class="outline-text-3" id="text-15-3">
 <div class="org-src-container">
 <pre class="src src-python">
@@ -1680,12 +1672,12 @@ also we can check if the lock is currently acquired by a thread
 </div>
 </div>
 
-<div id="outline-container-org1e71571" class="outline-2">
-<h2 id="org1e71571"><span class="section-number-2">16.</span> thread reentrant lock  - <i>threading.RLock</i></h2>
+<div id="outline-container-orgb6ca8aa" class="outline-2">
+<h2 id="orgb6ca8aa"><span class="section-number-2">16.</span> thread reentrant lock  - <i>threading.RLock</i></h2>
 <div class="outline-text-2" id="text-16">
 </div>
-<div id="outline-container-org0dda612" class="outline-3">
-<h3 id="org0dda612"><span class="section-number-3">16.1.</span> what is reentrant lock</h3>
+<div id="outline-container-orgfbf6754" class="outline-3">
+<h3 id="orgfbf6754"><span class="section-number-3">16.1.</span> what is reentrant lock</h3>
 <div class="outline-text-3" id="text-16-1">
 <p>
 a reentrant mutual exclusion lock aka &ldquo;reenrant mutex&rdquo; or &ldquo;reentrant lock&rdquo; for short, is like a mutex lock except it allows a thread to acquire the lock more than once.
@@ -1699,8 +1691,8 @@ a reentrant lock is synchranization primitive that may be acquired multiple time
 &#x2013; <a href="https://docs.python.org/3/library/threading.html#rlock-objects.html">rlock objects &#x2013; Thread-based parallelism</a>
 </p>
 </div>
-<div id="outline-container-orgb7fe6cd" class="outline-4">
-<h4 id="orgb7fe6cd"><span class="section-number-4">16.1.1.</span> why we neet reentrant lock</h4>
+<div id="outline-container-org2172de4" class="outline-4">
+<h4 id="org2172de4"><span class="section-number-4">16.1.1.</span> why we neet reentrant lock</h4>
 <div class="outline-text-4" id="text-16-1-1">
 <p>
 we can imagine critical sections spread across a number of funcstions,each protected by the same lock.A thread may call across these functions in course of normal execution and may call into one critical section from another critical section.
@@ -1712,8 +1704,8 @@ a limitation of a (non-reentrant) mutex lock is that if a thread has acquired th
 </div>
 </div>
 
-<div id="outline-container-org858b679" class="outline-4">
-<h4 id="org858b679"><span class="section-number-4">16.1.2.</span> description of reentrant lock</h4>
+<div id="outline-container-org480c647" class="outline-4">
+<h4 id="org480c647"><span class="section-number-4">16.1.2.</span> description of reentrant lock</h4>
 <div class="outline-text-4" id="text-16-1-2">
 <p>
 a reenrant lock will allow a thread to acquire the same lock again if it has already acquired it.This allows the thread to execute critical sections from within critical sections,as long as they are protected by same reentrant lock.
@@ -1726,8 +1718,8 @@ each time a thread acquires the lock it must also release it, meaning that are r
 </div>
 </div>
 
-<div id="outline-container-org5ab5bd3" class="outline-3">
-<h3 id="org5ab5bd3"><span class="section-number-3">16.2.</span> how to use reentrant lock</h3>
+<div id="outline-container-orga09f5d3" class="outline-3">
+<h3 id="orga09f5d3"><span class="section-number-3">16.2.</span> how to use reentrant lock</h3>
 <div class="outline-text-3" id="text-16-2">
 <div class="org-src-container">
 <pre class="src src-python">...
@@ -1752,8 +1744,8 @@ bonus: we can use via &rsquo;<b>with</b>&rsquo; keyword for safety.
 </div>
 </div>
 
-<div id="outline-container-org84f7220" class="outline-3">
-<h3 id="org84f7220"><span class="section-number-3">16.3.</span> example of using reentrant lock</h3>
+<div id="outline-container-org051bace" class="outline-3">
+<h3 id="org051bace"><span class="section-number-3">16.3.</span> example of using reentrant lock</h3>
 <div class="outline-text-3" id="text-16-3">
 <div class="org-src-container">
 <pre class="src src-python">
@@ -1787,12 +1779,12 @@ if non-reentrant lock,e.g. a threading.Lock was used instead,then the thread wou
 </div>
 </div>
 </div>
-<div id="outline-container-org10cfe9d" class="outline-2">
-<h2 id="org10cfe9d"><span class="section-number-2">17.</span> thread condition - <i>threading.Condition</i></h2>
+<div id="outline-container-org27f0bf2" class="outline-2">
+<h2 id="org27f0bf2"><span class="section-number-2">17.</span> thread condition - <i>threading.Condition</i></h2>
 <div class="outline-text-2" id="text-17">
 </div>
-<div id="outline-container-org5d7de9f" class="outline-3">
-<h3 id="org5d7de9f"><span class="section-number-3">17.1.</span> what is a threading condition</h3>
+<div id="outline-container-org74fa807" class="outline-3">
+<h3 id="org74fa807"><span class="section-number-3">17.1.</span> what is a threading condition</h3>
 <div class="outline-text-3" id="text-17-1">
 <p>
 in concurency,a condition (also called a monitor) allows multiple threads to be notified about some result.
@@ -1820,8 +1812,8 @@ this highlights that a condition and to allow threads to notify other threads wa
 </div>
 </div>
 
-<div id="outline-container-org8bbcd9c" class="outline-3">
-<h3 id="org8bbcd9c"><span class="section-number-3">17.2.</span> how to use condition object</h3>
+<div id="outline-container-orgb2af3e1" class="outline-3">
+<h3 id="orgb2af3e1"><span class="section-number-3">17.2.</span> how to use condition object</h3>
 <div class="outline-text-3" id="text-17-2">
 <p>
 we can create condition object by default it will create a new reentrant mutex lock (<b>threading.RLock</b>).
@@ -1913,8 +1905,8 @@ we can notify all threads waitinh on yhe condition via the notify<sub>all</sub>(
 </div>
 </div>
 
-<div id="outline-container-orgd61c86a" class="outline-3">
-<h3 id="orgd61c86a"><span class="section-number-3">17.3.</span> example of wait and notify with a condition</h3>
+<div id="outline-container-org89afc7b" class="outline-3">
+<h3 id="org89afc7b"><span class="section-number-3">17.3.</span> example of wait and notify with a condition</h3>
 <div class="outline-text-3" id="text-17-3">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -1947,16 +1939,16 @@ condition = threading.Condition()
 </div>
 </div>
 
-<div id="outline-container-orgce7f565" class="outline-2">
-<h2 id="orgce7f565"><span class="section-number-2">18.</span> thread semaphore - <i>threading.Semaphore</i></h2>
+<div id="outline-container-orgaa21f5a" class="outline-2">
+<h2 id="orgaa21f5a"><span class="section-number-2">18.</span> thread semaphore - <i>threading.Semaphore</i></h2>
 <div class="outline-text-2" id="text-18">
 <p>
 a semaphore is essentially a counter protected by a mutex lock used to limit the number of threads that can acces a resource.
 </p>
 </div>
 
-<div id="outline-container-org7e11de4" class="outline-3">
-<h3 id="org7e11de4"><span class="section-number-3">18.1.</span> what is a semaphore</h3>
+<div id="outline-container-orgd33eebb" class="outline-3">
+<h3 id="orgd33eebb"><span class="section-number-3">18.1.</span> what is a semaphore</h3>
 <div class="outline-text-3" id="text-18-1">
 <p>
 a semaphore is a concurency primitive that allows a limit on the number of threads that can acquire a lock protecting a critical section.
@@ -1988,8 +1980,8 @@ A semaphore provides a useful concurency, in examples:
 </div>
 </div>
 
-<div id="outline-container-orge6d52c0" class="outline-3">
-<h3 id="orge6d52c0"><span class="section-number-3">18.2.</span> how to use a semaphore</h3>
+<div id="outline-container-org3c1bb4e" class="outline-3">
+<h3 id="org3c1bb4e"><span class="section-number-3">18.2.</span> how to use a semaphore</h3>
 <div class="outline-text-3" id="text-18-2">
 <p>
 the <b>threading.Semaphore</b> instance must be configured when it is created to set the limit on the internal counter.This limit will match the number of concurrent threads that can hold the semaphore.
@@ -2010,8 +2002,8 @@ in this implementation,each time the semaphore is acquired,the internal counter 
 </p>
 </div>
 
-<div id="outline-container-orge8c7e01" class="outline-4">
-<h4 id="orge8c7e01"><span class="section-number-4">18.2.1.</span> acquiring and releasing</h4>
+<div id="outline-container-orgeaf2f03" class="outline-4">
+<h4 id="orgeaf2f03"><span class="section-number-4">18.2.1.</span> acquiring and releasing</h4>
 <div class="outline-text-4" id="text-18-2-1">
 <div class="org-src-container">
 <pre class="src src-python">...
@@ -2031,8 +2023,8 @@ semaphore.release()
 </div>
 </div>
 
-<div id="outline-container-orgb1a8a2f" class="outline-3">
-<h3 id="orgb1a8a2f"><span class="section-number-3">18.3.</span> example</h3>
+<div id="outline-container-org887aa54" class="outline-3">
+<h3 id="org887aa54"><span class="section-number-3">18.3.</span> example</h3>
 <div class="outline-text-3" id="text-18-3">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -2060,15 +2052,15 @@ semaphore.release()
 </div>
 </div>
 
-<div id="outline-container-org32fb662" class="outline-2">
-<h2 id="org32fb662"><span class="section-number-2">19.</span> thread event - <i>threading.Event</i></h2>
+<div id="outline-container-org651d57e" class="outline-2">
+<h2 id="org651d57e"><span class="section-number-2">19.</span> thread event - <i>threading.Event</i></h2>
 <div class="outline-text-2" id="text-19">
 <p>
 an event is a thread-safe boolean flag.
 </p>
 </div>
-<div id="outline-container-org4cbdc61" class="outline-3">
-<h3 id="org4cbdc61"><span class="section-number-3">19.1.</span> how to use event object</h3>
+<div id="outline-container-org8fa2fc6" class="outline-3">
+<h3 id="org8fa2fc6"><span class="section-number-3">19.1.</span> how to use event object</h3>
 <div class="outline-text-3" id="text-19-1">
 <p>
 an event is a simple pritimitve that allows communitcation between threads.
@@ -2132,8 +2124,8 @@ event.wait(timeout=<span style="color: #81a2be;">10</span>)
 </div>
 </div>
 
-<div id="outline-container-org4a9cf7f" class="outline-3">
-<h3 id="org4a9cf7f"><span class="section-number-3">19.2.</span> example</h3>
+<div id="outline-container-orga313864" class="outline-3">
+<h3 id="orga313864"><span class="section-number-3">19.2.</span> example</h3>
 <div class="outline-text-3" id="text-19-2">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -2164,15 +2156,15 @@ event.<span style="color: #b294bb;">set</span>()
 </div>
 </div>
 </div>
-<div id="outline-container-org6456490" class="outline-2">
-<h2 id="org6456490"><span class="section-number-2">20.</span> timer threads - <i>threading.Timer</i></h2>
+<div id="outline-container-org176217c" class="outline-2">
+<h2 id="org176217c"><span class="section-number-2">20.</span> timer threads - <i>threading.Timer</i></h2>
 <div class="outline-text-2" id="text-20">
 <p>
 a timer thread will execute a function after a time delay.
 </p>
 </div>
-<div id="outline-container-org27434f1" class="outline-3">
-<h3 id="org27434f1"><span class="section-number-3">20.1.</span> how to use a timer thread</h3>
+<div id="outline-container-orgb67c5b4" class="outline-3">
+<h3 id="orgb67c5b4"><span class="section-number-3">20.1.</span> how to use a timer thread</h3>
 <div class="outline-text-3" id="text-20-1">
 <p>
 the <b>threading.Timer</b> is an extension of fhe <b>threading.Thread</b> class because of this reason
@@ -2198,8 +2190,8 @@ timerT.cancel()
 </div>
 </div>
 
-<div id="outline-container-org21bbd08" class="outline-3">
-<h3 id="org21bbd08"><span class="section-number-3">20.2.</span> example of using a timer thread</h3>
+<div id="outline-container-org417600c" class="outline-3">
+<h3 id="org417600c"><span class="section-number-3">20.2.</span> example of using a timer thread</h3>
 <div class="outline-text-3" id="text-20-2">
 <div class="org-src-container">
 <pre class="src src-python"><span style="color: #b5bd68;">from</span> __init__ <span style="color: #b5bd68;">import</span> *
@@ -2220,12 +2212,12 @@ timerT.start()
 </div>
 </div>
 
-<div id="outline-container-orgca329c7" class="outline-2">
-<h2 id="orgca329c7"><span class="section-number-2">21.</span> thread barrier - <i>threading.Barrier</i></h2>
+<div id="outline-container-org7db988d" class="outline-2">
+<h2 id="org7db988d"><span class="section-number-2">21.</span> thread barrier - <i>threading.Barrier</i></h2>
 <div class="outline-text-2" id="text-21">
 </div>
-<div id="outline-container-orgc225a3e" class="outline-3">
-<h3 id="orgc225a3e"><span class="section-number-3">21.1.</span> what is barrier</h3>
+<div id="outline-container-org520cbaa" class="outline-3">
+<h3 id="org520cbaa"><span class="section-number-3">21.1.</span> what is barrier</h3>
 <div class="outline-text-3" id="text-21-1">
 <p>
 a barrier is a synchranization primitive.
@@ -2240,8 +2232,8 @@ internally, a barrier maintains a count of the number of threads waiting on the 
 </p>
 </div>
 </div>
-<div id="outline-container-org470e822" class="outline-3">
-<h3 id="org470e822"><span class="section-number-3">21.2.</span> how to use barrier</h3>
+<div id="outline-container-org02b4ea3" class="outline-3">
+<h3 id="org02b4ea3"><span class="section-number-3">21.2.</span> how to use barrier</h3>
 <div class="outline-text-3" id="text-21-2">
 <p>
 a barrier instance must first be created and configured via the constructor specifying the number of parties (threads) that must arrive before the barrier will be lifted.
@@ -2361,8 +2353,8 @@ the status of the barrier can be checked via attributes.
 </div>
 </div>
 
-<div id="outline-container-orgec70119" class="outline-3">
-<h3 id="orgec70119"><span class="section-number-3">21.3.</span> example</h3>
+<div id="outline-container-orgc41fd04" class="outline-3">
+<h3 id="orgc41fd04"><span class="section-number-3">21.3.</span> example</h3>
 <div class="outline-text-3" id="text-21-3">
 <p>
 in this example we will create a suite of threads, each required to perform some blocking calculation we will use a barrier to coodinate all threads after they have finished their work and perform some action in the main thread. this is a good proxy for the types of coodination we may need to perform with a barrier.
@@ -2399,20 +2391,20 @@ Tbarrier.wait()
 </div>
 </div>
 
-<div id="outline-container-org2c97b37" class="outline-2">
-<h2 id="org2c97b37"><span class="section-number-2">22.</span> pyhton : threading best practices</h2>
+<div id="outline-container-org13ef674" class="outline-2">
+<h2 id="org13ef674"><span class="section-number-2">22.</span> pyhton : threading best practices</h2>
 <div class="outline-text-2" id="text-22">
 </div>
-<div id="outline-container-org2793d0a" class="outline-3">
-<h3 id="org2793d0a"><span class="section-number-3">22.1.</span> tip 1: use context managers</h3>
+<div id="outline-container-orga6cbfa8" class="outline-3">
+<h3 id="orga6cbfa8"><span class="section-number-3">22.1.</span> tip 1: use context managers</h3>
 <div class="outline-text-3" id="text-22-1">
 <p>
 acquire and release locks using a context manager, wherever possible.
 </p>
 </div>
 
-<div id="outline-container-org5d65690" class="outline-4">
-<h4 id="org5d65690"><span class="section-number-4">22.1.1.</span> not use this</h4>
+<div id="outline-container-org4c8c98c" class="outline-4">
+<h4 id="org4c8c98c"><span class="section-number-4">22.1.1.</span> not use this</h4>
 <div class="outline-text-4" id="text-22-1-1">
 <div class="org-src-container">
 <pre class="src src-python">...
@@ -2427,8 +2419,8 @@ lock.release()
 </div>
 </div>
 
-<div id="outline-container-org1d79ac9" class="outline-4">
-<h4 id="org1d79ac9"><span class="section-number-4">22.1.2.</span> use this for better control over threads (more safe)</h4>
+<div id="outline-container-org5ab1b38" class="outline-4">
+<h4 id="org5ab1b38"><span class="section-number-4">22.1.2.</span> use this for better control over threads (more safe)</h4>
 <div class="outline-text-4" id="text-22-1-2">
 <div class="org-src-container">
 <pre class="src src-python">...
@@ -2457,8 +2449,8 @@ same but less code
 </div>
 </div>
 
-<div id="outline-container-orgb1217ce" class="outline-4">
-<h4 id="orgb1217ce"><span class="section-number-4">22.1.3.</span> the real benefit</h4>
+<div id="outline-container-org0f0be12" class="outline-4">
+<h4 id="org0f0be12"><span class="section-number-4">22.1.3.</span> the real benefit</h4>
 <div class="outline-text-4" id="text-22-1-3">
 <p>
 the benefit of the context manager is that the lock is always released as soon as the block exited,regardless of how it is exited, e.g normally, a return, an error, or an exception.
@@ -2481,8 +2473,8 @@ this applies to a number of concurency primitives,such as:
 </div>
 </div>
 
-<div id="outline-container-orga79040f" class="outline-3">
-<h3 id="orga79040f"><span class="section-number-3">22.2.</span> tip 2 : Use timedouts when waiting</h3>
+<div id="outline-container-orgfbb0fee" class="outline-3">
+<h3 id="orgfbb0fee"><span class="section-number-3">22.2.</span> tip 2 : Use timedouts when waiting</h3>
 <div class="outline-text-3" id="text-22-2">
 <p>
 always use a timedout when waiting on a blocking call.
@@ -2525,8 +2517,8 @@ this allow the waiting thread to give-up waiting after a fixed time limit and th
 </div>
 </div>
 
-<div id="outline-container-org4d8a233" class="outline-3">
-<h3 id="org4d8a233"><span class="section-number-3">22.3.</span> tip 3: use a mutex to protect critical sections</h3>
+<div id="outline-container-org8b389b9" class="outline-3">
+<h3 id="org8b389b9"><span class="section-number-3">22.3.</span> tip 3: use a mutex to protect critical sections</h3>
 <div class="outline-text-3" id="text-22-3">
 <p>
 always use a mutual exclusion (mutex) lock to protect critical sections in code.
@@ -2559,8 +2551,8 @@ each thread must attempt to acquire the lock at the beginning of the critical se
 </div>
 
 
-<div id="outline-container-orgff17755" class="outline-3">
-<h3 id="orgff17755"><span class="section-number-3">22.4.</span> tip 4: acquire locks in order</h3>
+<div id="outline-container-org3d9e114" class="outline-3">
+<h3 id="org3d9e114"><span class="section-number-3">22.4.</span> tip 4: acquire locks in order</h3>
 <div class="outline-text-3" id="text-22-4">
 <p>
 acquire locks in the same order throught the application, wherever possible.
@@ -2581,50 +2573,20 @@ when this is not possible, you may need to audit your code to confirm that all p
 </div>
 </div>
 
-<div id="outline-container-org01529c2" class="outline-2">
-<h2 id="org01529c2"><span class="section-number-2">23.</span> python : threading common errors</h2>
+
+<div id="outline-container-org31583f8" class="outline-2">
+<h2 id="org31583f8"><span class="section-number-2">23.</span> resources - read more about</h2>
 <div class="outline-text-2" id="text-23">
-</div>
-<div id="outline-container-org87cbf4f" class="outline-3">
-<h3 id="org87cbf4f"><span class="section-number-3">23.1.</span> race conditions</h3>
-</div>
-<div id="outline-container-org54a1375" class="outline-3">
-<h3 id="org54a1375"><span class="section-number-3">23.2.</span> thread deadlocks</h3>
-</div>
-<div id="outline-container-orgf1c649a" class="outline-3">
-<h3 id="orgf1c649a"><span class="section-number-3">23.3.</span> thread livelocks</h3>
-</div>
-</div>
-<div id="outline-container-org53d1644" class="outline-2">
-<h2 id="org53d1644"><span class="section-number-2">24.</span> python threading common questions</h2>
-<div class="outline-text-2" id="text-24">
-<p>
-<b>*
-*</b>
-<b>*
-*</b>
-<b>*
-*</b>
-<b>*
-*</b>
-<b>*
-*</b>
-**
-</p>
-</div>
-</div>
-<div id="outline-container-orgb6845a9" class="outline-2">
-<h2 id="orgb6845a9"><span class="section-number-2">25.</span> resources</h2>
-<div class="outline-text-2" id="text-25">
 <ul class="org-ul">
 <li><a href="https://superfastpython.com/threading-in-python/#Python_Threads">https://superfastpython.com/threading-in-python/#Python_Threads</a></li>
+<li><a href="https://superfastpython.com/">https://superfastpython.com/</a></li>
 </ul>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: mal1kc</p>
-<p class="date">Created: 2023-03-14 Tue 22:09</p>
+<p class="date">Created: 2023-03-18 Sat 19:24</p>
 </div>
 </body>
 </html>
