@@ -1,8 +1,8 @@
-#+title: 01 - elisp syntax
+#+title: elisp -cheatsheet
 #+creator: mal1kc
 
 
-i suggest to read original manual from gnu.org 'https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html'
+this cheatsheet is not well written i suggest to read original manual from gnu.org 'https://www.gnu.org/software/emacs/manual/html_node/elisp/index.html'
 
 
 * nil and t
@@ -236,3 +236,51 @@ define function with args
 
 #+RESULTS:
 : giovani giorgio
+
+* conditions
+** if-else
+    if the evaluated ~condition~ is non-'*nil*' ~then-form~ is evaluated, otherwise ~else-forms~ (none or more) is evaluated.
+
+    #+begin_src emacs-lisp
+if( condition
+    (then-form)
+    else-form-0
+    ...
+    else-form-4
+    ...
+                )
+    #+end_src
+
+
+if ~condition~ has the value '*nil*', and no ~else-forms~ are given '*if*' returns '*nil*'
+
+in this example, '*true*' is not printed because '*print*' is never called:
+
+   #+begin_src emacs-lisp
+(if nil
+    (print 'true)
+  'very-false)
+   #+end_src
+
+   #+RESULTS:
+   : very-false
+
+** when
+this is variant of '*if*' where there no ~else-forms~, and possibly several ~then-forms~. In particular,
+    ( when ~condition~ A B C )
+    is entirelly equvalent to
+    (if ~condition~ (progn A B C) nil)
+** unless
+this is a variant of '*if*' where there is no ~then-form~
+
+(unless ~condition~ A B C)
+
+equvalent to
+
+(if ~condition~ nil
+    A B C
+)
+
+** for more conditionals look emacs manual
+
+[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Conditionals.html][emacs-manual conditionals]]
