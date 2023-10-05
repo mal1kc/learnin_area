@@ -39,7 +39,7 @@ def main():
     print(MyFields.__annotations__)
     print(_make_init({"x": int, "y": str}))
     # print(help(MyFields))
-    m = MyFields(2, 3)
+    MyFields(2, 3)
 
 
 if __name__ == "__main__":

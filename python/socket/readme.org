@@ -43,7 +43,7 @@ if we want a lookout there was a [[https://commons.wikimedia.org/wiki/File:Inter
 * some example echo server,client
 ** src of echo server
 
-#+begin_src python :shebang "!#/bin/env python3"  :tangle echo_srv.py
+#+begin_src python :shebang "#!/bin/env python3"  :tangle echo_srv.py
 import socket
 
 HOST = "127.0.0.1"  # localhost or "127.0.0.1" (standart loopback interface address)
@@ -76,7 +76,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 ** src of echo client
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle echo_clnt.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle echo_clnt.py
 import socket
 HOST = "127.0.0.1"  # the server's hostname or IP address
 PORT = 5634  # the port used by the server
@@ -132,7 +132,7 @@ still,by using ~.select()~, we're not exactly to run concurrenctly.it still depe
 
 ** code with explanation of multiconnection server
 
-#+begin_src python :shebang "!#/bin/env python3"
+#+begin_src python :shebang "#!/bin/env python3"
 import sys
 import socket
 import selectors
@@ -301,7 +301,7 @@ def service_connection(key, mask):
  #+end_src
 ** src of multiconnection server
 
-#+begin_src python :shebang "!#/bin/env python3"  :tangle mutliconn-srvr.py
+#+begin_src python :shebang "#!/bin/env python3"  :tangle mutliconn-srvr.py
 
 import sys
 import socket
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 
 ** src of multiconnection client
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle multiconn-clnt.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle multiconn-clnt.py
 
 import sys
 import socket
@@ -536,7 +536,7 @@ file layout
 #+end_quote
 
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle lib_msrvr.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle lib_msrvr.py
 import sys
 import selectors
 import json
@@ -741,7 +741,7 @@ class Message:
 #+end_src
 
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle lib_mclient.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle lib_mclient.py
 import sys
 import selectors
 import json
@@ -940,7 +940,7 @@ class Message:
 #+end_src
 ** application server client
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle app_msrvr.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle app_msrvr.py
 
 import sys
 import socket
@@ -998,7 +998,7 @@ finally:
 #+end_src
 
 
-#+begin_src python :shebang "!#/bin/env python3" :tangle app_mclient.py
+#+begin_src python :shebang "#!/bin/env python3" :tangle app_mclient.py
 import sys
 import socket
 import selectors

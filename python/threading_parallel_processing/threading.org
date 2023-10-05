@@ -119,8 +119,8 @@ we do not have control over when the thread will execute precisely or which cpu 
 #+begin_src python :shebang "#!/bin/env python" :tangle __init__.py
 
 # doing nessesary imports for examples
-import threading
-import time
+import threading # noqa
+import time # noqa
 
 #+end_src
 
@@ -341,7 +341,7 @@ can be configured via setting *"daemon"* argument to True in the constructor
 
 #+begin_src python :shebang "#!/bin/env python" :tangle threading_example_06.py
 from __init__ import *
-thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print(f'this message is from daemon thread'))
+thread = threading.Thread(name='daemon Thread',daemon=True,target=lambda:print('this message is from daemon thread'))
 print(f'{thread.daemon=}')
 print(f'{thread.name=}')
 thread.start()
@@ -408,7 +408,7 @@ current_thread = threading.current_thread()
 current_thread.name="main thread"
 print(f'{current_thread=}')
 print(f'{threading.get_ident()=}')
-thread = threading.Thread(name='other thread',target=lambda:print(f'this message is from daemon thread'))
+thread = threading.Thread(name='other thread',target=lambda:print('this message is from daemon thread'))
 print(f'{threading.get_native_id()=}')
 thread.start()
 threads = threading.enumerate()

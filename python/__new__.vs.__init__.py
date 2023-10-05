@@ -99,7 +99,7 @@ def cached_clients_example():
     x = Client(0)
     y = Client(0)
     print(f"{x is y=}")
-    z = Client(1)
+    Client(1)
 
 
 def main():

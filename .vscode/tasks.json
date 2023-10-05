@@ -20,7 +20,7 @@
       "kind": "build",
       "isDefault": true
     },
-    "detail": "compiler: C:/Users/malik kokcan/scoop/apps/gcc/current/bin/g++.exe"
+    "detail": "compiler: g++.exe"
   }],
   "version": "2.0.0"
 }

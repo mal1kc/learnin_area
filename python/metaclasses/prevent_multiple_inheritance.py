@@ -29,9 +29,9 @@ class A(B, C):  # Error, multiple inheritance not allowed
 
 
 def main():
-    a = A()
-    b = B()
-    c = C()  # This is NOT where the error raises
+    A()
+    B()
+    C()  # This is NOT where the error raises
 
 
 if __name__ == "__main__":

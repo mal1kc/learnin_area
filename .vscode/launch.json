@@ -16,7 +16,7 @@
             "externalConsole": true,
             "MIMode": "gdb",
             "miDebuggerArgs": "--nx",
-            "miDebuggerPath": "C:/Users/malik kokcan\\scoop\\apps\\gdb\\current\\bin\\gdb.exe",
+            "miDebuggerPath": "gdb.exe",
             "setupCommands": [{
                 "description": "Enable pretty-printing for gdb",
                 "text": "-enable-pretty-printing",

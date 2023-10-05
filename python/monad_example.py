@@ -43,7 +43,7 @@ def main():
     y2, time2 = slow_f2(y1)
     total_time = time0 + time1 + time2
 
-    print(f"result without monad")
+    print("result without monad")
     print(f"{y2 = },{total_time = }")
 
     def bind(value_and_time, func):
@@ -145,7 +145,7 @@ def main():
             return values[0]
         return None
 
-    friends_of_first_friends = (
+    (
         Maybe.unit(props)
         .bind(lambda props: props.user)
         .bind(lambda user: user.friends)
@@ -189,7 +189,7 @@ def main():
 
     # usage of maybe with update
 
-    friends_of_first_friends = Maybe.unit(props).user.friends.bind(first_value).friends
+    Maybe.unit(props).user.friends.bind(first_value).friends
 
 
 if __name__ == "__main__":
