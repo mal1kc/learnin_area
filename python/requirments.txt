@@ -2,5 +2,3 @@ autopep8
 pycodestyle
 toml
 ipython
-psutil
-pyflakes

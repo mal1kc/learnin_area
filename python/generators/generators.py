@@ -8,8 +8,8 @@ from typing import NamedTuple
 
 def get_values():
     # every yield function pauses until other next(next() method) call
-    yield 'hello'
-    yield 'word'
+    yield "hello"
+    yield "word"
     yield 123
     # return 42 # very uncommon to return something
     # return doesn't return in next call
@@ -28,6 +28,7 @@ def example_get_values():
     print(next(gen))
 
     # print(next(get)) StopIteration
+
 
 # generator can be used in for loops because in python for loop is like
 
@@ -84,27 +85,29 @@ class MyDataPoint(NamedTuple):
 # line by line with generator,program not hold all data in memory it holds
 # which line current line is and next line is
 
+
 def mydata_reader(file):
     for row in file:
-        cols = row.rstrip().split(',')
+        cols = row.rstrip().split(",")
         cols = [float(c) for c in cols]
         yield MyDataPoint._make(cols)
 
 
 def example_reader():
-    with open('mydata.txt') as file:
+    with open("mydata.txt") as file:
         for row in mydata_reader(file):
             print(row)
 
 
 # collatz conjecture : https://www.wikiwand.com/en/Collatz_conjecture
 
+
 def collatz(n):
     while True:
         if n % 2 == 0:
             n = n // 2
         else:
-            n = 3*n+1
+            n = 3 * n + 1
         yield n
         if n == 1:
             break
@@ -117,7 +120,7 @@ def collatz_list(n):
         if n % 2 == 0:
             n = n // 2
         else:
-            n = 3 * n+1
+            n = 3 * n + 1
         count += 1
         result.append(n)
         if n == 1:
@@ -148,7 +151,7 @@ def example_collatz():
     # list vs gen
     for i in collatz_list(n):
         if not (next(collatz_gen) == i):
-            print(f'it not work same:{next(print_collatz_gen)} == {i}')
+            print(f"it not work same:{next(print_collatz_gen)} == {i}")
             # this line never work because it will work with less memory
 
     # first = True
@@ -160,6 +163,7 @@ def example_collatz():
     # print("]")
     #
     # print(collatz_list(n))
+
 
 # generators can be used other sequences that we know infinite
 
@@ -184,25 +188,26 @@ def primes():
 
 
 def example_gen_comp():
-    squares = [x*x for x in range(5)]  # list comprehension
+    squares = [x * x for x in range(5)]  # list comprehension
     for sq in squares:
         print(sq)
 
-    squares = (x*x for x in range(5))  # generator comprehension
+    squares = (x * x for x in range(5))  # generator comprehension
     for sq in squares:
         print(sq)
 
 
 def example_composable():
     # this all works lazily (memory efficient)
-    with open('./nums.txt') as file:
+    with open("./nums.txt") as file:
         nums = (row.partition("#")[0].rstrip() for row in file)
         nums = (row for row in nums if row)
-        nums = (float(row)for row in nums)
+        nums = (float(row) for row in nums)
         nums = (x for x in nums if math.isfinite((x)))
-        nums = (max(0., x)for x in nums)
+        nums = (max(0.0, x) for x in nums)
         s = sum(nums)
-        print(f'the sum is {s}')
+        print(f"the sum is {s}")
+
 
 # advanced usage of generators
 
@@ -237,7 +242,7 @@ def example_worker():
 
 def another_operator():
     # yield from (x*x for x in range(5))
-    for sq in (x*x for x in range(5)):
+    for sq in (x * x for x in range(5)):
         yield sq
 
 

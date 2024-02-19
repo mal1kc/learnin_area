@@ -1,10 +1,10 @@
-'''
+"""
 issues with mutable default args
-'''
+"""
 
 # ref:https://www.youtube.com/watch?v=_JGmemuINww
 
-#- imports for display_time example
+# - imports for display_time example
 from datetime import datetime
 import time
 
@@ -22,53 +22,53 @@ def add_user_fixed(user, user_list=None):
 
 
 def display_time(time_to_print=datetime.now()):
-    print(time_to_print.strftime('%Y-%m-%d %H:%M:%S'))
+    print(time_to_print.strftime("%Y-%m-%d %H:%M:%S"))
 
 
 def display_time_fixed(time_to_print=None):
     if time_to_print is None:
         time_to_print = datetime.now()
-    print(time_to_print.strftime('%Y-%m-%d %H:%M:%S'))
+    print(time_to_print.strftime("%Y-%m-%d %H:%M:%S"))
 
 
-print('/---add_user---')
+print("/---add_user---")
 # ? returns default values of function with created with function creation ,this is only evaluated once
 print(add_user.__defaults__)
 # ? set user_list to [] and append user4 to user_list
-add_user('user4')
+add_user("user4")
 # ? adds user1 to same list that created with function creation
-add_user('user1')
+add_user("user1")
 # ? adds same list that created with function creation
-add_user('user3')
+add_user("user3")
 # ? returns default values of function
 print(add_user.__defaults__)
 
-print('\n/---add_user_fixed---')
+print("\n/---add_user_fixed---")
 # ? returns default values of function
 print(add_user_fixed.__defaults__)
 # ? set user_list to None and append user4 to user_list
-add_user_fixed('user4')
+add_user_fixed("user4")
 # ? set user_list to None and append user1 to user_list
-add_user_fixed('user1')
+add_user_fixed("user1")
 # ? set user_list to None and append user3 to user_list
-add_user_fixed('user3')
+add_user_fixed("user3")
 # ? returns default values of function
 print(add_user_fixed.__defaults__)
 
-print('\n/---display_time---')
+print("\n/---display_time---")
 print(display_time.__defaults__)  # ? returns default values of function
 display_time()  # ? returns current time with default values of function
-time.sleep(1)  # ? module sleeps for 1 second
+time.sleep(0.3)  # ? module sleeps for 1 second
 display_time()  # ? returns current time with default values of function
-time.sleep(1)
+time.sleep(0.3)
 display_time()
 
-print('\n/---display_time_fixed---')
+print("\n/---display_time_fixed---")
 print(display_time_fixed.__defaults__)
 display_time_fixed()  # ? returns current time with default values of function
-time.sleep(1)  # ? module sleeps for 1 second
+time.sleep(0.3)  # ? module sleeps for 1 second
 display_time_fixed()  # ? returns current time with default values of function
-time.sleep(1)
+time.sleep(0.3)
 display_time_fixed()
 
 # - output will be like that
